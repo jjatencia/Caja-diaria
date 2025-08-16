@@ -1193,6 +1193,17 @@
         }
 
         function exportAndEmail() {
+            // Verificar si hay filtro activo
+            if (filteredDates) {
+                // ENVÍO DE RESUMEN CONSOLIDADO (FILTRO ACTIVO)
+                exportFilteredSummaryEmail();
+            } else {
+                // ENVÍO DEL DÍA ACTUAL (SIN FILTRO)
+                exportCurrentDayEmail();
+            }
+        }
+
+        function exportCurrentDayEmail() {
             const fecha = document.getElementById('fecha').value;
             const sucursal = document.getElementById('sucursal').value;
             
@@ -1257,6 +1268,111 @@ Sucursal: ${sucursal}
 Sistema de Gestión de Caja Diaria
 Generado automáticamente el ${formatDate(new Date().toISOString().split('T')[0])}`;
 
+            sendEmail(emailTo, emailSubject, emailBody);
+        }
+
+        function exportFilteredSummaryEmail() {
+            let dates = getDayIndex();
+            
+            // Aplicar filtro de fechas
+            dates = dates.filter(date => date >= filteredDates.desde && date <= filteredDates.hasta);
+            
+            if (!dates.length) {
+                showAlert('No hay datos en el filtro para enviar por email', 'danger');
+                return;
+            }
+            
+            // Calcular totales consolidados
+            let totalApertura = 0;
+            let totalIngresos = 0;
+            let totalIngresosTarjetaExora = 0;
+            let totalIngresosTarjetaDatafono = 0;
+            let totalEntradas = 0;
+            let totalSalidas = 0;
+            let totalCierre = 0;
+            let sucursalesInvolucradas = new Set();
+            let diasProcesados = 0;
+            
+            dates.forEach(date => {
+                const dayData = loadDay(date);
+                if (dayData) {
+                    diasProcesados++;
+                    sucursalesInvolucradas.add(dayData.sucursal);
+                    
+                    totalApertura += parseNum(dayData.apertura);
+                    totalIngresos += parseNum(dayData.ingresos);
+                    totalIngresosTarjetaExora += parseNum(dayData.ingresosTarjetaExora || 0);
+                    totalIngresosTarjetaDatafono += parseNum(dayData.ingresosTarjetaDatafono || 0);
+                    totalCierre += parseNum(dayData.cierre);
+                    
+                    // Sumar movimientos
+                    if (dayData.movimientos) {
+                        dayData.movimientos.forEach(mov => {
+                            if (mov && mov.tipo && mov.importe) {
+                                if (mov.tipo === 'entrada') {
+                                    totalEntradas += parseNum(mov.importe);
+                                } else if (mov.tipo === 'salida') {
+                                    totalSalidas += parseNum(mov.importe);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // Calcular diferencias totales
+            const totalTeoricoEfectivo = totalApertura + totalIngresos + totalEntradas - totalSalidas;
+            const diferenciaTotalEfectivo = totalTeoricoEfectivo - totalCierre;
+            const diferenciaTotalTarjeta = totalIngresosTarjetaExora - totalIngresosTarjetaDatafono;
+            
+            // Preparar email
+            const emailTo = 'juanjo@labarberiadejuanjo.com';
+            const sucursalesStr = Array.from(sucursalesInvolucradas).join(' y ');
+            const emailSubject = `Resumen Consolidado - ${sucursalesStr} - ${formatDate(filteredDates.desde)} a ${formatDate(filteredDates.hasta)}`;
+            
+            const emailBody = `Hola Juanjo,
+
+RESUMEN CONSOLIDADO DE CAJA
+Período: ${formatDate(filteredDates.desde)} - ${formatDate(filteredDates.hasta)}
+Sucursales: ${sucursalesStr}
+Días procesados: ${diasProcesados}
+
+═══════════════════════════════════════
+
+1. TOTALES DE APERTURA:
+   • Total Aperturas: ${formatCurrency(totalApertura)} €
+
+2. TOTALES DE INGRESOS EN EFECTIVO:
+   • Total Ingresos (Exora): ${formatCurrency(totalIngresos)} €
+
+3. TOTALES DE GESTIÓN DE TESORERÍA:
+   • Total Entradas: ${formatCurrency(totalEntradas)} €
+   • Total Salidas: ${formatCurrency(totalSalidas)} €
+
+4. TOTALES DE INGRESOS EN TARJETA:
+   • Total Ingresos tarjeta (Exora): ${formatCurrency(totalIngresosTarjetaExora)} €
+   • Total Ingresos tarjeta (Datáfono): ${formatCurrency(totalIngresosTarjetaDatafono)} €
+
+5. TOTALES DE CIERRE:
+   • Total Cierres: ${formatCurrency(totalCierre)} €
+
+6. DIFERENCIAS CONSOLIDADAS:
+   • Diferencia Total Efectivo: ${formatCurrency(diferenciaTotalEfectivo)} € ${Math.abs(diferenciaTotalEfectivo) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}
+   • Diferencia Total Tarjeta: ${formatCurrency(diferenciaTotalTarjeta)} € ${Math.abs(diferenciaTotalTarjeta) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}
+
+7. RESUMEN CALCULADO:
+   • Total teórico en efectivo: ${formatCurrency(totalTeoricoEfectivo)} €
+   • Total real cerrado: ${formatCurrency(totalCierre)} €
+
+═══════════════════════════════════════
+
+Sistema de Gestión de Caja Diaria
+Resumen consolidado generado el ${formatDate(new Date().toISOString().split('T')[0])}`;
+
+            sendEmail(emailTo, emailSubject, emailBody);
+        }
+
+        function sendEmail(emailTo, emailSubject, emailBody) {
             try {
                 // Crear enlace mailto
                 const mailtoLink = `mailto:${emailTo}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
@@ -1269,7 +1385,11 @@ Generado automáticamente el ${formatDate(new Date().toISOString().split('T')[0]
                 tempLink.click();
                 document.body.removeChild(tempLink);
                 
-                showAlert(`Email preparado para enviar a ${emailTo} con el resumen del día ${formatDate(fecha)}`, 'success');
+                if (filteredDates) {
+                    showAlert(`Email consolidado preparado para el período ${formatDate(filteredDates.desde)} - ${formatDate(filteredDates.hasta)}`, 'success');
+                } else {
+                    showAlert(`Email preparado para enviar a ${emailTo}`, 'success');
+                }
             } catch (error) {
                 showAlert('No se pudo abrir el cliente de email automáticamente', 'danger');
             }
