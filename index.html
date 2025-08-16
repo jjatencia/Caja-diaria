@@ -373,6 +373,13 @@
             color: #667eea;
         }
 
+        .filter-quick-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
         .export-section {
             background: #e8f5e8;
             padding: 20px;
@@ -598,6 +605,14 @@
                 <!-- Filtros -->
                 <div class="filter-section">
                     <h3>🔍 Filtrar por fechas</h3>
+                    
+                    <!-- Botones de acceso directo -->
+                    <div class="filter-quick-buttons">
+                        <button class="btn btn-secondary btn-small" onclick="filterToday()">📅 Hoy</button>
+                        <button class="btn btn-secondary btn-small" onclick="filterThisWeek()">📆 Esta semana</button>
+                        <button class="btn btn-secondary btn-small" onclick="filterThisMonth()">🗓️ Este mes</button>
+                    </div>
+                    
                     <div class="inline-inputs">
                         <div class="form-group">
                             <label for="fechaDesde">Desde</label>
@@ -1034,6 +1049,54 @@
         }
 
         // Funciones de filtrado
+        function filterToday() {
+            const today = getTodayString();
+            document.getElementById('fechaDesde').value = today;
+            document.getElementById('fechaHasta').value = today;
+            applyDateFilter();
+        }
+
+        function filterThisWeek() {
+            const today = new Date();
+            
+            // Calcular inicio de semana (lunes)
+            const dayOfWeek = today.getDay(); // 0 = domingo, 1 = lunes, etc.
+            const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Si es domingo, retroceder 6 días
+            
+            const monday = new Date(today);
+            monday.setDate(today.getDate() + mondayOffset);
+            
+            // Calcular fin de semana (domingo)
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            
+            const mondayStr = monday.toISOString().split('T')[0];
+            const sundayStr = sunday.toISOString().split('T')[0];
+            
+            document.getElementById('fechaDesde').value = mondayStr;
+            document.getElementById('fechaHasta').value = sundayStr;
+            applyDateFilter();
+        }
+
+        function filterThisMonth() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth(); // 0-11
+            
+            // Primer día del mes
+            const firstDay = new Date(year, month, 1);
+            
+            // Último día del mes
+            const lastDay = new Date(year, month + 1, 0);
+            
+            const firstDayStr = firstDay.toISOString().split('T')[0];
+            const lastDayStr = lastDay.toISOString().split('T')[0];
+            
+            document.getElementById('fechaDesde').value = firstDayStr;
+            document.getElementById('fechaHasta').value = lastDayStr;
+            applyDateFilter();
+        }
+
         function applyDateFilter() {
             const desde = document.getElementById('fechaDesde').value;
             const hasta = document.getElementById('fechaHasta').value;
