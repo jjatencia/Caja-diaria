@@ -239,30 +239,17 @@
             /* REDISEÑO COMPLETO DE MOVIMIENTOS PARA HORIZONTAL */
             .movimiento-form {
                 display: grid;
-                grid-template-columns: 120px 1fr 80px;
+                grid-template-columns: 120px 1fr 1fr 80px;
                 gap: 15px;
-                align-items: start;
+                align-items: end;
                 padding: 15px;
                 background: #e3f2fd;
                 border-radius: 8px;
                 margin-top: 15px;
             }
             
-            .movimiento-form-inputs {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .movimiento-form select {
-                font-size: 16px;
-                padding: 12px 16px;
-                min-height: 44px;
-                border: 2px solid #e1e5e9;
-                border-radius: 8px;
-            }
-            
-            .movimiento-form-inputs input[type="text"] {
+            .movimiento-form select,
+            .movimiento-form input[type="text"] {
                 font-size: 16px;
                 padding: 12px 16px;
                 min-height: 44px;
@@ -273,7 +260,7 @@
             
             .movimiento-item {
                 display: grid;
-                grid-template-columns: 120px 1fr 120px 80px;
+                grid-template-columns: 120px 1fr 1fr 80px;
                 gap: 15px;
                 align-items: center;
                 padding: 12px;
@@ -579,10 +566,8 @@
                                     <option value="entrada">Entrada</option>
                                     <option value="salida">Salida</option>
                                 </select>
-                                <div class="movimiento-form-inputs">
-                                    <input type="text" id="quienMovimiento" placeholder="Quién realizó">
-                                    <input type="text" id="importeMovimiento" placeholder="0,00" inputmode="decimal">
-                                </div>
+                                <input type="text" id="quienMovimiento" placeholder="Quién realizó">
+                                <input type="text" id="importeMovimiento" placeholder="0,00" inputmode="decimal">
                                 <button type="button" class="btn btn-primary btn-small" onclick="addMovimiento()">+</button>
                             </div>
                         </div>
