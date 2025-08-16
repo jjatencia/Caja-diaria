@@ -181,8 +181,8 @@
 
         .movimiento-form {
             display: grid;
-            grid-template-columns: 120px 2fr 120px 60px;
-            gap: 10px;
+            grid-template-columns: 120px 3fr 120px 60px;
+            gap: 15px;
             align-items: end;
             padding: 15px;
             background: #e3f2fd;
@@ -191,6 +191,13 @@
         }
 
         .movimiento-form input[type="text"] {
+            font-size: 16px;
+            padding: 12px 16px;
+            min-height: 44px;
+            width: 100%;
+        }
+
+        .movimiento-form select {
             font-size: 16px;
             padding: 12px 16px;
             min-height: 44px;
@@ -438,6 +445,18 @@
                         <input type="text" id="ingresos" placeholder="0,00">
                     </div>
 
+                    <div class="inline-inputs">
+                        <div class="form-group currency">
+                            <label for="ingresosTarjetaExora">Ingresos en tarjeta (Exora)</label>
+                            <input type="text" id="ingresosTarjetaExora" placeholder="0,00">
+                        </div>
+                        
+                        <div class="form-group currency">
+                            <label for="ingresosTarjetaDatafono">Ingresos en tarjeta (Datáfono)</label>
+                            <input type="text" id="ingresosTarjetaDatafono" placeholder="0,00">
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label>Gestión de tesorería - Movimientos</label>
                         <div class="movimientos-container">
@@ -468,6 +487,8 @@
                     </div>
 
                     <div id="diferenciaDisplay" class="diferencia"></div>
+
+                    <div id="diferenciaTarjetaDisplay" class="diferencia"></div>
 
                     <div class="btn-group">
                         <button type="button" class="btn btn-success" onclick="saveDay()">💾 Guardar día</button>
@@ -673,10 +694,26 @@
             
             if (Math.abs(totals.diff) < 0.01) {
                 diferenciaDiv.className = 'diferencia cuadra';
-                diferenciaDiv.innerHTML = `✅ Diferencia: ${diffFormatted} € - ¡Cuadra!`;
+                diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
             } else {
                 diferenciaDiv.className = 'diferencia no-cuadra';
-                diferenciaDiv.innerHTML = `⚠️ Diferencia: ${diffFormatted} € - No cuadra`;
+                diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - No cuadra`;
+            }
+            
+            // Calcular diferencia de tarjeta
+            const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
+            const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
+            const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
+            
+            const diferenciaTarjetaDiv = document.getElementById('diferenciaTarjetaDisplay');
+            const diffTarjetaFormatted = formatCurrency(diferenciaTarjeta);
+            
+            if (Math.abs(diferenciaTarjeta) < 0.01) {
+                diferenciaTarjetaDiv.className = 'diferencia cuadra';
+                diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
+            } else {
+                diferenciaTarjetaDiv.className = 'diferencia no-cuadra';
+                diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
             }
         }
 
@@ -747,6 +784,8 @@
             document.getElementById('apertura').value = formatCurrency(data.apertura);
             document.getElementById('responsableApertura').value = data.responsableApertura;
             document.getElementById('ingresos').value = formatCurrency(data.ingresos);
+            document.getElementById('ingresosTarjetaExora').value = formatCurrency(data.ingresosTarjetaExora || 0);
+            document.getElementById('ingresosTarjetaDatafono').value = formatCurrency(data.ingresosTarjetaDatafono || 0);
             document.getElementById('cierre').value = formatCurrency(data.cierre);
             document.getElementById('responsableCierre').value = data.responsableCierre;
             
@@ -761,6 +800,8 @@
             const apertura = parseNum(document.getElementById('apertura').value);
             const responsableApertura = document.getElementById('responsableApertura').value.trim();
             const ingresos = parseNum(document.getElementById('ingresos').value);
+            const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
+            const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
             const cierre = parseNum(document.getElementById('cierre').value);
             const responsableCierre = document.getElementById('responsableCierre').value.trim();
             
@@ -775,6 +816,8 @@
                 apertura,
                 responsableApertura,
                 ingresos,
+                ingresosTarjetaExora,
+                ingresosTarjetaDatafono,
                 movimientos: [...currentMovimientos],
                 cierre,
                 responsableCierre
@@ -1058,148 +1101,86 @@
         }
 
         function exportAndEmail() {
-            const dates = getDayIndex().sort((a, b) => b.localeCompare(a));
+            const fecha = document.getElementById('fecha').value;
+            const sucursal = document.getElementById('sucursal').value;
             
-            if (!dates.length) {
-                showAlert('No hay datos para enviar', 'danger');
+            if (!fecha || !sucursal) {
+                showAlert('Por favor, completa la fecha y sucursal antes de enviar el email', 'danger');
                 return;
             }
             
-            // Generar contenido de caja
-            const cajaHeaders = [
-                'Fecha', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
-                'Ingresos en efectivo (€)', 'Gestión de tesorería (salidas)', 'Gestión de tesorería (entradas)',
-                'Total en caja', 'Cierre de caja', 'Diferencia', 'Responsable de cierre de caja'
-            ];
+            // Obtener datos del día actual del formulario
+            const apertura = parseNum(document.getElementById('apertura').value);
+            const responsableApertura = document.getElementById('responsableApertura').value.trim();
+            const ingresos = parseNum(document.getElementById('ingresos').value);
+            const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
+            const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
+            const cierre = parseNum(document.getElementById('cierre').value);
+            const responsableCierre = document.getElementById('responsableCierre').value.trim();
             
-            const cajaData = [];
-            dates.forEach(date => {
-                const dayData = loadDay(date);
-                if (dayData) {
-                    const totals = computeTotals(dayData.apertura, dayData.ingresos, dayData.movimientos, dayData.cierre);
-                    cajaData.push([
-                        formatDate(date), dayData.sucursal, dayData.apertura, dayData.responsableApertura,
-                        dayData.ingresos, totals.salidas, totals.entradas, totals.total,
-                        dayData.cierre, totals.diff, dayData.responsableCierre
-                    ]);
-                }
-            });
-            
-            // Generar contenido de movimientos
-            const movHeaders = ['Fecha', 'Tipo', 'Quién', 'Importe (€)'];
-            const movData = [];
-            
-            dates.forEach(date => {
-                const dayData = loadDay(date);
-                if (dayData && dayData.movimientos && dayData.movimientos.length > 0) {
-                    dayData.movimientos.forEach(mov => {
-                        if (mov && mov.tipo) {
-                            movData.push([
-                                formatDate(date),
-                                mov.tipo === 'entrada' ? 'Entrada' : 'Salida',
-                                mov.quien || 'No especificado',
-                                mov.importe || 0
-                            ]);
-                        }
-                    });
-                }
-            });
-            
-            // Crear archivo combinado
-            const BOM = '\uFEFF';
-            let combinedContent = BOM;
-            
-            // Sección Caja
-            combinedContent += '=== DATOS DE CAJA ===\n';
-            combinedContent += cajaHeaders.join(';') + '\n';
-            cajaData.forEach(row => {
-                const csvRow = row.map(cell => {
-                    if (typeof cell === 'number') {
-                        return cell.toLocaleString('es-ES', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        });
-                    }
-                    return String(cell || '');
-                });
-                combinedContent += csvRow.join(';') + '\n';
-            });
-            
-            // Separador
-            combinedContent += '\n=== MOVIMIENTOS DE TESORERÍA ===\n';
-            
-            // Sección Movimientos
-            combinedContent += movHeaders.join(';') + '\n';
-            if (movData.length > 0) {
-                movData.forEach(row => {
-                    const csvRow = row.map(cell => {
-                        if (typeof cell === 'number') {
-                            return cell.toLocaleString('es-ES', {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            });
-                        }
-                        return String(cell || '');
-                    });
-                    combinedContent += csvRow.join(';') + '\n';
-                });
-            } else {
-                combinedContent += 'No hay movimientos registrados\n';
-            }
+            // Calcular totales
+            const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
+            const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
             
             // Preparar datos para el email
-            const today = new Date().toISOString().split('T')[0];
             const emailTo = 'juanjo@labarberiadejuanjo.com';
-            const emailSubject = `Datos de Caja Diaria - ${formatDate(today)}`;
-            
-            // Calcular resumen para el cuerpo del email
-            const totalDias = cajaData.length;
-            const totalMovimientos = movData.length;
-            const sucursales = [...new Set(cajaData.map(row => row[1]))].join(', ');
+            const emailSubject = `Resumen Caja Diaria - ${sucursal} - ${formatDate(fecha)}`;
             
             const emailBody = `Hola Juanjo,
 
-Te adjunto los datos de caja diaria exportados desde el sistema de gestión.
+RESUMEN DE CAJA DIARIA
+Fecha: ${formatDate(fecha)}
+Sucursal: ${sucursal}
 
-RESUMEN:
-- Total de días registrados: ${totalDias}
-- Sucursales: ${sucursales}
-- Total de movimientos: ${totalMovimientos}
-- Fecha de exportación: ${formatDate(today)}
+═══════════════════════════════════════
 
-Los datos están incluidos en formato CSV con las siguientes secciones:
-1. Datos de Caja (apertura, ingresos, cierre, diferencias)
-2. Movimientos de Tesorería (entradas y salidas detalladas)
+1. APERTURA DE CAJA:
+   • Apertura: ${formatCurrency(apertura)} €
+   • Responsable: ${responsableApertura || 'No especificado'}
 
-El archivo utiliza formato español (separador ; y coma decimal).
+2. INGRESOS EN EFECTIVO:
+   • Ingresos (Exora): ${formatCurrency(ingresos)} €
 
-Saludos,
-Sistema de Gestión de Caja Diaria`;
+3. GESTIÓN DE TESORERÍA:
+   • Total Entradas: ${formatCurrency(totals.entradas)} €
+   • Total Salidas: ${formatCurrency(totals.salidas)} €
+   ${currentMovimientos.length > 0 ? '\n   Detalle movimientos:\n' + currentMovimientos.map(mov => 
+       `   - ${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}: ${formatCurrency(mov.importe)} € (${mov.quien || 'No especificado'})`
+   ).join('\n') : '   • No hay movimientos registrados'}
 
-            const filename = `datos_caja_${today}.csv`;
-            
-            // Primero descargar el archivo
-            downloadFile(combinedContent, filename, 'text/csv;charset=utf-8');
-            
-            // Luego intentar abrir email
-            setTimeout(() => {
-                try {
-                    // Crear enlace mailto
-                    const mailtoLink = `mailto:${emailTo}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-                    
-                    // Crear un enlace temporal y hacer click
-                    const tempLink = document.createElement('a');
-                    tempLink.href = mailtoLink;
-                    tempLink.style.display = 'none';
-                    document.body.appendChild(tempLink);
-                    tempLink.click();
-                    document.body.removeChild(tempLink);
-                    
-                    showAlert(`Archivo ${filename} descargado. Se ha abierto tu cliente de email para enviar a juanjo@labarberiadejuanjo.com. Adjunta manualmente el archivo descargado.`, 'success');
-                } catch (error) {
-                    showAlert(`Archivo ${filename} descargado. No se pudo abrir el cliente de email automáticamente. Envía manualmente el archivo a juanjo@labarberiadejuanjo.com`, 'info');
-                }
-            }, 500);
+4. INGRESOS EN TARJETA:
+   • Ingresos tarjeta (Exora): ${formatCurrency(ingresosTarjetaExora)} €
+   • Ingresos tarjeta (Datáfono): ${formatCurrency(ingresosTarjetaDatafono)} €
+
+5. CIERRE DE CAJA:
+   • Cierre: ${formatCurrency(cierre)} €
+   • Responsable: ${responsableCierre || 'No especificado'}
+
+6. DIFERENCIAS:
+   • Diferencia Efectivo: ${formatCurrency(totals.diff)} € ${Math.abs(totals.diff) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}
+   • Diferencia Tarjeta: ${formatCurrency(diferenciaTarjeta)} € ${Math.abs(diferenciaTarjeta) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}
+
+═══════════════════════════════════════
+
+Sistema de Gestión de Caja Diaria
+Generado automáticamente el ${formatDate(new Date().toISOString().split('T')[0])}`;
+
+            try {
+                // Crear enlace mailto
+                const mailtoLink = `mailto:${emailTo}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+                
+                // Crear un enlace temporal y hacer click
+                const tempLink = document.createElement('a');
+                tempLink.href = mailtoLink;
+                tempLink.style.display = 'none';
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+                
+                showAlert(`Email preparado para enviar a ${emailTo} con el resumen del día ${formatDate(fecha)}`, 'success');
+            } catch (error) {
+                showAlert('No se pudo abrir el cliente de email automáticamente', 'danger');
+            }
         }
 
         // Funciones de testing
@@ -1346,7 +1327,7 @@ Sistema de Gestión de Caja Diaria`;
             document.getElementById('fecha').value = getTodayString();
             
             // Event listeners para recálculo automático
-            ['apertura', 'ingresos', 'cierre'].forEach(id => {
+            ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
                 const element = document.getElementById(id);
                 element.addEventListener('input', recalc);
                 element.addEventListener('blur', function() {
