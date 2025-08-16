@@ -1,0 +1,16 @@
+{
+  "name": "Gestión de Caja Diaria",
+  "short_name": "Caja Diaria",
+  "description": "Sistema de gestión de caja diaria para sucursales",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8f9fa",
+  "theme_color": "#667eea",
+  "icons": [
+    {
+      "src": "./icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
