@@ -8,7 +8,8 @@
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "dependencies": {
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "nodemailer": "^6.9.4"
   },
   "keywords": [],
   "author": "",
