@@ -124,13 +124,15 @@ function recalc() {
     const diferenciaDiv = document.getElementById('diferenciaDisplay');
     if (diferenciaDiv) {
         const diffFormatted = formatCurrency(totals.diff);
-
         if (Math.abs(totals.diff) < 0.01) {
-            diferenciaDiv.className = 'diferencia cuadra';
+            diferenciaDiv.className = 'diferencia cero';
             diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
+        } else if (totals.diff > 0) {
+            diferenciaDiv.className = 'diferencia positivo';
+            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - Sobra dinero`;
         } else {
-            diferenciaDiv.className = 'diferencia no-cuadra';
-            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - No cuadra`;
+            diferenciaDiv.className = 'diferencia negativo';
+            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - Falta dinero`;
         }
     }
     

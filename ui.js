@@ -86,7 +86,7 @@ export function renderResumen(filteredDates) {
                 <td class="text-right">${formatCurrency(sums.salidas)} €</td>
                 <td class="text-right">${formatCurrency(sums.total)} €</td>
                 <td class="text-right">${formatCurrency(sums.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(sums.diff) < 0.01 ? 'var(--color-exito)' : 'var(--color-peligro)'}">${formatCurrency(sums.diff)} €</td>
+                <td class="text-right" style="color: ${Math.abs(sums.diff) < 0.01 ? 'var(--color-exito)' : (sums.diff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(sums.diff)} €</td>
             </tr>
         `;
     }).join('');
@@ -105,7 +105,7 @@ export function renderResumen(filteredDates) {
                 <td class="text-right">${formatCurrency(totalSalidas)} €</td>
                 <td class="text-right">${formatCurrency(totalTotal)} €</td>
                 <td class="text-right">${formatCurrency(totalCierre)} €</td>
-                <td class="text-right">${formatCurrency(totalDiff)} €</td>
+                <td class="text-right" style="color: ${Math.abs(totalDiff) < 0.01 ? 'var(--color-exito)' : (totalDiff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(totalDiff)} €</td>
             </tr>`;
     }
 }
@@ -155,7 +155,7 @@ export function renderHistorial(filteredDates) {
                 <td class="text-right">${formatCurrency(totals.salidas)} €</td>
                 <td class="text-right">${formatCurrency(totals.total)} €</td>
                 <td class="text-right">${formatCurrency(data.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? 'var(--color-exito)' : 'var(--color-peligro)'}">${formatCurrency(totals.diff)} €</td>
+                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? 'var(--color-exito)' : (totals.diff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(totals.diff)} €</td>
                 <td class="text-center">
                     <div class="actions-dropdown">
                         <button class="btn btn-secondary btn-small" onclick="toggleActionsMenu('actions-${safeId}')">⋮</button>

@@ -345,6 +345,24 @@ input:focus, select:focus, textarea:focus {
     margin: 20px 0;
 }
 
+.diferencia.cero {
+    background: var(--color-exito-bg);
+    color: var(--color-exito-text);
+    border: 2px solid var(--color-exito-border);
+}
+
+.diferencia.positivo {
+    background: var(--color-info-bg);
+    color: var(--color-info-text);
+    border: 2px solid var(--color-info-border);
+}
+
+.diferencia.negativo {
+    background: var(--color-peligro-bg);
+    color: var(--color-peligro-text);
+    border: 2px solid var(--color-peligro-border);
+}
+
 .diferencia.cuadra {
     background: var(--color-exito-bg);
     color: var(--color-exito-text);
