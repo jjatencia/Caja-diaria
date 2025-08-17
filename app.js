@@ -835,10 +835,20 @@ function sendEmail(emailTo, emailSubject, emailBody) {
     }
 }
 
+function closeAllActionsMenus() {
+    document
+        .querySelectorAll('.dropdown-menu.show')
+        .forEach(menu => menu.classList.remove('show'));
+}
+
 function toggleActionsMenu(id) {
     const menu = document.getElementById(id);
     if (menu) {
-        menu.classList.toggle('show');
+        const isOpen = menu.classList.contains('show');
+        closeAllActionsMenus();
+        if (!isOpen) {
+            menu.classList.add('show');
+        }
     }
 }
 
@@ -1036,3 +1046,4 @@ window.changeSucursal = changeSucursal;
 window.downloadDayCSV = downloadDayCSV;
 window.emailDay = emailDay;
 window.toggleActionsMenu = toggleActionsMenu;
+window.closeAllActionsMenus = closeAllActionsMenus;
