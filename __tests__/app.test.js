@@ -63,9 +63,9 @@ describe('addMovimiento', () => {
             diferenciaDisplay: { className: '', innerHTML: '' },
             diferenciaTarjetaDisplay: { className: '', innerHTML: '' },
             fecha: { value: '2025-01-01' },
-            sucursal: { value: 'Central' },
             responsableApertura: { value: '' },
-            responsableCierre: { value: '' }
+            responsableCierre: { value: '' },
+            currentSucursal: { textContent: '' }
         };
         global.document = {
             getElementById: (id) => elements[id],
@@ -115,7 +115,7 @@ describe('changeSucursal', () => {
             sucursalSetup: { style: { display: 'none' } },
             guardarSucursal: { addEventListener: (evt, handler) => { saveHandler = handler; } },
             sucursalInicial: { value: '' },
-            sucursal: { value: '', disabled: false }
+            currentSucursal: { textContent: '' }
         };
         global.document = {
             getElementById: (id) => elements[id]
@@ -128,8 +128,7 @@ describe('changeSucursal', () => {
         elements.sucursalInicial.value = 'Nueva';
         saveHandler();
         expect(store['sucursal']).toBe('Nueva');
-        expect(elements.sucursal.value).toBe('Nueva');
-        expect(elements.sucursal.disabled).toBe(true);
+        expect(elements.currentSucursal.textContent).toBe('Nueva');
         expect(elements.sucursalSetup.style.display).toBe('none');
     });
 });
@@ -143,7 +142,6 @@ describe('saveDay', () => {
         global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
         elements = {
             fecha: { value: '2025-01-01' },
-            sucursal: { value: 'Central' },
             apertura: { value: '0' },
             responsableApertura: { value: '' },
             ingresos: { value: '0' },
@@ -159,6 +157,7 @@ describe('saveDay', () => {
     });
 
     test('saveDay almacena hora de guardado', async () => {
+        store['sucursal'] = 'Central';
         await window.saveDay();
         const index = JSON.parse(store['caja:index']);
         const key = index[0];

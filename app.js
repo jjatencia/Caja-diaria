@@ -29,7 +29,7 @@ const empleadosPorSucursal = {
 };
 
 function updateResponsables() {
-    const sucursal = document.getElementById('sucursal')?.value;
+    const sucursal = localStorage.getItem('sucursal');
     const nombres = empleadosPorSucursal[sucursal] || [];
     const placeholders = {
         responsableApertura: 'Seleccionar responsable',
@@ -50,10 +50,9 @@ function updateResponsables() {
 
 function applySucursal() {
     const saved = localStorage.getItem('sucursal');
-    const select = document.getElementById('sucursal');
-    if (saved && select) {
-        select.value = saved;
-        select.disabled = true;
+    const display = document.getElementById('currentSucursal');
+    if (display) {
+        display.textContent = saved || '';
     }
     updateResponsables();
 }
@@ -93,7 +92,7 @@ function changeSucursal() {
 function saveDraft() {
     const draft = {
         fecha: document.getElementById('fecha').value,
-        sucursal: document.getElementById('sucursal').value,
+        sucursal: localStorage.getItem('sucursal'),
         apertura: parseNum(document.getElementById('apertura').value),
         responsableApertura: document.getElementById('responsableApertura').value.trim(),
         ingresos: parseNum(document.getElementById('ingresos').value),
@@ -139,7 +138,7 @@ function recalc() {
     // Si falta dinero, intenta enviar una alerta
     if (totals.diff < 0) {
         const alertData = {
-            sucursal: document.getElementById('sucursal').value,
+            sucursal: localStorage.getItem('sucursal'),
             fecha: document.getElementById('fecha').value,
             diferencia: totals.diff,
             detalle: currentMovimientos
@@ -246,8 +245,10 @@ function clearForm() {
 
 function loadFormData(data) {
     document.getElementById('fecha').value = data.fecha;
-    document.getElementById('sucursal').value = data.sucursal;
-    applySucursal();
+    if (data.sucursal) {
+        localStorage.setItem('sucursal', data.sucursal);
+        applySucursal();
+    }
     document.getElementById('apertura').value = formatCurrency(data.apertura);
     document.getElementById('responsableApertura').value = data.responsableApertura;
     document.getElementById('ingresos').value = formatCurrency(data.ingresos);
@@ -263,7 +264,7 @@ function loadFormData(data) {
 
 async function saveDay() {
     const fecha = document.getElementById('fecha').value;
-    const sucursal = document.getElementById('sucursal').value;
+    const sucursal = localStorage.getItem('sucursal');
     const apertura = parseNum(document.getElementById('apertura').value);
     const responsableApertura = document.getElementById('responsableApertura').value.trim();
     const ingresos = parseNum(document.getElementById('ingresos').value);
@@ -837,11 +838,6 @@ document.addEventListener('DOMContentLoaded', function() {
     ['responsableApertura', 'responsableCierre'].forEach(id => {
         const element = document.getElementById(id);
         element.addEventListener('input', saveDraft);
-    });
-    const sucursalSelect = document.getElementById('sucursal');
-    sucursalSelect.addEventListener('change', () => {
-        updateResponsables();
-        saveDraft();
     });
     
     // Event listener para cambio de fecha
