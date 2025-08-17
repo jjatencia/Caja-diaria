@@ -30,8 +30,8 @@
 
         <div class="tests-panel" id="testsPanel">
             <h4>🔧 Tests de Sistema</h4>
-            <div id="testResults"></div>
-            <button class="btn btn-small btn-secondary" onclick="hideTests()">Cerrar</button>
+            <div id="testResults" role="status" aria-live="polite"></div>
+            <button class="btn btn-small btn-secondary" onclick="hideTests()" tabindex="0">Cerrar</button>
         </div>
 
         <div class="main-content">
@@ -85,22 +85,25 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Gestión de tesorería - Movimientos</label>
+                    <fieldset class="form-group">
+                        <legend>Gestión de tesorería - Movimientos</legend>
                         <div class="movimientos-container">
                             <div id="movimientosList"></div>
-                            
+
                             <div class="movimiento-form">
-                                <select id="tipoMovimiento">
+                                <label for="tipoMovimiento" class="visually-hidden">Tipo de movimiento</label>
+                                <select id="tipoMovimiento" tabindex="0">
                                     <option value="entrada">Entrada</option>
                                     <option value="salida">Salida</option>
                                 </select>
-                                <input type="text" id="quienMovimiento" placeholder="Quién realizó">
-                                <input type="text" id="importeMovimiento" placeholder="0,00" inputmode="decimal">
-                                <button type="button" class="btn btn-primary btn-small" onclick="addMovimiento()">+</button>
+                                <label for="quienMovimiento" class="visually-hidden">Quién realizó</label>
+                                <input type="text" id="quienMovimiento" placeholder="Quién realizó" tabindex="0">
+                                <label for="importeMovimiento" class="visualmente-hidden">Importe del movimiento</label>
+                                <input type="text" id="importeMovimiento" placeholder="0,00" inputmode="decimal" tabindex="0">
+                                <button type="button" class="btn btn-primary btn-small" onclick="addMovimiento()" tabindex="0">+</button>
                             </div>
                         </div>
-                    </div>
+                    </fieldset>
 
                     <div class="inline-inputs">
                         <div class="form-group currency">
@@ -114,9 +117,9 @@
                         </div>
                     </div>
 
-                    <div id="diferenciaDisplay" class="diferencia"></div>
+                    <div id="diferenciaDisplay" class="diferencia" role="status" aria-live="polite"></div>
 
-                    <div id="diferenciaTarjetaDisplay" class="diferencia"></div>
+                    <div id="diferenciaTarjetaDisplay" class="diferencia" role="status" aria-live="polite"></div>
 
                     <div class="btn-group">
                         <button type="button" class="btn btn-success" onclick="saveDay()">💾 Guardar día</button>
@@ -137,9 +140,9 @@
                     
                     <!-- Botones de acceso directo -->
                     <div class="filter-quick-buttons">
-                        <button class="btn btn-secondary btn-small" onclick="filterToday()">📅 Hoy</button>
-                        <button class="btn btn-secondary btn-small" onclick="filterThisWeek()">📆 Esta semana</button>
-                        <button class="btn btn-secondary btn-small" onclick="filterThisMonth()">🗓️ Este mes</button>
+                        <button class="btn btn-secondary btn-small" onclick="filterToday()" tabindex="0">📅 Hoy</button>
+                        <button class="btn btn-secondary btn-small" onclick="filterThisWeek()" tabindex="0">📆 Esta semana</button>
+                        <button class="btn btn-secondary btn-small" onclick="filterThisMonth()" tabindex="0">🗓️ Este mes</button>
                     </div>
                     
                     <div class="inline-inputs">
@@ -153,8 +156,8 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="applyDateFilter()">Aplicar filtro</button>
-                        <button class="btn btn-secondary" onclick="clearDateFilter()">Limpiar filtro</button>
+                        <button class="btn btn-primary" onclick="applyDateFilter()" tabindex="0">Aplicar filtro</button>
+                        <button class="btn btn-secondary" onclick="clearDateFilter()" tabindex="0">Limpiar filtro</button>
                     </div>
                 </div>
 
@@ -184,8 +187,8 @@
                 <div class="export-section">
                     <h3>📤 Exportación</h3>
                     <div class="btn-group">
-                        <button class="btn btn-success" onclick="exportCombinedCSV()">📊 Exportar Caja y Movimientos (1 archivo)</button>
-                        <button class="btn btn-primary" onclick="exportAndEmail()">📧 Enviar por Email</button>
+                        <button class="btn btn-success" onclick="exportCombinedCSV()" tabindex="0">📊 Exportar Caja y Movimientos (1 archivo)</button>
+                        <button class="btn btn-primary" onclick="exportAndEmail()" tabindex="0">📧 Enviar por Email</button>
                     </div>
                 </div>
             </div>
