@@ -22,6 +22,31 @@ let currentMovimientos = [];
 let filteredDates = null;
 const API_KEY = globalThis.API_KEY || '';
 
+const empleadosPorSucursal = {
+    "Lliçà d'Amunt": ["Juanjo", "Jordi", "Ian Paul", "Miquel"],
+    "Parets del Vallès": ["Juanjo", "Quim", "Genís", "Alex"]
+};
+
+function updateResponsables() {
+    const sucursal = document.getElementById('sucursal')?.value;
+    const nombres = empleadosPorSucursal[sucursal] || [];
+    const placeholders = {
+        responsableApertura: 'Seleccionar responsable',
+        responsableCierre: 'Seleccionar responsable',
+        quienMovimiento: 'Quién realizó'
+    };
+    ['responsableApertura', 'responsableCierre', 'quienMovimiento'].forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        const current = select.value;
+        select.innerHTML = `<option value="">${placeholders[id]}</option>` +
+            nombres.map(nombre => `<option value="${nombre}">${nombre}</option>`).join('');
+        if (nombres.includes(current)) {
+            select.value = current;
+        }
+    });
+}
+
 function applySucursal() {
     const saved = localStorage.getItem('sucursal');
     const select = document.getElementById('sucursal');
@@ -29,6 +54,7 @@ function applySucursal() {
         select.value = saved;
         select.disabled = true;
     }
+    updateResponsables();
 }
 
 function openSucursalModal() {
@@ -176,6 +202,7 @@ function clearForm() {
 function loadFormData(data) {
     document.getElementById('fecha').value = data.fecha;
     document.getElementById('sucursal').value = data.sucursal;
+    applySucursal();
     document.getElementById('apertura').value = formatCurrency(data.apertura);
     document.getElementById('responsableApertura').value = data.responsableApertura;
     document.getElementById('ingresos').value = formatCurrency(data.ingresos);
@@ -186,7 +213,6 @@ function loadFormData(data) {
 
     currentMovimientos = data.movimientos || [];
     renderMovimientos(currentMovimientos);
-    applySucursal();
     recalc();
 }
 
@@ -826,7 +852,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configurar fecha por defecto
     document.getElementById('fecha').value = getTodayString();
     initializeSucursal();
-    
+    updateResponsables();
+
     // Event listeners para recálculo automático
     ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
         const element = document.getElementById(id);
@@ -836,9 +863,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    ['responsableApertura', 'responsableCierre', 'sucursal'].forEach(id => {
+    ['responsableApertura', 'responsableCierre'].forEach(id => {
         const element = document.getElementById(id);
         element.addEventListener('input', saveDraft);
+    });
+    const sucursalSelect = document.getElementById('sucursal');
+    sucursalSelect.addEventListener('change', () => {
+        updateResponsables();
+        saveDraft();
     });
     
     // Event listener para cambio de fecha
