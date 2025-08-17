@@ -7,6 +7,9 @@
   "scripts": {
     "test": "jest"
   },
+  "dependencies": {
+    "pg": "^8.11.3"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
