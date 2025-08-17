@@ -2,7 +2,7 @@ const CACHE_NAME = 'pwa-cache-v1';
 const PRECACHE_URLS = [
   './',
   './index.html',
-  './styles.css',
+  './styles.css?v=2',
   './app.js',
   './manifest.json',
   './icon-180.png'
