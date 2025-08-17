@@ -1,4 +1,4 @@
-import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils.js";
+import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils/index.js";
 import { getDayIndex, loadDay, saveDayData, deleteDay } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
 if ('serviceWorker' in navigator) {
