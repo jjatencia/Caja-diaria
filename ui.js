@@ -5,7 +5,7 @@ export function renderMovimientos(movimientos) {
     const container = document.getElementById('movimientosList');
 
     if (!movimientos.length) {
-        container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">No hay movimientos registrados</p>';
+        container.innerHTML = '<p style="text-align: center; color: var(--color-gris); padding: 20px;">No hay movimientos registrados</p>';
         return;
     }
 
@@ -50,7 +50,7 @@ export function renderHistorial(filteredDates) {
                 <td class="text-right">${formatCurrency(totals.salidas)} €</td>
                 <td class="text-right">${formatCurrency(totals.total)} €</td>
                 <td class="text-right">${formatCurrency(data.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? '#28a745' : '#dc3545'}">${formatCurrency(totals.diff)} €</td>
+                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? 'var(--color-exito)' : 'var(--color-peligro)'}">${formatCurrency(totals.diff)} €</td>
                 <td class="text-center">
                     <button class="btn btn-primary btn-small" onclick="editDay('${date}')">✏️</button>
                     <button class="btn btn-danger btn-small" onclick="deleteDayFromHistorial('${date}')">🗑️</button>
