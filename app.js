@@ -8,6 +8,7 @@ if ('serviceWorker' in navigator) {
 // Variables globales
 let currentMovimientos = [];
 let filteredDates = null;
+const API_KEY = globalThis.API_KEY || '';
 
 // Funciones de UI
 function recalc() {
@@ -145,7 +146,7 @@ async function saveDay() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: process.env.API_KEY || ''
+                Authorization: API_KEY
             },
             body: JSON.stringify({
                 cajaDiaria: { ...dayData, movimientos: undefined },
