@@ -1,134 +1,10 @@
+import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils.js";
+import { getDayIndex, loadDay, saveDayData, deleteDay } from "./storage.js";
+import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
+
 // Variables globales
 let currentMovimientos = [];
 let filteredDates = null;
-
-// Funciones de utilidad
-function parseNum(value) {
-    if (typeof value === 'number') return value;
-    if (!value || value === '') return 0;
-    
-    // Convertir a string y limpiar
-    let str = String(value).trim();
-    
-    // Remover espacios, €, y otros caracteres no numéricos excepto comas, puntos y signos
-    str = str.replace(/[^\d,\.\-+]/g, '');
-
-    // Permitir solo un signo al inicio del número
-    if (str[0] === '-' || str[0] === '+') {
-        const sign = str[0];
-        str = sign + str.slice(1).replace(/[+-]/g, '');
-    } else {
-        str = str.replace(/[+-]/g, '');
-    }
-
-    // Si está vacío después de limpiar, retornar 0
-    if (!str) return 0;
-    
-    // Manejar formato español (1.234,56)
-    if (str.includes(',') && str.includes('.')) {
-        // Si tiene tanto coma como punto, asumir que el punto es separador de miles
-        str = str.replace(/\./g, '').replace(',', '.');
-    } else if (str.includes(',')) {
-        // Solo coma, asumir decimal español
-        str = str.replace(',', '.');
-    }
-    
-    const num = parseFloat(str);
-    return isNaN(num) ? 0 : num;
-}
-
-function formatCurrency(value) {
-    const num = parseNum(value);
-    return num.toLocaleString('es-ES', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
-
-function formatDate(dateStr) {
-    const date = new Date(dateStr + 'T00:00:00');
-    return date.toLocaleDateString('es-ES');
-}
-
-function getTodayString() {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-}
-
-function computeTotals(apertura, ingresos, movimientos, cierre) {
-    const aperturaNum = parseNum(apertura);
-    const ingresosNum = parseNum(ingresos);
-    const cierreNum = parseNum(cierre);
-    
-    let entradas = 0;
-    let salidas = 0;
-    
-    if (Array.isArray(movimientos)) {
-        movimientos.forEach(mov => {
-            if (mov && typeof mov === 'object') {
-                const importe = parseNum(mov.importe);
-                if (mov.tipo === 'entrada') {
-                    entradas += importe;
-                } else if (mov.tipo === 'salida') {
-                    salidas += importe;
-                }
-            }
-        });
-    }
-    
-    const total = aperturaNum + ingresosNum + entradas - salidas;
-    const diff = total - cierreNum;
-    
-    return {
-        entradas,
-        salidas,
-        total,
-        diff
-    };
-}
-
-// Funciones de persistencia
-function saveToLocalStorage(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
-}
-
-function getFromLocalStorage(key) {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : null;
-}
-
-function getDayIndex() {
-    return getFromLocalStorage('caja:index') || [];
-}
-
-function updateDayIndex(date, action = 'add') {
-    let index = getDayIndex();
-    
-    if (action === 'add') {
-        if (!index.includes(date)) {
-            index.push(date);
-            index.sort();
-        }
-    } else if (action === 'remove') {
-        index = index.filter(d => d !== date);
-    }
-    
-    saveToLocalStorage('caja:index', index);
-}
-
-function loadDay(date) {
-    return getFromLocalStorage(`caja:${date}`);
-}
-
-function saveDayData(date, data) {
-    saveToLocalStorage(`caja:${date}`, data);
-    updateDayIndex(date, 'add');
-}
-
-function deleteDay(date) {
-    localStorage.removeItem(`caja:${date}`);
-    updateDayIndex(date, 'remove');
-}
 
 // Funciones de UI
 function recalc() {
@@ -166,23 +42,6 @@ function recalc() {
     }
 }
 
-function renderMovimientos() {
-    const container = document.getElementById('movimientosList');
-    
-    if (!currentMovimientos.length) {
-        container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">No hay movimientos registrados</p>';
-        return;
-    }
-    
-    container.innerHTML = currentMovimientos.map((mov, index) => `
-        <div class="movimiento-item">
-            <strong>${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}</strong>
-            <span>${mov.quien || 'No especificado'}</span>
-            <span class="text-right">${formatCurrency(mov.importe)} €</span>
-            <button type="button" class="btn btn-danger btn-small" onclick="removeMovimiento(${index})">🗑️</button>
-        </div>
-    `).join('');
-}
 
 function addMovimiento() {
     const tipo = document.getElementById('tipoMovimiento').value;
@@ -209,13 +68,13 @@ function addMovimiento() {
     document.getElementById('quienMovimiento').value = '';
     document.getElementById('importeMovimiento').value = '';
     
-    renderMovimientos();
+    renderMovimientos(currentMovimientos);
     recalc();
 }
 
 function removeMovimiento(index) {
     currentMovimientos.splice(index, 1);
-    renderMovimientos();
+    renderMovimientos(currentMovimientos);
     recalc();
 }
 
@@ -223,7 +82,7 @@ function clearForm() {
     document.getElementById('cajaForm').reset();
     document.getElementById('fecha').value = getTodayString();
     currentMovimientos = [];
-    renderMovimientos();
+    renderMovimientos(currentMovimientos);
     recalc();
 }
 
@@ -239,7 +98,7 @@ function loadFormData(data) {
     document.getElementById('responsableCierre').value = data.responsableCierre;
     
     currentMovimientos = data.movimientos || [];
-    renderMovimientos();
+    renderMovimientos(currentMovimientos);
     recalc();
 }
 
@@ -274,7 +133,7 @@ function saveDay() {
     
     saveDayData(fecha, dayData);
     showAlert('Día guardado correctamente', 'success');
-    renderHistorial();
+    renderHistorial(filteredDates);
 }
 
 function newDay() {
@@ -288,49 +147,31 @@ function deleteCurrentDay() {
         showAlert('No hay fecha seleccionada para borrar', 'danger');
         return;
     }
-    
-    // Verificar si existe el día en localStorage
-    const dayKey = `caja:${fecha}`;
-    const existingData = localStorage.getItem(dayKey);
+
+    const existingData = loadDay(fecha);
     if (!existingData) {
         showAlert('No existe un día guardado para esta fecha', 'danger');
         return;
     }
-    
+
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
-        // Eliminar del localStorage
-        localStorage.removeItem(dayKey);
-        
-        // Actualizar índice
-        let index = getDayIndex();
-        index = index.filter(d => d !== fecha);
-        saveToLocalStorage('caja:index', index);
-        
-        // Limpiar formulario y actualizar UI
+        deleteDay(fecha);
         clearForm();
-        renderHistorial();
+        renderHistorial(filteredDates);
         showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
     }
 }
 
 function deleteDayFromHistorial(fecha) {
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
-        // Eliminar del localStorage
-        const dayKey = `caja:${fecha}`;
-        localStorage.removeItem(dayKey);
-        
-        // Actualizar índice
-        let index = getDayIndex();
-        index = index.filter(d => d !== fecha);
-        saveToLocalStorage('caja:index', index);
-        
-        // Si es el día actual cargado, limpiar formulario
+        deleteDay(fecha);
+
         const currentDate = document.getElementById('fecha').value;
         if (currentDate === fecha) {
             clearForm();
         }
-        
-        renderHistorial();
+
+        renderHistorial(filteredDates);
         showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
     }
 }
@@ -347,48 +188,6 @@ function editDay(fecha) {
     }
 }
 
-function renderHistorial() {
-    const tbody = document.getElementById('historialTable');
-    let dates = getDayIndex();
-    
-    // Aplicar filtro de fechas si está activo
-    if (filteredDates) {
-        dates = dates.filter(date => date >= filteredDates.desde && date <= filteredDates.hasta);
-    }
-    
-    if (!dates.length) {
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay datos para mostrar</td></tr>';
-        return;
-    }
-    
-    // Ordenar fechas de más reciente a más antigua
-    dates.sort((a, b) => b.localeCompare(a));
-    
-    tbody.innerHTML = dates.map(date => {
-        const data = loadDay(date);
-        if (!data) return '';
-        
-        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
-        
-        return `
-            <tr>
-                <td>${formatDate(date)}</td>
-                <td>${data.sucursal}</td>
-                <td class="text-right">${formatCurrency(data.apertura)} €</td>
-                <td class="text-right">${formatCurrency(data.ingresos)} €</td>
-                <td class="text-right">${formatCurrency(totals.entradas)} €</td>
-                <td class="text-right">${formatCurrency(totals.salidas)} €</td>
-                <td class="text-right">${formatCurrency(totals.total)} €</td>
-                <td class="text-right">${formatCurrency(data.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? '#28a745' : '#dc3545'}">${formatCurrency(totals.diff)} €</td>
-                <td class="text-center">
-                    <button class="btn btn-primary btn-small" onclick="editDay('${date}')">✏️</button>
-                    <button class="btn btn-danger btn-small" onclick="deleteDayFromHistorial('${date}')">🗑️</button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
 
 // Funciones de filtrado
 function filterToday() {
@@ -459,7 +258,7 @@ function applyDateFilter() {
     }
     
     filteredDates = { desde, hasta };
-    renderHistorial();
+    renderHistorial(filteredDates);
     showAlert(`Filtro aplicado: ${formatDate(desde)} - ${formatDate(hasta)}`, 'info');
 }
 
@@ -467,7 +266,7 @@ function clearDateFilter() {
     filteredDates = null;
     document.getElementById('fechaDesde').value = '';
     document.getElementById('fechaHasta').value = '';
-    renderHistorial();
+    renderHistorial(filteredDates);
     showAlert('Filtro de fechas eliminado', 'info');
 }
 
@@ -896,52 +695,7 @@ function runTests() {
     displayTestResults(results);
 }
 
-function displayTestResults(results) {
-    const panel = document.getElementById('testsPanel');
-    const resultsDiv = document.getElementById('testResults');
-    
-    const allPassed = results.every(r => r.passed);
-    
-    if (allPassed) {
-        console.log('🎉 Todos los tests pasaron correctamente');
-        showAlert('Todos los tests pasaron correctamente', 'success');
-    } else {
-        resultsDiv.innerHTML = results.map(result => {
-            const className = result.passed ? 'test-pass' : 'test-fail';
-            const icon = result.passed ? '✅' : '❌';
-            const errorText = result.error ? ` - ${result.error}` : '';
-            return `<div class="${className}">${icon} ${result.name}${errorText}</div>`;
-        }).join('');
-        
-        panel.classList.add('show');
-    }
-}
 
-function hideTests() {
-    document.getElementById('testsPanel').classList.remove('show');
-}
-
-// Función para mostrar alertas
-function showAlert(message, type = 'info') {
-    // Remover alertas existentes
-    const existingAlerts = document.querySelectorAll('.alert');
-    existingAlerts.forEach(alert => alert.remove());
-    
-    const alert = document.createElement('div');
-    alert.className = `alert alert-${type}`;
-    alert.textContent = message;
-    
-    // Insertar después del header
-    const header = document.querySelector('.header');
-    header.parentNode.insertBefore(alert, header.nextSibling);
-    
-    // Auto-remover después de 5 segundos
-    setTimeout(() => {
-        if (alert.parentNode) {
-            alert.remove();
-        }
-    }, 5000);
-}
 
 // Event listeners y inicialización
 document.addEventListener('DOMContentLoaded', function() {
@@ -996,8 +750,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Inicializar UI
-    renderMovimientos();
-    renderHistorial();
+    renderMovimientos(currentMovimientos);
+    renderHistorial(filteredDates);
     recalc();
     
     console.log('📊 Sistema de Caja Diaria inicializado correctamente');

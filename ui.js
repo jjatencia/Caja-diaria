@@ -1,0 +1,104 @@
+import { formatCurrency, formatDate, computeTotals } from './utils.js';
+import { getDayIndex, loadDay } from './storage.js';
+
+export function renderMovimientos(movimientos) {
+    const container = document.getElementById('movimientosList');
+
+    if (!movimientos.length) {
+        container.innerHTML = '<p style="text-align: center; color: #6c757d; padding: 20px;">No hay movimientos registrados</p>';
+        return;
+    }
+
+    container.innerHTML = movimientos.map((mov, index) => `
+        <div class="movimiento-item">
+            <strong>${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}</strong>
+            <span>${mov.quien || 'No especificado'}</span>
+            <span class="text-right">${formatCurrency(mov.importe)} €</span>
+            <button type="button" class="btn btn-danger btn-small" onclick="removeMovimiento(${index})">🗑️</button>
+        </div>
+    `).join('');
+}
+
+export function renderHistorial(filteredDates) {
+    const tbody = document.getElementById('historialTable');
+    let dates = getDayIndex();
+
+    if (filteredDates) {
+        dates = dates.filter(date => date >= filteredDates.desde && date <= filteredDates.hasta);
+    }
+
+    if (!dates.length) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay datos para mostrar</td></tr>';
+        return;
+    }
+
+    dates.sort((a, b) => b.localeCompare(a));
+
+    tbody.innerHTML = dates.map(date => {
+        const data = loadDay(date);
+        if (!data) return '';
+
+        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
+
+        return `
+            <tr>
+                <td>${formatDate(date)}</td>
+                <td>${data.sucursal}</td>
+                <td class="text-right">${formatCurrency(data.apertura)} €</td>
+                <td class="text-right">${formatCurrency(data.ingresos)} €</td>
+                <td class="text-right">${formatCurrency(totals.entradas)} €</td>
+                <td class="text-right">${formatCurrency(totals.salidas)} €</td>
+                <td class="text-right">${formatCurrency(totals.total)} €</td>
+                <td class="text-right">${formatCurrency(data.cierre)} €</td>
+                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? '#28a745' : '#dc3545'}">${formatCurrency(totals.diff)} €</td>
+                <td class="text-center">
+                    <button class="btn btn-primary btn-small" onclick="editDay('${date}')">✏️</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteDayFromHistorial('${date}')">🗑️</button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+export function showAlert(message, type = 'info') {
+    const existingAlerts = document.querySelectorAll('.alert');
+    existingAlerts.forEach(alert => alert.remove());
+
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
+
+    const header = document.querySelector('.header');
+    header.parentNode.insertBefore(alert, header.nextSibling);
+
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
+}
+
+export function displayTestResults(results) {
+    const panel = document.getElementById('testsPanel');
+    const resultsDiv = document.getElementById('testResults');
+
+    const allPassed = results.every(r => r.passed);
+
+    if (allPassed) {
+        console.log('🎉 Todos los tests pasaron correctamente');
+        showAlert('Todos los tests pasaron correctamente', 'success');
+    } else {
+        resultsDiv.innerHTML = results.map(result => {
+            const className = result.passed ? 'test-pass' : 'test-fail';
+            const icon = result.passed ? '✅' : '❌';
+            const errorText = result.error ? ` - ${result.error}` : '';
+            return `<div class="${className}">${icon} ${result.name}${errorText}</div>`;
+        }).join('');
+
+        panel.classList.add('show');
+    }
+}
+
+export function hideTests() {
+    document.getElementById('testsPanel').classList.remove('show');
+}
