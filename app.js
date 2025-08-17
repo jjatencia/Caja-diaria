@@ -1,4 +1,4 @@
-import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils.js";
+import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils/index.js";
 import { getDayIndex, loadDay, saveDayData, deleteDay } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
 if ('serviceWorker' in navigator) {
@@ -18,14 +18,16 @@ function recalc() {
     const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
     
     const diferenciaDiv = document.getElementById('diferenciaDisplay');
-    const diffFormatted = formatCurrency(totals.diff);
-    
-    if (Math.abs(totals.diff) < 0.01) {
-        diferenciaDiv.className = 'diferencia cuadra';
-        diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
-    } else {
-        diferenciaDiv.className = 'diferencia no-cuadra';
-        diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - No cuadra`;
+    if (diferenciaDiv) {
+        const diffFormatted = formatCurrency(totals.diff);
+
+        if (Math.abs(totals.diff) < 0.01) {
+            diferenciaDiv.className = 'diferencia cuadra';
+            diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
+        } else {
+            diferenciaDiv.className = 'diferencia no-cuadra';
+            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - No cuadra`;
+        }
     }
     
     // Calcular diferencia de tarjeta
@@ -34,14 +36,16 @@ function recalc() {
     const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
     
     const diferenciaTarjetaDiv = document.getElementById('diferenciaTarjetaDisplay');
-    const diffTarjetaFormatted = formatCurrency(diferenciaTarjeta);
-    
-    if (Math.abs(diferenciaTarjeta) < 0.01) {
-        diferenciaTarjetaDiv.className = 'diferencia cuadra';
-        diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
-    } else {
-        diferenciaTarjetaDiv.className = 'diferencia no-cuadra';
-        diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
+    if (diferenciaTarjetaDiv) {
+        const diffTarjetaFormatted = formatCurrency(diferenciaTarjeta);
+
+        if (Math.abs(diferenciaTarjeta) < 0.01) {
+            diferenciaTarjetaDiv.className = 'diferencia cuadra';
+            diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
+        } else {
+            diferenciaTarjetaDiv.className = 'diferencia no-cuadra';
+            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
+        }
     }
 }
 
@@ -133,10 +137,15 @@ function saveDay() {
         cierre,
         responsableCierre
     };
-    
-    saveDayData(fecha, dayData);
-    showAlert('Día guardado correctamente', 'success');
-    renderHistorial(filteredDates);
+
+    try {
+        saveDayData(fecha, dayData);
+        showAlert('Día guardado correctamente', 'success');
+        renderHistorial(filteredDates);
+    } catch (error) {
+        console.error('Error al guardar en localStorage', error);
+        showAlert('No se pudo guardar el día. Revisa la consola para más detalles', 'danger');
+    }
 }
 
 function newDay() {
@@ -194,29 +203,36 @@ function editDay(fecha) {
 
 // Funciones de filtrado
 function filterToday() {
-    const today = getTodayString();
-    document.getElementById('fechaDesde').value = today;
-    document.getElementById('fechaHasta').value = today;
+    const today = new Date();
+    const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+    document.getElementById('fechaDesde').value = todayStr;
+    document.getElementById('fechaHasta').value = todayStr;
     applyDateFilter();
 }
 
 function filterThisWeek() {
     const today = new Date();
-    
+
     // Calcular inicio de semana (lunes)
     const dayOfWeek = today.getDay(); // 0 = domingo, 1 = lunes, etc.
     const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Si es domingo, retroceder 6 días
-    
+
     const monday = new Date(today);
     monday.setDate(today.getDate() + mondayOffset);
-    
+
     // Calcular fin de semana (domingo)
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-    
-    const mondayStr = monday.toISOString().split('T')[0];
-    const sundayStr = sunday.toISOString().split('T')[0];
-    
+
+    const mondayStr = new Date(monday.getTime() - monday.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+    const sundayStr = new Date(sunday.getTime() - sunday.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+
     document.getElementById('fechaDesde').value = mondayStr;
     document.getElementById('fechaHasta').value = sundayStr;
     applyDateFilter();
@@ -226,21 +242,20 @@ function filterThisMonth() {
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth(); // 0-11
-    
+
     // Primer día del mes
     const firstDay = new Date(year, month, 1);
-    
+
     // Último día del mes
     const lastDay = new Date(year, month + 1, 0);
-    
-    // Ajustar las fechas para evitar desfases por zona horaria
+
     const firstDayStr = new Date(firstDay.getTime() - firstDay.getTimezoneOffset() * 60000)
         .toISOString()
         .split('T')[0];
     const lastDayStr = new Date(lastDay.getTime() - lastDay.getTimezoneOffset() * 60000)
         .toISOString()
         .split('T')[0];
-    
+
     document.getElementById('fechaDesde').value = firstDayStr;
     document.getElementById('fechaHasta').value = lastDayStr;
     applyDateFilter();
