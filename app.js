@@ -155,8 +155,10 @@ function recalc() {
             }
         })
             .then(response => {
-                if (!response.ok) {
-                    showAlert('No se pudo enviar la alerta', 'danger');
+                if (response.ok) {
+                    showAlert(`Alerta enviada (${response.status})`, 'success');
+                } else {
+                    showAlert(`No se pudo enviar la alerta (${response.status})`, 'danger');
                 }
             })
             .catch(() => {
