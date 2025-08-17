@@ -64,10 +64,16 @@ self.addEventListener('sync', event => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
+          }).then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
+            }
           })
         )
       ).then(() => {
         alertQueue = [];
+      }).catch(err => {
+        console.error('Error al reenviar alertas', err);
       })
     );
   }

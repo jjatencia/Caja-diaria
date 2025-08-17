@@ -148,19 +148,27 @@ function recalc() {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).catch(() => {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then(registration => {
-                    if (registration.sync) {
-                        registration.sync.register('send-alert');
-                        navigator.serviceWorker.controller?.postMessage({
-                            type: 'queue-alert',
-                            payload: alertData
-                        });
-                    }
-                });
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error(response.status.toString());
             }
-            showAlert('Alerta enviada en segundo plano', 'info');
+        }).catch(error => {
+            if (error.message === 'Failed to fetch') {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        if (registration.sync) {
+                            registration.sync.register('send-alert');
+                            navigator.serviceWorker.controller?.postMessage({
+                                type: 'queue-alert',
+                                payload: alertData
+                            });
+                        }
+                    });
+                }
+                showAlert('Alerta enviada en segundo plano', 'info');
+            } else {
+                showAlert(`No se pudo enviar la alerta (${error.message})`, 'danger');
+            }
         });
     }
 
