@@ -51,7 +51,6 @@ describe('draft persistence', () => {
 
         elements = {
             fecha: { value: '2025-01-01' },
-            sucursal: { value: 'Central' },
             apertura: { value: '0' },
             responsableApertura: { value: '' },
             ingresos: { value: '0' },
@@ -63,7 +62,8 @@ describe('draft persistence', () => {
             quienMovimiento: { value: '' },
             importeMovimiento: { value: '' },
             diferenciaDisplay: { className: '', innerHTML: '' },
-            diferenciaTarjetaDisplay: { className: '', innerHTML: '' }
+            diferenciaTarjetaDisplay: { className: '', innerHTML: '' },
+            currentSucursal: { textContent: '' }
         };
         global.document = {
             getElementById: (id) => elements[id],
@@ -96,11 +96,11 @@ describe('draft persistence', () => {
         };
         store['caja:draft'] = JSON.stringify(draftData);
         elements.fecha.value = '';
-        elements.sucursal.value = '';
         renderMovimientos.mockClear();
         window.loadDraft();
         expect(elements.fecha.value).toBe('2025-02-02');
-        expect(elements.sucursal.value).toBe('Sucursal1');
+        expect(store['sucursal']).toBe('Sucursal1');
+        expect(elements.currentSucursal.textContent).toBe('Sucursal1');
         expect(renderMovimientos).toHaveBeenCalledWith(draftData.movimientos);
     });
 });
