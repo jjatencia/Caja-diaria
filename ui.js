@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, computeTotals } from './utils.js';
+import { formatCurrency, formatDate, computeTotals } from './utils/index.js';
 import { getDayIndex, loadDay } from './storage.js';
 
 export function renderMovimientos(movimientos) {
