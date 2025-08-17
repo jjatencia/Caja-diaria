@@ -125,6 +125,12 @@ input, select, textarea {
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Ensure consistent height for form controls to align side by side */
+input,
+select {
+    height: 44px;
+}
+
 input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: var(--color-primario);
@@ -135,6 +141,7 @@ input:focus, select:focus, textarea:focus {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
+    align-items: end;
 }
 
 .btn {
