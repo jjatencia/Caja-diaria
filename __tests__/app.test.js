@@ -133,3 +133,36 @@ describe('changeSucursal', () => {
         expect(elements.sucursalSetup.style.display).toBe('none');
     });
 });
+
+describe('saveDay', () => {
+    let elements;
+    beforeEach(() => {
+        store = {};
+        global.localStorage.setItem.mockImplementation((k, v) => { store[k] = v; });
+        global.localStorage.getItem.mockImplementation((k) => store[k] || null);
+        global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
+        elements = {
+            fecha: { value: '2025-01-01' },
+            sucursal: { value: 'Central' },
+            apertura: { value: '0' },
+            responsableApertura: { value: '' },
+            ingresos: { value: '0' },
+            ingresosTarjetaExora: { value: '0' },
+            ingresosTarjetaDatafono: { value: '0' },
+            cierre: { value: '0' },
+            responsableCierre: { value: '' }
+        };
+        global.document = {
+            getElementById: (id) => elements[id],
+            addEventListener: jest.fn()
+        };
+    });
+
+    test('saveDay almacena hora de guardado', async () => {
+        await window.saveDay();
+        const index = JSON.parse(store['caja:index']);
+        const key = index[0];
+        const saved = JSON.parse(store[`caja:${key}`]);
+        expect(saved.horaGuardado).toBeDefined();
+    });
+});
