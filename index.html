@@ -75,7 +75,9 @@
                         
                         <div class="form-group">
                             <label for="responsableApertura">Responsable apertura</label>
-                            <input type="text" id="responsableApertura" placeholder="Nombre del responsable">
+                            <select id="responsableApertura">
+                                <option value="">Seleccionar responsable</option>
+                            </select>
                         </div>
                     </div>
 
@@ -108,7 +110,9 @@
                                     <option value="salida">Salida</option>
                                 </select>
                                 <label for="quienMovimiento" class="visually-hidden">Quién realizó</label>
-                                <input type="text" id="quienMovimiento" placeholder="Quién realizó" tabindex="0">
+                                <select id="quienMovimiento" tabindex="0">
+                                    <option value="">Quién realizó</option>
+                                </select>
                                 <label for="importeMovimiento" class="visualmente-hidden">Importe del movimiento</label>
                                 <input type="text" id="importeMovimiento" placeholder="0,00" inputmode="decimal" tabindex="0">
                                 <button type="button" class="btn btn-primary btn-small" onclick="addMovimiento()" tabindex="0">+</button>
@@ -124,7 +128,9 @@
                         
                         <div class="form-group">
                             <label for="responsableCierre">Responsable cierre</label>
-                            <input type="text" id="responsableCierre" placeholder="Nombre del responsable">
+                            <select id="responsableCierre">
+                                <option value="">Seleccionar responsable</option>
+                            </select>
                         </div>
                     </div>
 
