@@ -141,7 +141,7 @@ input:focus, select:focus, textarea:focus {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    align-items: end;
+    align-items: start;
 }
 
 .btn {
