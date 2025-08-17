@@ -31,7 +31,7 @@ export function renderHistorial(filteredDates) {
     }
 
     if (!dates.length) {
-        tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay datos para mostrar</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay datos para mostrar</td></tr>';
         return;
     }
 
@@ -50,9 +50,12 @@ export function renderHistorial(filteredDates) {
         const [day, turno] = date.split('#');
         const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
 
+        const hora = data.horaGuardado ? new Date(data.horaGuardado).toLocaleTimeString('es-ES') : '';
+
         return `
             <tr>
                 <td>${formatDate(day)}${turno ? ` (Turno ${turno})` : ''}</td>
+                <td>${hora}</td>
                 <td>${data.sucursal}</td>
                 <td class="text-right">${formatCurrency(data.apertura)} €</td>
                 <td class="text-right">${formatCurrency(data.ingresos)} €</td>

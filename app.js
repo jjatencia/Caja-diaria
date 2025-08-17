@@ -244,7 +244,8 @@ async function saveDay() {
         ingresosTarjetaDatafono,
         movimientos: [...currentMovimientos],
         cierre,
-        responsableCierre
+        responsableCierre,
+        horaGuardado: new Date().toISOString()
     };
 
     try {
@@ -457,7 +458,7 @@ function exportCombinedCSV() {
     
     // Generar contenido de caja
     const cajaHeaders = [
-        'Fecha', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
+        'Fecha', 'Hora', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
         'Ingresos en efectivo (€)', 'Gestión de tesorería (salidas)', 'Gestión de tesorería (entradas)',
         'Total en caja', 'Cierre de caja', 'Diferencia', 'Responsable de cierre de caja'
     ];
@@ -468,7 +469,7 @@ function exportCombinedCSV() {
         if (dayData) {
             const totals = computeTotals(dayData.apertura, dayData.ingresos, dayData.movimientos, dayData.cierre);
             cajaData.push([
-                formatDate(date), dayData.sucursal, dayData.apertura, dayData.responsableApertura,
+                formatDate(date), dayData.horaGuardado ? new Date(dayData.horaGuardado).toLocaleTimeString('es-ES') : '', dayData.sucursal, dayData.apertura, dayData.responsableApertura,
                 dayData.ingresos, totals.salidas, totals.entradas, totals.total,
                 dayData.cierre, totals.diff, dayData.responsableCierre
             ]);
