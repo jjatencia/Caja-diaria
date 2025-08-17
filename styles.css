@@ -359,6 +359,7 @@ input:focus, select:focus, textarea:focus {
 
 .table-container {
     overflow-x: auto;
+    overflow-y: visible;
     margin: 20px 0;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
