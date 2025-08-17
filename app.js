@@ -109,7 +109,7 @@ function loadFormData(data) {
     recalc();
 }
 
-function saveDay() {
+async function saveDay() {
     const fecha = document.getElementById('fecha').value;
     const sucursal = document.getElementById('sucursal').value;
     const apertura = parseNum(document.getElementById('apertura').value);
@@ -140,10 +140,30 @@ function saveDay() {
 
     try {
         saveDayData(fecha, dayData);
-        showAlert('Día guardado correctamente', 'success');
+
+        const response = await fetch('/api/save-day', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: process.env.API_KEY || ''
+            },
+            body: JSON.stringify({
+                cajaDiaria: { ...dayData, movimientos: undefined },
+                movimientos: currentMovimientos
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            showAlert('Día guardado correctamente', 'success');
+        } else {
+            showAlert('Error al guardar el día en el servidor', 'danger');
+        }
+
         renderHistorial(filteredDates);
     } catch (error) {
-        console.error('Error al guardar en localStorage', error);
+        console.error('Error al guardar el día', error);
         showAlert('No se pudo guardar el día. Revisa la consola para más detalles', 'danger');
     }
 }
