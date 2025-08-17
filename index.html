@@ -677,8 +677,16 @@
             let str = String(value).trim();
             
             // Remover espacios, €, y otros caracteres no numéricos excepto comas, puntos y signos
-            str = str.replace(/[^\d,.\-+]/g, '');
-            
+            str = str.replace(/[^\d,\.\-+]/g, '');
+
+            // Permitir solo un signo al inicio del número
+            if (str[0] === '-' || str[0] === '+') {
+                const sign = str[0];
+                str = sign + str.slice(1).replace(/[+-]/g, '');
+            } else {
+                str = str.replace(/[+-]/g, '');
+            }
+
             // Si está vacío después de limpiar, retornar 0
             if (!str) return 0;
             
