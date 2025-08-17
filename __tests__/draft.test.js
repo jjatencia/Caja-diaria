@@ -1,6 +1,5 @@
 import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 
-// Mock UI module
 jest.unstable_mockModule('../ui.js', () => ({
     renderMovimientos: jest.fn(),
     renderHistorial: jest.fn(),
@@ -9,7 +8,6 @@ jest.unstable_mockModule('../ui.js', () => ({
     hideTests: jest.fn()
 }));
 
-// Mock utils module
 jest.unstable_mockModule('../utils/index.js', () => ({
     parseNum: jest.fn((val) => {
         if (val === undefined || val === null || val === '') return 0;
@@ -23,7 +21,6 @@ jest.unstable_mockModule('../utils/index.js', () => ({
     computeTotals: jest.fn(() => ({ diff: 0 }))
 }));
 
-// Provide minimal document before importing app.js
 global.window = {};
 let store = {};
 global.localStorage = {
@@ -31,41 +28,42 @@ global.localStorage = {
     getItem: jest.fn((k) => store[k] || null),
     removeItem: jest.fn((k) => { delete store[k]; })
 };
+
 global.document = {
     addEventListener: jest.fn(),
     getElementById: jest.fn()
 };
 
-// Dynamically import modules after mocks
 await import('../app.js');
 const ui = await import('../ui.js');
 const utils = await import('../utils/index.js');
 
-const { renderMovimientos, showAlert } = ui;
+const { renderMovimientos } = ui;
 const { computeTotals } = utils;
 
-describe('addMovimiento', () => {
+describe('draft persistence', () => {
     let elements;
     beforeEach(() => {
         store = {};
         global.localStorage.setItem.mockImplementation((k, v) => { store[k] = v; });
         global.localStorage.getItem.mockImplementation((k) => store[k] || null);
         global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
+
         elements = {
+            fecha: { value: '2025-01-01' },
+            sucursal: { value: 'Central' },
+            apertura: { value: '0' },
+            responsableApertura: { value: '' },
+            ingresos: { value: '0' },
+            ingresosTarjetaExora: { value: '0' },
+            ingresosTarjetaDatafono: { value: '0' },
+            cierre: { value: '0' },
+            responsableCierre: { value: '' },
             tipoMovimiento: { value: 'entrada' },
             quienMovimiento: { value: '' },
             importeMovimiento: { value: '' },
-            apertura: { value: '0' },
-            ingresos: { value: '0' },
-            cierre: { value: '0' },
-            ingresosTarjetaExora: { value: '0' },
-            ingresosTarjetaDatafono: { value: '0' },
             diferenciaDisplay: { className: '', innerHTML: '' },
-            diferenciaTarjetaDisplay: { className: '', innerHTML: '' },
-            fecha: { value: '2025-01-01' },
-            sucursal: { value: 'Central' },
-            responsableApertura: { value: '' },
-            responsableCierre: { value: '' }
+            diferenciaTarjetaDisplay: { className: '', innerHTML: '' }
         };
         global.document = {
             getElementById: (id) => elements[id],
@@ -73,30 +71,36 @@ describe('addMovimiento', () => {
         };
         renderMovimientos.mockClear();
         computeTotals.mockClear();
-        showAlert.mockClear();
     });
 
-    test('window.addMovimiento is exposed', () => {
-        expect(typeof window.addMovimiento).toBe('function');
-    });
-
-    test('addMovimiento agrega movimiento y recalcula', () => {
-        elements.quienMovimiento.value = 'Juan';
-        elements.importeMovimiento.value = '10';
+    test('addMovimiento saves draft data', () => {
+        elements.importeMovimiento.value = '5';
         window.addMovimiento();
-        expect(renderMovimientos).toHaveBeenCalledTimes(1);
-        expect(renderMovimientos.mock.calls[0][0]).toEqual([
-            { tipo: 'entrada', quien: 'Juan', importe: 10 }
-        ]);
-        expect(computeTotals).toHaveBeenCalled();
-        expect(showAlert).not.toHaveBeenCalled();
+        const draft = JSON.parse(store['caja:draft']);
+        expect(draft.movimientos).toHaveLength(1);
+        expect(draft.movimientos[0].importe).toBe(5);
     });
 
-    test('addMovimiento valida importe negativo', () => {
-        elements.importeMovimiento.value = '-5';
-        window.addMovimiento();
-        expect(showAlert).toHaveBeenCalled();
-        expect(renderMovimientos).not.toHaveBeenCalled();
-        expect(computeTotals).not.toHaveBeenCalled();
+    test('loadDraft restores saved data', () => {
+        const draftData = {
+            fecha: '2025-02-02',
+            sucursal: 'Sucursal1',
+            apertura: 10,
+            responsableApertura: 'Ana',
+            ingresos: 20,
+            ingresosTarjetaExora: 0,
+            ingresosTarjetaDatafono: 0,
+            movimientos: [{ tipo: 'salida', quien: 'Luis', importe: 5 }],
+            cierre: 25,
+            responsableCierre: 'Carlos'
+        };
+        store['caja:draft'] = JSON.stringify(draftData);
+        elements.fecha.value = '';
+        elements.sucursal.value = '';
+        renderMovimientos.mockClear();
+        window.loadDraft();
+        expect(elements.fecha.value).toBe('2025-02-02');
+        expect(elements.sucursal.value).toBe('Sucursal1');
+        expect(renderMovimientos).toHaveBeenCalledWith(draftData.movimientos);
     });
 });

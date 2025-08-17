@@ -1,5 +1,5 @@
 import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils/index.js";
-import { getDayIndex, loadDay, saveDayData, deleteDay } from "./storage.js";
+import { getDayIndex, loadDay, saveDayData, deleteDay, saveToLocalStorage, getFromLocalStorage } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(registration => {
@@ -50,6 +50,29 @@ function initializeSucursal() {
     }
 }
 
+function saveDraft() {
+    const draft = {
+        fecha: document.getElementById('fecha').value,
+        sucursal: document.getElementById('sucursal').value,
+        apertura: parseNum(document.getElementById('apertura').value),
+        responsableApertura: document.getElementById('responsableApertura').value.trim(),
+        ingresos: parseNum(document.getElementById('ingresos').value),
+        ingresosTarjetaExora: parseNum(document.getElementById('ingresosTarjetaExora').value),
+        ingresosTarjetaDatafono: parseNum(document.getElementById('ingresosTarjetaDatafono').value),
+        movimientos: [...currentMovimientos],
+        cierre: parseNum(document.getElementById('cierre').value),
+        responsableCierre: document.getElementById('responsableCierre').value.trim()
+    };
+    saveToLocalStorage('caja:draft', draft);
+}
+
+function loadDraft() {
+    const draft = getFromLocalStorage('caja:draft');
+    if (draft) {
+        loadFormData(draft);
+    }
+}
+
 // Funciones de UI
 function recalc() {
     const apertura = document.getElementById('apertura').value;
@@ -88,6 +111,7 @@ function recalc() {
             diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
         }
     }
+    saveDraft();
 }
 
 
@@ -133,6 +157,7 @@ function clearForm() {
     renderMovimientos(currentMovimientos);
     applySucursal();
     recalc();
+    localStorage.removeItem('caja:draft');
 }
 
 function loadFormData(data) {
@@ -183,6 +208,7 @@ async function saveDay() {
 
     try {
         saveDayData(fecha, dayData);
+        localStorage.removeItem('caja:draft');
 
         if (API_KEY) {
             const response = await fetch('/api/save-day', {
@@ -796,6 +822,11 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = formatCurrency(this.value);
         });
     });
+
+    ['responsableApertura', 'responsableCierre', 'sucursal'].forEach(id => {
+        const element = document.getElementById(id);
+        element.addEventListener('input', saveDraft);
+    });
     
     // Event listener para cambio de fecha
     document.getElementById('fecha').addEventListener('change', function() {
@@ -811,6 +842,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearForm();
             this.value = currentDate;
         }
+        saveDraft();
     });
     
     // Event listener para Enter en el formulario de movimientos
@@ -836,6 +868,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Inicializar UI
+    loadDraft();
     renderMovimientos(currentMovimientos);
     renderHistorial(filteredDates);
     recalc();
@@ -859,3 +892,4 @@ window.exportAndEmail = exportAndEmail;
 window.removeMovimiento = removeMovimiento;
 window.editDay = editDay;
 window.deleteDayFromHistorial = deleteDayFromHistorial;
+window.loadDraft = loadDraft;
