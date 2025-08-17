@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate, computeTotals } from './utils/index.js';
+import { formatCurrency, formatDate, computeTotals, parseNum } from './utils/index.js';
 import { getDayIndex, loadDay } from './storage.js';
 
 export function renderMovimientos(movimientos) {
@@ -17,6 +17,97 @@ export function renderMovimientos(movimientos) {
             <button type="button" class="btn btn-danger btn-small" onclick="removeMovimiento(${index})">🗑️</button>
         </div>
     `).join('');
+}
+
+export function renderResumen(filteredDates) {
+    const tbody = document.getElementById('resumenTable');
+    const tfoot = document.getElementById('resumenTotals');
+    let dates = getDayIndex();
+
+    if (filteredDates) {
+        dates = dates.filter(date => {
+            const day = date.split('#')[0];
+            return day >= filteredDates.desde && day <= filteredDates.hasta;
+        });
+    }
+
+    if (!dates.length) {
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay datos para mostrar</td></tr>';
+        }
+        if (tfoot) {
+            tfoot.innerHTML = '';
+        }
+        return;
+    }
+
+    const summary = {};
+    dates.forEach(key => {
+        const day = key.split('#')[0];
+        const data = loadDay(key);
+        if (!data) return;
+        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
+        if (!summary[day]) {
+            summary[day] = { apertura: 0, ingresos: 0, entradas: 0, salidas: 0, total: 0, cierre: 0, diff: 0 };
+        }
+        summary[day].apertura += parseNum(data.apertura);
+        summary[day].ingresos += parseNum(data.ingresos);
+        summary[day].entradas += totals.entradas;
+        summary[day].salidas += totals.salidas;
+        summary[day].total += totals.total;
+        summary[day].cierre += parseNum(data.cierre);
+        summary[day].diff += totals.diff;
+    });
+
+    const days = Object.keys(summary).sort((a, b) => b.localeCompare(a));
+    let totalApertura = 0,
+        totalIngresos = 0,
+        totalEntradas = 0,
+        totalSalidas = 0,
+        totalTotal = 0,
+        totalCierre = 0,
+        totalDiff = 0;
+
+    const rows = days.map(day => {
+        const sums = summary[day];
+        totalApertura += sums.apertura;
+        totalIngresos += sums.ingresos;
+        totalEntradas += sums.entradas;
+        totalSalidas += sums.salidas;
+        totalTotal += sums.total;
+        totalCierre += sums.cierre;
+        totalDiff += sums.diff;
+        return `
+            <tr>
+                <td>${formatDate(day)}</td>
+                <td class="text-right">${formatCurrency(sums.apertura)} €</td>
+                <td class="text-right">${formatCurrency(sums.ingresos)} €</td>
+                <td class="text-right">${formatCurrency(sums.entradas)} €</td>
+                <td class="text-right">${formatCurrency(sums.salidas)} €</td>
+                <td class="text-right">${formatCurrency(sums.total)} €</td>
+                <td class="text-right">${formatCurrency(sums.cierre)} €</td>
+                <td class="text-right" style="color: ${Math.abs(sums.diff) < 0.01 ? 'var(--color-exito)' : 'var(--color-peligro)'}">${formatCurrency(sums.diff)} €</td>
+            </tr>
+        `;
+    }).join('');
+
+    if (tbody) {
+        tbody.innerHTML = rows;
+    }
+
+    if (tfoot) {
+        tfoot.innerHTML = `
+            <tr>
+                <td>Total</td>
+                <td class="text-right">${formatCurrency(totalApertura)} €</td>
+                <td class="text-right">${formatCurrency(totalIngresos)} €</td>
+                <td class="text-right">${formatCurrency(totalEntradas)} €</td>
+                <td class="text-right">${formatCurrency(totalSalidas)} €</td>
+                <td class="text-right">${formatCurrency(totalTotal)} €</td>
+                <td class="text-right">${formatCurrency(totalCierre)} €</td>
+                <td class="text-right">${formatCurrency(totalDiff)} €</td>
+            </tr>`;
+    }
 }
 
 export function renderHistorial(filteredDates) {
@@ -79,6 +170,8 @@ export function renderHistorial(filteredDates) {
             </tr>
         `;
     }).join('');
+
+    renderResumen(filteredDates);
 }
 
 export function showAlert(message, type = 'info') {
