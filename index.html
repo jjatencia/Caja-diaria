@@ -216,12 +216,26 @@
                     </table>
                 </div>
 
-                <!-- Exportación -->
-                <div class="export-section">
-                    <h3>📤 Exportación</h3>
-                    <div class="btn-group">
-                        <button class="btn btn-success" onclick="exportCombinedCSV()" tabindex="0">📊 Exportar Caja y Movimientos (1 archivo)</button>
-                        <button class="btn btn-email" onclick="exportAndEmail()" tabindex="0">📧 Enviar por Email</button>
+                <!-- Resumen de Facturación -->
+                <div class="summary-section">
+                    <h3>📊 Resumen de Facturación</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th class="text-right">Apertura</th>
+                                    <th class="text-right">Ingresos</th>
+                                    <th class="text-right">Entradas</th>
+                                    <th class="text-right">Salidas</th>
+                                    <th class="text-right">Total</th>
+                                    <th class="text-right">Cierre</th>
+                                    <th class="text-right">Dif.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resumenTable"></tbody>
+                            <tfoot id="resumenTotals"></tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
