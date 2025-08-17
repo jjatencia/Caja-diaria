@@ -120,7 +120,7 @@ function recalc() {
     const cierre = document.getElementById('cierre').value;
     
     const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
-    
+
     const diferenciaDiv = document.getElementById('diferenciaDisplay');
     if (diferenciaDiv) {
         const diffFormatted = formatCurrency(totals.diff);
@@ -135,7 +135,35 @@ function recalc() {
             diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - Falta dinero`;
         }
     }
-    
+
+    // Si falta dinero, intenta enviar una alerta
+    if (totals.diff < 0) {
+        const alertData = {
+            diff: totals.diff,
+            fecha: document.getElementById('fecha').value
+        };
+        fetch('/api/send-alert', {
+            method: 'POST',
+            body: JSON.stringify(alertData),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).catch(() => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.ready.then(registration => {
+                    if (registration.sync) {
+                        registration.sync.register('send-alert');
+                        navigator.serviceWorker.controller?.postMessage({
+                            type: 'queue-alert',
+                            payload: alertData
+                        });
+                    }
+                });
+            }
+            showAlert('Alerta enviada en segundo plano', 'info');
+        });
+    }
+
     // Calcular diferencia de tarjeta
     const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
     const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
