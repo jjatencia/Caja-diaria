@@ -69,10 +69,10 @@ export function renderHistorial(filteredDates) {
                     <div class="actions-dropdown">
                         <button class="btn btn-secondary btn-small" onclick="toggleActionsMenu('actions-${safeId}')">⋮</button>
                         <div id="actions-${safeId}" class="dropdown-menu">
-                            <button onclick="editDay('${date}')">Editar</button>
-                            <button onclick="emailDay('${date}')">Enviar por email</button>
-                            <button onclick="downloadDayCSV('${date}')">Descargar CSV</button>
-                            <button class="delete" onclick="deleteDayFromHistorial('${date}')">Eliminar</button>
+                            <button onclick="closeAllActionsMenus(); editDay('${date}')">Editar</button>
+                            <button onclick="closeAllActionsMenus(); emailDay('${date}')">Enviar por email</button>
+                            <button onclick="closeAllActionsMenus(); downloadDayCSV('${date}')">Descargar CSV</button>
+                            <button class="delete" onclick="closeAllActionsMenus(); deleteDayFromHistorial('${date}')">Eliminar</button>
                         </div>
                     </div>
                 </td>
