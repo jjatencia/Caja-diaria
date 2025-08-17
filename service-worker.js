@@ -45,3 +45,30 @@ self.addEventListener('fetch', event => {
       .catch(() => caches.match(event.request))
   );
 });
+
+// Cola de alertas para reenviar cuando haya conexión
+let alertQueue = [];
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'queue-alert') {
+    alertQueue.push(event.data.payload);
+  }
+});
+
+self.addEventListener('sync', event => {
+  if (event.tag === 'send-alert') {
+    event.waitUntil(
+      Promise.all(
+        alertQueue.map(data =>
+          fetch('/api/send-alert', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          })
+        )
+      ).then(() => {
+        alertQueue = [];
+      })
+    );
+  }
+});
