@@ -536,6 +536,101 @@ function emailDay(date) {
     sendEmail(emailTo, emailSubject, emailBody);
 }
 
+function computeResumenData(filter) {
+    let dates = getDayIndex();
+    if (filter) {
+        dates = dates.filter(date => {
+            const day = date.split('#')[0];
+            return day >= filter.desde && day <= filter.hasta;
+        });
+    }
+
+    const summary = {};
+    dates.forEach(key => {
+        const day = key.split('#')[0];
+        const data = loadDay(key);
+        if (!data) return;
+        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
+        if (!summary[day]) {
+            summary[day] = { apertura: 0, ingresos: 0, entradas: 0, salidas: 0, total: 0, cierre: 0, diff: 0 };
+        }
+        summary[day].apertura += parseNum(data.apertura);
+        summary[day].ingresos += parseNum(data.ingresos);
+        summary[day].entradas += totals.entradas;
+        summary[day].salidas += totals.salidas;
+        summary[day].total += totals.total;
+        summary[day].cierre += parseNum(data.cierre);
+        summary[day].diff += totals.diff;
+    });
+
+    const days = Object.keys(summary).sort((a, b) => b.localeCompare(a));
+    const rows = [];
+    const totals = { apertura: 0, ingresos: 0, entradas: 0, salidas: 0, total: 0, cierre: 0, diff: 0 };
+
+    days.forEach(day => {
+        const sums = summary[day];
+        totals.apertura += sums.apertura;
+        totals.ingresos += sums.ingresos;
+        totals.entradas += sums.entradas;
+        totals.salidas += sums.salidas;
+        totals.total += sums.total;
+        totals.cierre += sums.cierre;
+        totals.diff += sums.diff;
+        rows.push({ day, ...sums });
+    });
+
+    return { rows, totals };
+}
+
+function downloadResumenCSV() {
+    const { rows, totals } = computeResumenData(filteredDates);
+    if (!rows.length) {
+        showAlert('No hay datos para exportar', 'danger');
+        return;
+    }
+
+    const headers = ['Fecha', 'Apertura (€)', 'Ingresos (€)', 'Entradas (€)', 'Salidas (€)', 'Total (€)', 'Cierre (€)', 'Dif. (€)'];
+    const data = rows.map(r => [
+        formatDate(r.day),
+        r.apertura,
+        r.ingresos,
+        r.entradas,
+        r.salidas,
+        r.total,
+        r.cierre,
+        r.diff
+    ]);
+    data.push(['Total', totals.apertura, totals.ingresos, totals.entradas, totals.salidas, totals.total, totals.cierre, totals.diff]);
+
+    const content = generateCSVContent(data, headers);
+    const filename = filteredDates
+        ? `resumen_${filteredDates.desde}_${filteredDates.hasta}.csv`
+        : 'resumen_completo.csv';
+    downloadFile(content, filename, 'text/csv;charset=utf-8');
+    showAlert(`Archivo ${filename} descargado`, 'success');
+}
+
+function emailResumen() {
+    const { rows, totals } = computeResumenData(filteredDates);
+    if (!rows.length) {
+        showAlert('No hay datos para enviar', 'danger');
+        return;
+    }
+
+    const rango = filteredDates
+        ? `${formatDate(filteredDates.desde)} - ${formatDate(filteredDates.hasta)}`
+        : 'Todos los registros';
+
+    let body = `Hola Juanjo,\n\nRESUMEN DE FACTURACIÓN\n${rango}\n\n`;
+    rows.forEach(r => {
+        body += `${formatDate(r.day)}: A ${formatCurrency(r.apertura)} €, In ${formatCurrency(r.ingresos)} €, Ent ${formatCurrency(r.entradas)} €, Sal ${formatCurrency(r.salidas)} €, Tot ${formatCurrency(r.total)} €, Cie ${formatCurrency(r.cierre)} €, Dif ${formatCurrency(r.diff)} €\n`;
+    });
+    body += `\nTotales:\n - Apertura: ${formatCurrency(totals.apertura)} €\n - Ingresos: ${formatCurrency(totals.ingresos)} €\n - Entradas: ${formatCurrency(totals.entradas)} €\n - Salidas: ${formatCurrency(totals.salidas)} €\n - Total: ${formatCurrency(totals.total)} €\n - Cierre: ${formatCurrency(totals.cierre)} €\n - Dif.: ${formatCurrency(totals.diff)} €\n\nSistema de Gestión de Caja LBJ`;
+
+    const emailTo = 'juanjo@labarberiadejuanjo.com';
+    const subject = `Resumen de Facturación LBJ - ${rango}`;
+    sendEmail(emailTo, subject, body);
+}
 
 function sendEmail(emailTo, emailSubject, emailBody) {
     try {
@@ -780,5 +875,7 @@ window.loadDraft = loadDraft;
 window.changeSucursal = changeSucursal;
 window.downloadDayCSV = downloadDayCSV;
 window.emailDay = emailDay;
+window.downloadResumenCSV = downloadResumenCSV;
+window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
