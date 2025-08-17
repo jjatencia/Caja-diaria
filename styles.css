@@ -1,0 +1,471 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.panel {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.panel h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+}
+
+.inline-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.btn-primary {
+    background: #667eea;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5a6fd8;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #218838;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+.btn-small {
+    padding: 8px 16px;
+    font-size: 14px;
+    min-height: 36px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.movimientos-container {
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+}
+
+.movimiento-item {
+    display: grid;
+    grid-template-columns: 120px 2fr 1fr 60px;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+
+.movimiento-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+    background: #e3f2fd;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.movimiento-form input[type="text"], .movimiento-form select {
+    font-size: 16px;
+    padding: 12px 16px;
+    min-height: 44px;
+    width: 100%;
+}
+
+/* Optimizaciones para iPad en horizontal */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+    .container {
+        padding: 15px 20px;
+    }
+    
+    .main-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+    
+    .header h1 {
+        font-size: 2em;
+    }
+    
+    .panel {
+        padding: 20px;
+    }
+    
+    /* REDISEÑO COMPLETO DE MOVIMIENTOS PARA HORIZONTAL */
+    .movimiento-form {
+        display: grid;
+        grid-template-columns: 120px 2fr 1fr 80px;
+        gap: 15px;
+        align-items: end;
+        padding: 15px;
+        background: #e3f2fd;
+        border-radius: 8px;
+        margin-top: 15px;
+    }
+    
+    .movimiento-form select,
+    .movimiento-form input[type="text"] {
+        font-size: 16px;
+        padding: 12px 16px;
+        min-height: 44px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        width: 100%;
+    }
+    
+    .movimiento-item {
+        display: grid;
+        grid-template-columns: 120px 2fr 1fr 80px;
+        gap: 15px;
+        align-items: center;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        margin-bottom: 10px;
+    }
+    
+    /* Ajustar inputs inline para pantallas medianas */
+    .inline-inputs {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    /* Optimizar tabla para horizontal */
+    .table-container {
+        font-size: 13px;
+    }
+    
+    th, td {
+        padding: 8px 6px;
+        font-size: 13px;
+    }
+    
+    /* Ajustar botones */
+    .btn-group {
+        gap: 8px;
+    }
+    
+    .btn {
+        padding: 10px 18px;
+        font-size: 15px;
+    }
+    
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 13px;
+        min-height: 32px;
+    }
+}
+
+.diferencia {
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.diferencia.cuadra {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.diferencia.no-cuadra {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin: 20px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    min-width: 800px;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px 8px;
+    text-align: left;
+    border-bottom: 1px solid #e1e5e9;
+    font-size: 14px;
+}
+
+th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+tr:hover {
+    background: #e3f2fd;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.filter-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.filter-section h3 {
+    margin-bottom: 15px;
+    color: #667eea;
+}
+
+.filter-quick-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.export-section {
+    background: #e8f5e8;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.export-section h3 {
+    margin-bottom: 15px;
+    color: #28a745;
+}
+
+.tests-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fff3cd;
+    border: 2px solid #ffeaa7;
+    border-radius: 8px;
+    padding: 15px;
+    max-width: 300px;
+    z-index: 1000;
+    display: none;
+}
+
+.tests-panel.show {
+    display: block;
+}
+
+.test-result {
+    margin: 5px 0;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.test-pass {
+    background: #d4edda;
+    color: #155724;
+}
+
+.test-fail {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+@media (max-width: 1023px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .header h1 {
+        font-size: 1.8em;
+    }
+    
+    .movimiento-item,
+    .movimiento-form {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .inline-inputs {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn-group {
+        justify-content: center;
+    }
+}
+
+.currency {
+    position: relative;
+}
+
+.currency::after {
+    content: "€";
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.currency input {
+    padding-right: 30px;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
