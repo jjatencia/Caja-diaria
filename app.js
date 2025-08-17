@@ -838,7 +838,11 @@ function sendEmail(emailTo, emailSubject, emailBody) {
 function closeAllActionsMenus() {
     document
         .querySelectorAll('.dropdown-menu.show')
-        .forEach(menu => menu.classList.remove('show'));
+        .forEach(menu => {
+            menu.classList.remove('show');
+            menu.style.top = '';
+            menu.style.bottom = '';
+        });
 }
 
 function toggleActionsMenu(id) {
@@ -848,6 +852,14 @@ function toggleActionsMenu(id) {
         closeAllActionsMenus();
         if (!isOpen) {
             menu.classList.add('show');
+            const rect = menu.getBoundingClientRect();
+            if (rect.bottom > window.innerHeight) {
+                menu.style.top = 'auto';
+                menu.style.bottom = '100%';
+            } else {
+                menu.style.top = '';
+                menu.style.bottom = '';
+            }
         }
     }
 }
