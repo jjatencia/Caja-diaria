@@ -1,6 +1,9 @@
 import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils.js";
 import { getDayIndex, loadDay, saveDayData, deleteDay } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js');
+}
 
 // Variables globales
 let currentMovimientos = [];
