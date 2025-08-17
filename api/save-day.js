@@ -26,6 +26,9 @@ export default async function handler(req, res) {
   let body;
   try {
     body = req.body;
+    if (typeof body === 'string') {
+      body = JSON.parse(body);
+    }
     if (!body) {
       const chunks = [];
       for await (const chunk of req) {
