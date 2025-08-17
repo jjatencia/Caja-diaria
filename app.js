@@ -18,14 +18,16 @@ function recalc() {
     const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
     
     const diferenciaDiv = document.getElementById('diferenciaDisplay');
-    const diffFormatted = formatCurrency(totals.diff);
-    
-    if (Math.abs(totals.diff) < 0.01) {
-        diferenciaDiv.className = 'diferencia cuadra';
-        diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
-    } else {
-        diferenciaDiv.className = 'diferencia no-cuadra';
-        diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - No cuadra`;
+    if (diferenciaDiv) {
+        const diffFormatted = formatCurrency(totals.diff);
+
+        if (Math.abs(totals.diff) < 0.01) {
+            diferenciaDiv.className = 'diferencia cuadra';
+            diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
+        } else {
+            diferenciaDiv.className = 'diferencia no-cuadra';
+            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - No cuadra`;
+        }
     }
     
     // Calcular diferencia de tarjeta
@@ -34,14 +36,16 @@ function recalc() {
     const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
     
     const diferenciaTarjetaDiv = document.getElementById('diferenciaTarjetaDisplay');
-    const diffTarjetaFormatted = formatCurrency(diferenciaTarjeta);
-    
-    if (Math.abs(diferenciaTarjeta) < 0.01) {
-        diferenciaTarjetaDiv.className = 'diferencia cuadra';
-        diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
-    } else {
-        diferenciaTarjetaDiv.className = 'diferencia no-cuadra';
-        diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
+    if (diferenciaTarjetaDiv) {
+        const diffTarjetaFormatted = formatCurrency(diferenciaTarjeta);
+
+        if (Math.abs(diferenciaTarjeta) < 0.01) {
+            diferenciaTarjetaDiv.className = 'diferencia cuadra';
+            diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
+        } else {
+            diferenciaTarjetaDiv.className = 'diferencia no-cuadra';
+            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
+        }
     }
 }
 
