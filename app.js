@@ -22,6 +22,34 @@ let currentMovimientos = [];
 let filteredDates = null;
 const API_KEY = globalThis.API_KEY || '';
 
+function applySucursal() {
+    const saved = localStorage.getItem('sucursal');
+    const select = document.getElementById('sucursal');
+    if (saved && select) {
+        select.value = saved;
+        select.disabled = true;
+    }
+}
+
+function initializeSucursal() {
+    const saved = localStorage.getItem('sucursal');
+    if (saved) {
+        applySucursal();
+    } else {
+        const modal = document.getElementById('sucursalSetup');
+        const saveBtn = document.getElementById('guardarSucursal');
+        if (modal && saveBtn) {
+            modal.style.display = 'flex';
+            saveBtn.addEventListener('click', () => {
+                const selected = document.getElementById('sucursalInicial').value;
+                localStorage.setItem('sucursal', selected);
+                modal.style.display = 'none';
+                applySucursal();
+            }, { once: true });
+        }
+    }
+}
+
 // Funciones de UI
 function recalc() {
     const apertura = document.getElementById('apertura').value;
@@ -103,6 +131,7 @@ function clearForm() {
     document.getElementById('fecha').value = getTodayString();
     currentMovimientos = [];
     renderMovimientos(currentMovimientos);
+    applySucursal();
     recalc();
 }
 
@@ -116,9 +145,10 @@ function loadFormData(data) {
     document.getElementById('ingresosTarjetaDatafono').value = formatCurrency(data.ingresosTarjetaDatafono || 0);
     document.getElementById('cierre').value = formatCurrency(data.cierre);
     document.getElementById('responsableCierre').value = data.responsableCierre;
-    
+
     currentMovimientos = data.movimientos || [];
     renderMovimientos(currentMovimientos);
+    applySucursal();
     recalc();
 }
 
@@ -756,6 +786,7 @@ function runTests() {
 document.addEventListener('DOMContentLoaded', function() {
     // Configurar fecha por defecto
     document.getElementById('fecha').value = getTodayString();
+    initializeSucursal();
     
     // Event listeners para recálculo automático
     ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
