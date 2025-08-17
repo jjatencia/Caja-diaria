@@ -8,6 +8,8 @@ const PRECACHE_URLS = [
   './icon-180.png'
 ];
 
+const API_KEY = globalThis.API_KEY || '';
+
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
@@ -62,8 +64,15 @@ self.addEventListener('sync', event => {
         alertQueue.map(data =>
           fetch('/api/send-alert', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': API_KEY
+            },
             body: JSON.stringify(data)
+          }).then(response => {
+            if (!response.ok) {
+              throw new Error('Failed');
+            }
           })
         )
       ).then(() => {
