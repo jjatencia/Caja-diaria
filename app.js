@@ -20,6 +20,7 @@ if ('serviceWorker' in navigator) {
 // Variables globales
 let currentMovimientos = [];
 let filteredDates = null;
+let currentEditKey = null;
 const API_KEY = globalThis.API_KEY || '';
 
 const empleadosPorSucursal = {
@@ -197,6 +198,7 @@ function clearForm() {
     applySucursal();
     recalc();
     localStorage.removeItem('caja:draft');
+    currentEditKey = null;
 }
 
 function loadFormData(data) {
@@ -246,7 +248,7 @@ async function saveDay() {
     };
 
     try {
-        saveDayData(fecha, dayData);
+        currentEditKey = saveDayData(fecha, dayData, currentEditKey);
         localStorage.removeItem('caja:draft');
 
         if (API_KEY) {
@@ -286,32 +288,23 @@ function newDay() {
 }
 
 function deleteCurrentDay() {
-    const fecha = document.getElementById('fecha').value;
-    if (!fecha) {
-        showAlert('No hay fecha seleccionada para borrar', 'danger');
+    if (!currentEditKey) {
+        showAlert('No hay un día cargado para borrar', 'danger');
         return;
     }
 
-    const existingData = loadDay(fecha);
-    if (!existingData) {
-        showAlert('No existe un día guardado para esta fecha', 'danger');
-        return;
-    }
-
-    if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
-        deleteDay(fecha);
+    if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(currentEditKey)}?`)) {
+        deleteDay(currentEditKey);
         clearForm();
         renderHistorial(filteredDates);
-        showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
+        showAlert(`Día ${formatDate(currentEditKey)} borrado correctamente`, 'success');
     }
 }
 
 function deleteDayFromHistorial(fecha) {
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
         deleteDay(fecha);
-
-        const currentDate = document.getElementById('fecha').value;
-        if (currentDate === fecha) {
+        if (currentEditKey === fecha) {
             clearForm();
         }
 
@@ -324,6 +317,7 @@ function editDay(fecha) {
     const data = loadDay(fecha);
     if (data) {
         loadFormData(data);
+        currentEditKey = fecha;
         showAlert(`Día ${formatDate(fecha)} cargado para edición`, 'info');
         // Hacer scroll hacia arriba para ver el formulario
         document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
@@ -806,26 +800,26 @@ function runTests() {
                 return filtered.length === 1 && filtered[0] === '2025-08-10';
             }
         },
-        {
+        { 
             name: 'Test 5: Delete day functionality',
             test: () => {
                 // Guardar un día de prueba
                 const testDate = '2025-08-16';
                 const testData = { fecha: testDate, sucursal: 'Test', apertura: 100 };
-                saveDayData(testDate, testData);
-                
+                const key = saveDayData(testDate, testData);
+
                 // Verificar que está en el índice
                 let index = getDayIndex();
-                const wasInIndex = index.includes(testDate);
-                
+                const wasInIndex = index.includes(key);
+
                 // Eliminar
-                deleteDay(testDate);
-                
+                deleteDay(key);
+
                 // Verificar que se eliminó
                 index = getDayIndex();
-                const isStillInIndex = index.includes(testDate);
-                const dataExists = loadDay(testDate) !== null;
-                
+                const isStillInIndex = index.includes(key);
+                const dataExists = loadDay(key) !== null;
+
                 return wasInIndex && !isStillInIndex && !dataExists;
             }
         }
@@ -876,13 +870,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener para cambio de fecha
     document.getElementById('fecha').addEventListener('change', function() {
         const selectedDate = this.value;
-        const existingData = loadDay(selectedDate);
-        
-        if (existingData) {
+        const matches = getDayIndex().filter(d => d.startsWith(selectedDate));
+
+        if (matches.length === 1) {
+            const existingData = loadDay(matches[0]);
             loadFormData(existingData);
+            currentEditKey = matches[0];
             showAlert('Día cargado desde el historial', 'info');
+        } else if (matches.length > 1) {
+            const currentDate = this.value;
+            clearForm();
+            this.value = currentDate;
+            showAlert('Existen múltiples cierres para esta fecha, usa el historial para seleccionar uno', 'warning');
         } else {
-            // Mantener fecha pero limpiar otros campos
             const currentDate = this.value;
             clearForm();
             this.value = currentDate;

@@ -24,7 +24,10 @@ export function renderHistorial(filteredDates) {
     let dates = getDayIndex();
 
     if (filteredDates) {
-        dates = dates.filter(date => date >= filteredDates.desde && date <= filteredDates.hasta);
+        dates = dates.filter(date => {
+            const day = date.split('#')[0];
+            return day >= filteredDates.desde && day <= filteredDates.hasta;
+        });
     }
 
     if (!dates.length) {
@@ -32,17 +35,24 @@ export function renderHistorial(filteredDates) {
         return;
     }
 
-    dates.sort((a, b) => b.localeCompare(a));
+    dates.sort((a, b) => {
+        const [dateA, turnoA] = a.split('#');
+        const [dateB, turnoB] = b.split('#');
+        if (dateA === dateB) {
+            return Number(turnoB || 0) - Number(turnoA || 0);
+        }
+        return dateB.localeCompare(dateA);
+    });
 
     tbody.innerHTML = dates.map(date => {
         const data = loadDay(date);
         if (!data) return '';
-
+        const [day, turno] = date.split('#');
         const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
 
         return `
             <tr>
-                <td>${formatDate(date)}</td>
+                <td>${formatDate(day)}${turno ? ` (Turno ${turno})` : ''}</td>
                 <td>${data.sucursal}</td>
                 <td class="text-right">${formatCurrency(data.apertura)} €</td>
                 <td class="text-right">${formatCurrency(data.ingresos)} €</td>

@@ -17,12 +17,12 @@ export function updateDayIndex(date, action = 'add') {
     if (action === 'add') {
         if (!index.includes(date)) {
             index.push(date);
-            index.sort();
         }
     } else if (action === 'remove') {
         index = index.filter(d => d !== date);
     }
 
+    index.sort((a, b) => a.localeCompare(b));
     saveToLocalStorage('caja:index', index);
 }
 
@@ -30,9 +30,29 @@ export function loadDay(date) {
     return getFromLocalStorage(`caja:${date}`);
 }
 
-export function saveDayData(date, data) {
-    saveToLocalStorage(`caja:${date}`, data);
-    updateDayIndex(date, 'add');
+export function saveDayData(date, data, existingKey = null) {
+    let key = existingKey;
+
+    if (existingKey) {
+        if (existingKey.startsWith(date)) {
+            saveToLocalStorage(`caja:${existingKey}`, data);
+            updateDayIndex(existingKey, 'add');
+            return existingKey;
+        } else {
+            deleteDay(existingKey);
+            key = null;
+        }
+    }
+
+    if (!key) {
+        const index = getDayIndex();
+        const count = index.filter(d => d.startsWith(date)).length;
+        key = `${date}#${count + 1}`;
+    }
+
+    saveToLocalStorage(`caja:${key}`, data);
+    updateDayIndex(key, 'add');
+    return key;
 }
 
 export function deleteDay(date) {
