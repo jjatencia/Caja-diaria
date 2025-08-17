@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pwa-cache-v2';
+const CACHE_NAME = 'pwa-cache-v3';
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -34,6 +34,14 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request).then(response => response || fetch(event.request))
+    fetch(event.request)
+      .then(networkResponse => {
+        const responseClone = networkResponse.clone();
+        event.waitUntil(
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone))
+        );
+        return networkResponse;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
