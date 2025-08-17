@@ -2,7 +2,19 @@ import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } f
 import { getDayIndex, loadDay, saveDayData, deleteDay } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js');
+    navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(registration => {
+        registration.update();
+        registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        window.location.reload();
+                    }
+                });
+            }
+        });
+    });
 }
 
 // Variables globales
