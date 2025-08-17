@@ -51,6 +51,7 @@ export function renderHistorial(filteredDates) {
         const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
 
         const hora = data.horaGuardado ? new Date(data.horaGuardado).toLocaleTimeString('es-ES') : '';
+        const safeId = date.replace(/[^a-z0-9]/gi, '_');
 
         return `
             <tr>
@@ -65,8 +66,15 @@ export function renderHistorial(filteredDates) {
                 <td class="text-right">${formatCurrency(data.cierre)} €</td>
                 <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? 'var(--color-exito)' : 'var(--color-peligro)'}">${formatCurrency(totals.diff)} €</td>
                 <td class="text-center">
-                    <button class="btn btn-primary btn-small" onclick="editDay('${date}')">✏️</button>
-                    <button class="btn btn-danger btn-small" onclick="deleteDayFromHistorial('${date}')">🗑️</button>
+                    <div class="actions-dropdown">
+                        <button class="btn btn-secondary btn-small" onclick="toggleActionsMenu('actions-${safeId}')">⋮</button>
+                        <div id="actions-${safeId}" class="dropdown-menu">
+                            <button onclick="editDay('${date}')">Editar</button>
+                            <button onclick="emailDay('${date}')">Enviar por email</button>
+                            <button onclick="downloadDayCSV('${date}')">Descargar CSV</button>
+                            <button class="delete" onclick="deleteDayFromHistorial('${date}')">Eliminar</button>
+                        </div>
+                    </div>
                 </td>
             </tr>
         `;

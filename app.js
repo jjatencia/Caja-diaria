@@ -448,6 +448,63 @@ function downloadFile(content, filename, mimeType = 'text/plain;charset=utf-8') 
     URL.revokeObjectURL(url);
 }
 
+function downloadDayCSV(date) {
+    const dayData = loadDay(date);
+    if (!dayData) {
+        showAlert('Día no encontrado', 'danger');
+        return;
+    }
+
+    const totals = computeTotals(dayData.apertura, dayData.ingresos, dayData.movimientos, dayData.cierre);
+    const cajaHeaders = [
+        'Fecha', 'Hora', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
+        'Ingresos en efectivo (€)', 'Gestión de tesorería (salidas)', 'Gestión de tesorería (entradas)',
+        'Total en caja', 'Cierre de caja', 'Diferencia', 'Responsable de cierre de caja'
+    ];
+    const cajaData = [[
+        formatDate(date.split('#')[0]),
+        dayData.horaGuardado ? new Date(dayData.horaGuardado).toLocaleTimeString('es-ES') : '',
+        dayData.sucursal,
+        dayData.apertura,
+        dayData.responsableApertura,
+        dayData.ingresos,
+        totals.salidas,
+        totals.entradas,
+        totals.total,
+        dayData.cierre,
+        totals.diff,
+        dayData.responsableCierre
+    ]];
+
+    let content = generateCSVContent(cajaData, cajaHeaders);
+    content += '\n=== MOVIMIENTOS DE TESORERÍA ===\n';
+    const movHeaders = ['Fecha', 'Tipo', 'Quién', 'Importe (€)'];
+    content += movHeaders.join(';') + '\n';
+
+    if (dayData.movimientos && dayData.movimientos.length > 0) {
+        dayData.movimientos.forEach(mov => {
+            const row = [
+                formatDate(date.split('#')[0]),
+                mov.tipo === 'entrada' ? 'Entrada' : 'Salida',
+                mov.quien || 'No especificado',
+                mov.importe || 0
+            ].map(cell => {
+                if (typeof cell === 'number') {
+                    return cell.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                return String(cell || '');
+            }).join(';');
+            content += row + '\n';
+        });
+    } else {
+        content += 'No hay movimientos registrados\n';
+    }
+
+    const filename = `caja_${date.replace(/#/g, '_')}.csv`;
+    downloadFile(content, filename, 'text/csv;charset=utf-8');
+    showAlert(`Archivo ${filename} descargado`, 'success');
+}
+
 function exportCombinedCSV() {
     const dates = getDayIndex().sort((a, b) => b.localeCompare(a));
     
@@ -625,6 +682,35 @@ Generado automáticamente el ${formatDate(new Date().toISOString().split('T')[0]
     sendEmail(emailTo, emailSubject, emailBody);
 }
 
+function emailDay(date) {
+    const dayData = loadDay(date);
+    if (!dayData) {
+        showAlert('Día no encontrado', 'danger');
+        return;
+    }
+
+    const {
+        apertura,
+        ingresos,
+        movimientos = [],
+        cierre,
+        responsableApertura,
+        responsableCierre,
+        sucursal,
+        ingresosTarjetaExora = 0,
+        ingresosTarjetaDatafono = 0
+    } = dayData;
+
+    const totals = computeTotals(apertura, ingresos, movimientos, cierre);
+    const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
+
+    const emailTo = 'juanjo@labarberiadejuanjo.com';
+    const emailSubject = `Resumen Caja LBJ - ${sucursal} - ${formatDate(date.split('#')[0])}`;
+    const emailBody = `Hola Juanjo,\n\nRESUMEN DE CAJA LBJ\nFecha: ${formatDate(date.split('#')[0])}\nSucursal: ${sucursal}\n\n═══════════════════════════════════════\n\n1. APERTURA DE CAJA:\n   • Apertura: ${formatCurrency(apertura)} €\n   • Responsable: ${responsableApertura || 'No especificado'}\n\n2. INGRESOS EN EFECTIVO:\n   • Ingresos (Exora): ${formatCurrency(ingresos)} €\n\n3. GESTIÓN DE TESORERÍA:\n   • Total Entradas: ${formatCurrency(totals.entradas)} €\n   • Total Salidas: ${formatCurrency(totals.salidas)} €\n   ${movimientos.length > 0 ? '\n   Detalle movimientos:\n' + movimientos.map(mov => `   - ${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}: ${formatCurrency(mov.importe)} € (${mov.quien || 'No especificado'})`).join('\n') : '   • No hay movimientos registrados'}\n\n4. INGRESOS EN TARJETA:\n   • Ingresos tarjeta (Exora): ${formatCurrency(ingresosTarjetaExora)} €\n   • Ingresos tarjeta (Datáfono): ${formatCurrency(ingresosTarjetaDatafono)} €\n\n5. CIERRE DE CAJA:\n   • Cierre: ${formatCurrency(cierre)} €\n   • Responsable: ${responsableCierre || 'No especificado'}\n\n6. DIFERENCIAS:\n   • Diferencia Efectivo: ${formatCurrency(totals.diff)} € ${Math.abs(totals.diff) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}\n   • Diferencia Tarjeta: ${formatCurrency(diferenciaTarjeta)} € ${Math.abs(diferenciaTarjeta) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}\n\n═══════════════════════════════════════\n\nSistema de Gestión de Caja LBJ\nGenerado automáticamente el ${formatDate(new Date().toISOString().split('T')[0])}`;
+
+    sendEmail(emailTo, emailSubject, emailBody);
+}
+
 function exportFilteredSummaryEmail() {
     let dates = getDayIndex();
     
@@ -746,6 +832,13 @@ function sendEmail(emailTo, emailSubject, emailBody) {
         }
     } catch (error) {
         showAlert('No se pudo abrir el cliente de email automáticamente', 'danger');
+    }
+}
+
+function toggleActionsMenu(id) {
+    const menu = document.getElementById(id);
+    if (menu) {
+        menu.classList.toggle('show');
     }
 }
 
@@ -940,3 +1033,6 @@ window.editDay = editDay;
 window.deleteDayFromHistorial = deleteDayFromHistorial;
 window.loadDraft = loadDraft;
 window.changeSucursal = changeSucursal;
+window.downloadDayCSV = downloadDayCSV;
+window.emailDay = emailDay;
+window.toggleActionsMenu = toggleActionsMenu;
