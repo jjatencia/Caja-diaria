@@ -123,6 +123,7 @@ export function renderHistorial(filteredDates) {
 
     if (!dates.length) {
         tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay datos para mostrar</td></tr>';
+        renderResumen(filteredDates);
         return;
     }
 
