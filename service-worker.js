@@ -59,25 +59,28 @@ self.addEventListener('message', event => {
 
 self.addEventListener('sync', event => {
   if (event.tag === 'send-alert') {
-    event.waitUntil(
-      Promise.all(
-        alertQueue.map(data =>
-          fetch('/api/send-alert', {
+    event.waitUntil((async () => {
+      const remaining = [];
+      for (const data of alertQueue) {
+        try {
+          const response = await fetch('/api/send-alert', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': API_KEY
             },
             body: JSON.stringify(data)
-          }).then(response => {
-            if (!response.ok) {
-              throw new Error('Failed');
-            }
-          })
-        )
-      ).then(() => {
-        alertQueue = [];
-      })
-    );
+          });
+          if (!response.ok) {
+            console.error('Failed to resend alert', response.status);
+            remaining.push(data);
+          }
+        } catch (err) {
+          console.error('Failed to resend alert', err);
+          remaining.push(data);
+        }
+      }
+      alertQueue = remaining;
+    })());
   }
 });
