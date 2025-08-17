@@ -139,29 +139,40 @@ function recalc() {
     // Si falta dinero, intenta enviar una alerta
     if (totals.diff < 0) {
         const alertData = {
-            diff: totals.diff,
-            fecha: document.getElementById('fecha').value
+            sucursal: document.getElementById('sucursal').value,
+            fecha: document.getElementById('fecha').value,
+            diferencia: totals.diff,
+            detalle: currentMovimientos
+                .map(m => `${m.tipo} - ${m.quien}: ${formatCurrency(m.importe)} €`)
+                .join('\n')
         };
         fetch('/api/send-alert', {
             method: 'POST',
             body: JSON.stringify(alertData),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': API_KEY
             }
-        }).catch(() => {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.ready.then(registration => {
-                    if (registration.sync) {
-                        registration.sync.register('send-alert');
-                        navigator.serviceWorker.controller?.postMessage({
-                            type: 'queue-alert',
-                            payload: alertData
-                        });
-                    }
-                });
-            }
-            showAlert('Alerta enviada en segundo plano', 'info');
-        });
+        })
+            .then(response => {
+                if (!response.ok) {
+                    showAlert('No se pudo enviar la alerta', 'danger');
+                }
+            })
+            .catch(() => {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        if (registration.sync) {
+                            registration.sync.register('send-alert');
+                            navigator.serviceWorker.controller?.postMessage({
+                                type: 'queue-alert',
+                                payload: alertData
+                            });
+                        }
+                    });
+                }
+                showAlert('Alerta enviada en segundo plano', 'info');
+            });
     }
 
     // Calcular diferencia de tarjeta
