@@ -154,24 +154,28 @@ async function saveDay() {
     try {
         saveDayData(fecha, dayData);
 
-        const response = await fetch('/api/save-day', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: API_KEY
-            },
-            body: JSON.stringify({
-                cajaDiaria: { ...dayData, movimientos: undefined },
-                movimientos: currentMovimientos
-            })
-        });
+        if (API_KEY) {
+            const response = await fetch('/api/save-day', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: API_KEY
+                },
+                body: JSON.stringify({
+                    cajaDiaria: { ...dayData, movimientos: undefined },
+                    movimientos: currentMovimientos
+                })
+            });
 
-        const result = await response.json();
+            const result = await response.json();
 
-        if (result.success) {
-            showAlert('Día guardado correctamente', 'success');
+            if (result.success) {
+                showAlert('Día guardado correctamente', 'success');
+            } else {
+                showAlert('Error al guardar el día en el servidor', 'danger');
+            }
         } else {
-            showAlert('Error al guardar el día en el servidor', 'danger');
+            showAlert('Día guardado localmente (sin API key)', 'info');
         }
 
         renderHistorial(filteredDates);
