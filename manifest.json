@@ -1,7 +1,7 @@
 {
-  "name": "Gestión de Caja Diaria",
-  "short_name": "Caja Diaria",
-  "description": "Sistema de gestión de caja diaria para sucursales",
+  "name": "Gestión de Caja LBJ",
+  "short_name": "Caja LBJ",
+  "description": "Sistema de gestión de caja LBJ para sucursales",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#fdf7f2",

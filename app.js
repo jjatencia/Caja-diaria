@@ -454,11 +454,11 @@ function exportCurrentDayEmail() {
     
     // Preparar datos para el email
     const emailTo = 'juanjo@labarberiadejuanjo.com';
-    const emailSubject = `Resumen Caja Diaria - ${sucursal} - ${formatDate(fecha)}`;
+    const emailSubject = `Resumen Caja LBJ - ${sucursal} - ${formatDate(fecha)}`;
     
     const emailBody = `Hola Juanjo,
 
-RESUMEN DE CAJA DIARIA
+RESUMEN DE CAJA LBJ
 Fecha: ${formatDate(fecha)}
 Sucursal: ${sucursal}
 
@@ -492,7 +492,7 @@ Sucursal: ${sucursal}
 
 ═══════════════════════════════════════
 
-Sistema de Gestión de Caja Diaria
+Sistema de Gestión de Caja LBJ
 Generado automáticamente el ${formatDate(new Date().toISOString().split('T')[0])}`;
 
     sendEmail(emailTo, emailSubject, emailBody);
@@ -593,7 +593,7 @@ Días procesados: ${diasProcesados}
 
 ═══════════════════════════════════════
 
-Sistema de Gestión de Caja Diaria
+Sistema de Gestión de Caja LBJ
 Resumen consolidado generado el ${formatDate(new Date().toISOString().split('T')[0])}`;
 
     sendEmail(emailTo, emailSubject, emailBody);
@@ -772,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
     renderHistorial(filteredDates);
     recalc();
     
-    console.log('📊 Sistema de Caja Diaria inicializado correctamente');
+    console.log('📊 Sistema de Caja LBJ inicializado correctamente');
 });
 // Expose functions to global scope
 window.hideTests = hideTests;
