@@ -31,23 +31,36 @@ function applySucursal() {
     }
 }
 
+function openSucursalModal() {
+    const modal = document.getElementById('sucursalSetup');
+    const saveBtn = document.getElementById('guardarSucursal');
+    const selectInicial = document.getElementById('sucursalInicial');
+    if (modal && saveBtn && selectInicial) {
+        const current = localStorage.getItem('sucursal');
+        if (current) {
+            selectInicial.value = current;
+        }
+        modal.style.display = 'flex';
+        saveBtn.addEventListener('click', () => {
+            const selected = selectInicial.value;
+            localStorage.setItem('sucursal', selected);
+            modal.style.display = 'none';
+            applySucursal();
+        }, { once: true });
+    }
+}
+
 function initializeSucursal() {
     const saved = localStorage.getItem('sucursal');
     if (saved) {
         applySucursal();
     } else {
-        const modal = document.getElementById('sucursalSetup');
-        const saveBtn = document.getElementById('guardarSucursal');
-        if (modal && saveBtn) {
-            modal.style.display = 'flex';
-            saveBtn.addEventListener('click', () => {
-                const selected = document.getElementById('sucursalInicial').value;
-                localStorage.setItem('sucursal', selected);
-                modal.style.display = 'none';
-                applySucursal();
-            }, { once: true });
-        }
+        openSucursalModal();
     }
+}
+
+function changeSucursal() {
+    openSucursalModal();
 }
 
 function saveDraft() {
@@ -893,3 +906,4 @@ window.removeMovimiento = removeMovimiento;
 window.editDay = editDay;
 window.deleteDayFromHistorial = deleteDayFromHistorial;
 window.loadDraft = loadDraft;
+window.changeSucursal = changeSucursal;

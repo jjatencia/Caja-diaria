@@ -100,3 +100,36 @@ describe('addMovimiento', () => {
         expect(computeTotals).not.toHaveBeenCalled();
     });
 });
+
+describe('changeSucursal', () => {
+    let elements, saveHandler;
+
+    beforeEach(() => {
+        store = { sucursal: 'Antigua' };
+        global.localStorage.setItem.mockImplementation((k, v) => { store[k] = v; });
+        global.localStorage.getItem.mockImplementation((k) => store[k] || null);
+        global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
+
+        saveHandler = null;
+        elements = {
+            sucursalSetup: { style: { display: 'none' } },
+            guardarSucursal: { addEventListener: (evt, handler) => { saveHandler = handler; } },
+            sucursalInicial: { value: '' },
+            sucursal: { value: '', disabled: false }
+        };
+        global.document = {
+            getElementById: (id) => elements[id]
+        };
+    });
+
+    test('changeSucursal actualiza la sucursal almacenada', () => {
+        window.changeSucursal();
+        expect(elements.sucursalSetup.style.display).toBe('flex');
+        elements.sucursalInicial.value = 'Nueva';
+        saveHandler();
+        expect(store['sucursal']).toBe('Nueva');
+        expect(elements.sucursal.value).toBe('Nueva');
+        expect(elements.sucursal.disabled).toBe(true);
+        expect(elements.sucursalSetup.style.display).toBe('none');
+    });
+});
