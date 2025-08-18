@@ -955,3 +955,127 @@ window.downloadResumenCSV = downloadResumenCSV;
 window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
+
+// ---- API integration ----
+function safeNum(v) {
+  return Number(v) || 0;
+}
+
+function buildPayloadFromForm() {
+  const get = (id, isNum = false) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`Elemento #${id} no encontrado`);
+      return isNum ? 0 : '';
+    }
+    return isNum ? safeNum(el.value) : el.value;
+  };
+  return {
+    fecha: get('fecha'),
+    hora: get('hora'),
+    sucursal: get('sucursal'),
+    apertura: get('apertura', true),
+    ingresos: get('ingresos', true),
+    tarjetaExora: get('tx', true),
+    tarjetaDatafono: get('td', true),
+    dif: get('dif', true),
+    entradas: get('entradas', true),
+    salidas: get('salidas', true),
+    total: get('total', true),
+    cierre: get('cierre', true)
+  };
+}
+
+async function createRecord() {
+  const payload = buildPayloadFromForm();
+  try {
+    const resp = await fetch('/api/append-record', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      alert(data.message || 'Error creando registro');
+      return;
+    }
+    const idInput = document.getElementById('registroId');
+    if (idInput) {
+      idInput.value = data.id;
+    } else {
+      localStorage.setItem('ultimoID', data.id);
+    }
+    return data;
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+async function updateRecord(id) {
+  const payload = { id, ...buildPayloadFromForm() };
+  try {
+    const resp = await fetch('/api/update-record', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      alert(data.message || 'Error actualizando registro');
+      return;
+    }
+    return data;
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+async function deleteRecord(id) {
+  try {
+    const resp = await fetch('/api/delete-record', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok) {
+      alert(data.message || 'Error eliminando registro');
+      return;
+    }
+    return data;
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+function wireUI() {
+  const getId = () => {
+    const idInput = document.getElementById('registroId');
+    return (idInput && idInput.value) || localStorage.getItem('ultimoID');
+  };
+  const bind = (btn, handler) => {
+    if (!btn || typeof btn.addEventListener !== 'function') return;
+    btn.addEventListener('click', async function () {
+      this.disabled = true;
+      try {
+        await handler();
+      } finally {
+        this.disabled = false;
+      }
+    });
+  };
+  bind(document.getElementById('btnGuardar'), () => createRecord());
+  bind(document.getElementById('btnEditar'), () => {
+    const id = getId();
+    if (id) return updateRecord(id);
+    console.warn('ID para edición no encontrado');
+  });
+  bind(document.getElementById('btnBorrar'), () => {
+    const id = getId();
+    if (id) return deleteRecord(id);
+    console.warn('ID para borrado no encontrado');
+  });
+}
+
+wireUI();
+window.API = { createRecord, updateRecord, deleteRecord };
