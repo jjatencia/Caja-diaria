@@ -35,16 +35,22 @@ module.exports = async (req, res) => {
     const range = `${sheetName}!A1`;
 
     const values = [[
-      req.body.fecha,
-      req.body.sucursal,
-      req.body.apertura,
-      req.body.ingresos,
-      req.body.entradas,
-      req.body.salidas,
-      req.body.total,
-      req.body.cierre,
-      req.body.dif
-    ]];
+  req.body.id,
+  req.body.fecha,
+  req.body.hora,
+  req.body.sucursal,
+  req.body.apertura,
+  req.body.ingresos,
+  req.body.tarjetaExora,
+  req.body.tarjetaDatafono,
+  req.body.dif,
+  req.body.entradas,
+  req.body.salidas,
+  req.body.total,
+  req.body.cierre,
+  req.body.dif
+]];
+
 
     await sheets.spreadsheets.values.append({
       spreadsheetId,
