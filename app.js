@@ -294,28 +294,37 @@ async function saveDay() {
 
     try {
         currentEditKey = saveDayData(fecha, dayData, currentEditKey);
-        // Integración Google Sheets
-try {
-  const { appendRecord } = await import('./api/googleSheets.js');
-  await appendRecord({
-    fecha: formatDate(fecha),
-    hora: new Date().toLocaleTimeString('es-ES'),
-    sucursal,
-    apertura,
-    ingresos,
-    tarjetaExora: ingresosTarjetaExora,
-    tarjetaDatafono: ingresosTarjetaDatafono,
-    difTarjeta: ingresosTarjetaExora - ingresosTarjetaDatafono,
-    entradas: computeTotals(apertura, ingresos, currentMovimientos, cierre).entradas,
-    salidas: computeTotals(apertura, ingresos, currentMovimientos, cierre).salidas,
-    total: computeTotals(apertura, ingresos, currentMovimientos, cierre).total,
-    cierre,
-    dif: computeTotals(apertura, ingresos, currentMovimientos, cierre).diff
-  });
-  console.log('Registro guardado en Google Sheets');
-} catch (gsError) {
-  console.error('Error Google Sheets:', gsError);
-}
+
+        // Enviar registro al backend para guardarlo en Google Sheets
+        const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
+        const payload = {
+            fecha: formatDate(fecha),
+            hora: new Date().toLocaleTimeString('es-ES'),
+            sucursal,
+            apertura,
+            ingresos,
+            tarjetaExora: ingresosTarjetaExora,
+            tarjetaDatafono: ingresosTarjetaDatafono,
+            dif: totals.diff,
+            entradas: totals.entradas,
+            salidas: totals.salidas,
+            total: totals.total,
+            cierre
+        };
+
+        try {
+            const resp = await fetch('/api/append-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json();
+            if (!resp.ok) throw new Error(data.message || 'Error al crear registro');
+        } catch (err) {
+            console.error(err);
+            showAlert('No se pudo guardar en Sheets', 'danger');
+        }
+
         localStorage.removeItem('caja:draft');
 
         if (API_KEY) {
