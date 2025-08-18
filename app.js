@@ -298,8 +298,16 @@ async function saveDay() {
         // Enviar registro al backend para guardarlo en Google Sheets
         const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
         const payload = {
-            fecha: formatDate(fecha),
-            hora: new Date().toLocaleTimeString('es-ES'),
+            // Mantener la fecha en formato ISO (YYYY-MM-DD) evita
+            // que Google Sheets interprete el valor como una fórmula
+            // o como una fecha en otro formato regional.
+            fecha,
+            // Se envía la hora con precisión de minutos para que sea
+            // más consistente con las anotaciones realizadas manualmente.
+            hora: new Date().toLocaleTimeString('es-ES', {
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
             sucursal,
             apertura,
             ingresos,
