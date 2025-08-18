@@ -56,6 +56,19 @@ export function saveDayData(date, data, existingKey = null) {
 }
 
 export function deleteDay(date) {
+    const data = loadDay(date);
     localStorage.removeItem(`caja:${date}`);
     updateDayIndex(date, 'remove');
+
+    if (data?.sheetId && typeof fetch !== 'undefined') {
+        try {
+            fetch('/api/delete-record', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: data.sheetId })
+            });
+        } catch (err) {
+            console.error('No se pudo borrar en Sheets', err);
+        }
+    }
 }

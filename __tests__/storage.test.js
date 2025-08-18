@@ -1,4 +1,4 @@
-import { describe, beforeEach, test, expect } from '@jest/globals';
+import { describe, beforeEach, test, expect, jest } from '@jest/globals';
 import { saveDayData, loadDay, getDayIndex, deleteDay } from '../storage.js';
 
 let store = {};
@@ -10,6 +10,7 @@ beforeEach(() => {
     getItem: (k) => store[k] || null,
     removeItem: (k) => { delete store[k]; }
   };
+  global.fetch = undefined;
 });
 
 describe('saveDayData with multiple closings per day', () => {
@@ -35,6 +36,19 @@ describe('saveDayData with multiple closings per day', () => {
     deleteDay(key);
     expect(getDayIndex()).toHaveLength(0);
     expect(loadDay(key)).toBeNull();
+  });
+
+  test('deleteDay calls API when sheetId exists', () => {
+    global.fetch = jest.fn(() => Promise.resolve({}));
+    const key = saveDayData('2024-01-01', { cierre: 100, sheetId: 'abc' });
+    deleteDay(key);
+    expect(fetch).toHaveBeenCalledWith(
+      '/api/delete-record',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ id: 'abc' })
+      })
+    );
   });
 });
 

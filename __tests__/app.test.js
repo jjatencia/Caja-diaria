@@ -140,6 +140,10 @@ describe('saveDay', () => {
         global.localStorage.setItem.mockImplementation((k, v) => { store[k] = v; });
         global.localStorage.getItem.mockImplementation((k) => store[k] || null);
         global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
+        global.fetch = jest.fn(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ id: 'test-id' })
+        }));
         elements = {
             fecha: { value: '2025-01-01' },
             apertura: { value: '0' },

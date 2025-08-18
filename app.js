@@ -272,12 +272,18 @@ async function saveDay() {
     const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
     const cierre = parseNum(document.getElementById('cierre').value);
     const responsableCierre = document.getElementById('responsableCierre').value.trim();
-    
+
     if (!fecha || !sucursal) {
         showAlert('Por favor, completa la fecha y sucursal', 'danger');
         return;
     }
     
+    let sheetId;
+    if (currentEditKey) {
+        const existing = loadDay(currentEditKey);
+        sheetId = existing?.sheetId;
+    }
+
     const dayData = {
         fecha,
         sucursal,
@@ -289,18 +295,20 @@ async function saveDay() {
         movimientos: [...currentMovimientos],
         cierre,
         responsableCierre,
-        horaGuardado: new Date().toISOString()
+        horaGuardado: new Date().toISOString(),
+        sheetId
     };
 
     try {
         currentEditKey = saveDayData(fecha, dayData, currentEditKey);
 
-        // Enviar registro al backend para guardarlo en Google Sheets
+        // Enviar registro al backend para guardarlo/actualizarlo en Google Sheets
         const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
         const payload = {
             // Mantener la fecha en formato ISO (YYYY-MM-DD) evita
             // que Google Sheets interprete el valor como una fórmula
             // o como una fecha en otro formato regional.
+            id: sheetId,
             fecha,
             // Se envía la hora con precisión de minutos para que sea
             // más consistente con las anotaciones realizadas manualmente.
@@ -321,13 +329,19 @@ async function saveDay() {
         };
 
         try {
-            const resp = await fetch('/api/append-record', {
+            const endpoint = sheetId ? '/api/update-record' : '/api/append-record';
+            const resp = await fetch(endpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
             const data = await resp.json();
             if (!resp.ok) throw new Error(data.message || 'Error al crear registro');
+            if (!sheetId && data.id) {
+                sheetId = data.id;
+                dayData.sheetId = sheetId;
+                saveDayData(fecha, dayData, currentEditKey);
+            }
         } catch (err) {
             console.error(err);
             showAlert('No se pudo guardar en Sheets', 'danger');
