@@ -500,10 +500,12 @@ function downloadDayCSV(date) {
     }
 
     const totals = computeTotals(dayData.apertura, dayData.ingresos, dayData.movimientos, dayData.cierre);
+    const diferenciaTarjeta = (dayData.ingresosTarjetaExora || 0) - (dayData.ingresosTarjetaDatafono || 0);
     const cajaHeaders = [
         'Fecha', 'Hora', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
-        'Ingresos en efectivo (€)', 'Gestión de tesorería (salidas)', 'Gestión de tesorería (entradas)',
-        'Total en caja', 'Cierre de caja', 'Diferencia', 'Responsable de cierre de caja'
+        'Ingresos en efectivo (€)', 'Ingresos tarjeta (Exora)', 'Ingresos tarjeta (Datáfono)', 'Diferencia tarjeta (€)',
+        'Gestión de tesorería (salidas)', 'Gestión de tesorería (entradas)',
+        'Total en caja', 'Cierre de caja', 'Diferencia efectivo', 'Responsable de cierre de caja'
     ];
     const cajaData = [[
         formatDate(date.split('#')[0]),
@@ -512,6 +514,9 @@ function downloadDayCSV(date) {
         dayData.apertura,
         dayData.responsableApertura,
         dayData.ingresos,
+        dayData.ingresosTarjetaExora || 0,
+        dayData.ingresosTarjetaDatafono || 0,
+        diferenciaTarjeta,
         totals.salidas,
         totals.entradas,
         totals.total,

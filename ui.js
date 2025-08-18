@@ -141,6 +141,9 @@ export function renderHistorial(filteredDates) {
         if (!data) return '';
         const [day, turno] = date.split('#');
         const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
+        const tarjetaExora = parseNum(data.ingresosTarjetaExora || 0);
+        const tarjetaDatafono = parseNum(data.ingresosTarjetaDatafono || 0);
+        const diffTarjeta = tarjetaExora - tarjetaDatafono;
 
         const hora = data.horaGuardado ? new Date(data.horaGuardado).toLocaleTimeString('es-ES') : '';
         const safeId = date.replace(/[^a-z0-9]/gi, '_');
@@ -152,6 +155,9 @@ export function renderHistorial(filteredDates) {
                 <td>${data.sucursal}</td>
                 <td class="text-right">${formatCurrency(data.apertura)} €</td>
                 <td class="text-right">${formatCurrency(data.ingresos)} €</td>
+                <td class="text-right">${formatCurrency(tarjetaExora)} €</td>
+                <td class="text-right">${formatCurrency(tarjetaDatafono)} €</td>
+                <td class="text-right" style="color: ${Math.abs(diffTarjeta) < 0.01 ? 'var(--color-exito)' : (diffTarjeta < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(diffTarjeta)} €</td>
                 <td class="text-right">${formatCurrency(totals.entradas)} €</td>
                 <td class="text-right">${formatCurrency(totals.salidas)} €</td>
                 <td class="text-right">${formatCurrency(totals.total)} €</td>
