@@ -838,6 +838,11 @@ document.addEventListener('DOMContentLoaded', function() {
         element.addEventListener('blur', function() {
             this.value = formatCurrency(this.value);
         });
+        element.addEventListener('focus', function() {
+            if (parseNum(this.value) === 0) {
+                this.value = '';
+            }
+        });
     });
 
     ['responsableApertura', 'responsableCierre'].forEach(id => {
@@ -874,7 +879,14 @@ document.addEventListener('DOMContentLoaded', function() {
             addMovimiento();
         }
     });
-    
+
+    // Limpiar importe si es 0 al enfocar
+    document.getElementById('importeMovimiento').addEventListener('focus', function() {
+        if (parseNum(this.value) === 0) {
+            this.value = '';
+        }
+    });
+
     // Formatear campos de moneda al perder el foco
     document.getElementById('importeMovimiento').addEventListener('blur', function() {
         if (this.value) {
