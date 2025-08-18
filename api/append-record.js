@@ -34,7 +34,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     // Datos hoja
-    const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
+   const spreadsheetId = process.env.GSHEET_ID;
     const sheetName = process.env.GSHEET_NAME || 'Cierres';
     const range = `${sheetName}!A1`;
 
