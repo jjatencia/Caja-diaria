@@ -1,8 +1,6 @@
 import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils/index.js";
 import { getDayIndex, loadDay, saveDayData, deleteDay, saveToLocalStorage, getFromLocalStorage } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
-import { appendRecord, updateRecord, deleteRecord } from "./api/googleSheets.js";
-
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(registration => {
         registration.update();
@@ -23,7 +21,6 @@ if ('serviceWorker' in navigator) {
 let currentMovimientos = [];
 let filteredDates = null;
 let currentEditKey = null;
-let currentGoogleSheetsId = null; // Nuevo: para tracking del ID en Google Sheets
 const API_KEY = globalThis.API_KEY || '';
 
 const empleadosPorSucursal = {
@@ -103,8 +100,7 @@ function saveDraft() {
         ingresosTarjetaDatafono: parseNum(document.getElementById('ingresosTarjetaDatafono').value),
         movimientos: [...currentMovimientos],
         cierre: parseNum(document.getElementById('cierre').value),
-        responsableCierre: document.getElementById('responsableCierre').value.trim(),
-        googleSheetsId: currentGoogleSheetsId // Guardar el ID de Google Sheets
+        responsableCierre: document.getElementById('responsableCierre').value.trim()
     };
     saveToLocalStorage('caja:draft', draft);
 }
@@ -113,7 +109,6 @@ function loadDraft() {
     const draft = getFromLocalStorage('caja:draft');
     if (draft) {
         loadFormData(draft);
-        currentGoogleSheetsId = draft.googleSheetsId; // Restaurar el ID de Google Sheets
     }
 }
 
@@ -246,7 +241,6 @@ function clearForm() {
     recalc();
     localStorage.removeItem('caja:draft');
     currentEditKey = null;
-    currentGoogleSheetsId = null; // Limpiar ID de Google Sheets
 }
 
 function loadFormData(data) {
@@ -264,7 +258,6 @@ function loadFormData(data) {
     document.getElementById('responsableCierre').value = data.responsableCierre;
 
     currentMovimientos = data.movimientos || [];
-    currentGoogleSheetsId = data.googleSheetsId; // Cargar ID de Google Sheets
     renderMovimientos(currentMovimientos);
     recalc();
 }
@@ -285,10 +278,6 @@ async function saveDay() {
         return;
     }
     
-    // Calcular diferencia de tarjeta y totales
-    const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
-    const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
-    
     const dayData = {
         fecha,
         sucursal,
@@ -300,58 +289,13 @@ async function saveDay() {
         movimientos: [...currentMovimientos],
         cierre,
         responsableCierre,
-        horaGuardado: new Date().toISOString(),
-        googleSheetsId: currentGoogleSheetsId // Incluir ID de Google Sheets
+        horaGuardado: new Date().toISOString()
     };
 
     try {
-        // Guardar localmente primero
         currentEditKey = saveDayData(fecha, dayData, currentEditKey);
         localStorage.removeItem('caja:draft');
 
-        // Preparar datos para Google Sheets
-        const now = new Date();
-        const googleSheetsData = {
-            fecha: formatDate(fecha),
-            hora: now.toLocaleTimeString('es-ES', { hour12: false }),
-            sucursal: sucursal,
-            apertura: apertura,
-            ingresos: ingresos,
-            tarjetaExora: ingresosTarjetaExora,
-            tarjetaDatafono: ingresosTarjetaDatafono,
-            difTarjeta: diferenciaTarjeta,
-            entradas: totals.entradas,
-            salidas: totals.salidas,
-            total: totals.total,
-            cierre: cierre,
-            dif: totals.diff
-        };
-
-        // Integración con Google Sheets
-        try {
-            if (currentGoogleSheetsId) {
-                // Si existe ID, actualizar registro existente
-                await updateRecord(currentGoogleSheetsId, googleSheetsData);
-                console.log(`Google Sheets: Registro actualizado con ID ${currentGoogleSheetsId}`);
-                showAlert('Día actualizado en Google Sheets correctamente', 'success');
-            } else {
-                // Si no existe ID, crear nuevo registro
-                const googleId = await appendRecord(googleSheetsData);
-                currentGoogleSheetsId = googleId;
-                
-                // Actualizar datos locales con el nuevo ID
-                dayData.googleSheetsId = googleId;
-                saveDayData(fecha, dayData, currentEditKey);
-                
-                console.log(`Google Sheets: Nuevo registro creado con ID ${googleId}`);
-                showAlert('Día guardado en Google Sheets correctamente', 'success');
-            }
-        } catch (gsError) {
-            console.error('Error en Google Sheets:', gsError);
-            showAlert('Día guardado localmente, pero falló la sincronización con Google Sheets', 'warning');
-        }
-
-        // API del servidor (mantener funcionalidad existente)
         if (API_KEY) {
             const response = await fetch('/api/save-day', {
                 method: 'POST',
@@ -368,10 +312,12 @@ async function saveDay() {
             const result = await response.json();
 
             if (result.success) {
-                console.log('Servidor: Día guardado correctamente');
+                showAlert('Día guardado correctamente', 'success');
             } else {
-                console.log('Servidor: Error al guardar el día');
+                showAlert('Error al guardar el día en el servidor', 'danger');
             }
+        } else {
+            showAlert('Día guardado localmente (sin API key)', 'info');
         }
 
         renderHistorial(filteredDates);
@@ -386,24 +332,13 @@ function newDay() {
     showAlert('Formulario limpiado para nuevo día', 'info');
 }
 
-async function deleteCurrentDay() {
+function deleteCurrentDay() {
     if (!currentEditKey) {
         showAlert('No hay un día cargado para borrar', 'danger');
         return;
     }
 
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(currentEditKey)}?`)) {
-        // Eliminar de Google Sheets si existe ID
-        if (currentGoogleSheetsId) {
-            try {
-                await deleteRecord(currentGoogleSheetsId);
-                console.log(`Google Sheets: Registro eliminado con ID ${currentGoogleSheetsId}`);
-            } catch (gsError) {
-                console.error('Error al eliminar de Google Sheets:', gsError);
-                showAlert('Día eliminado localmente, pero falló la eliminación en Google Sheets', 'warning');
-            }
-        }
-
         deleteDay(currentEditKey);
         clearForm();
         renderHistorial(filteredDates);
@@ -411,22 +346,8 @@ async function deleteCurrentDay() {
     }
 }
 
-async function deleteDayFromHistorial(fecha) {
+function deleteDayFromHistorial(fecha) {
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
-        // Obtener datos del día para conseguir el googleSheetsId
-        const dayData = loadDay(fecha);
-        
-        // Eliminar de Google Sheets si existe ID
-        if (dayData && dayData.googleSheetsId) {
-            try {
-                await deleteRecord(dayData.googleSheetsId);
-                console.log(`Google Sheets: Registro eliminado con ID ${dayData.googleSheetsId}`);
-            } catch (gsError) {
-                console.error('Error al eliminar de Google Sheets:', gsError);
-                showAlert('Día eliminado localmente, pero falló la eliminación en Google Sheets', 'warning');
-            }
-        }
-
         deleteDay(fecha);
         if (currentEditKey === fecha) {
             clearForm();
@@ -442,7 +363,6 @@ function editDay(fecha) {
     if (data) {
         loadFormData(data);
         currentEditKey = fecha;
-        currentGoogleSheetsId = data.googleSheetsId; // Cargar ID de Google Sheets
         showAlert(`Día ${formatDate(fecha)} cargado para edición`, 'info');
         // Hacer scroll hacia arriba para ver el formulario
         document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
@@ -902,6 +822,8 @@ function runTests() {
     displayTestResults(results);
 }
 
+
+
 // Event listeners y inicialización
 document.addEventListener('DOMContentLoaded', function() {
     // Configurar fecha por defecto
@@ -988,7 +910,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     console.log('📊 Sistema de Caja LBJ inicializado correctamente');
 });
-
 // Expose functions to global scope
 window.hideTests = hideTests;
 window.addMovimiento = addMovimiento;
