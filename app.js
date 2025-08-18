@@ -838,6 +838,11 @@ document.addEventListener('DOMContentLoaded', function() {
         element.addEventListener('blur', function() {
             this.value = formatCurrency(this.value);
         });
+        element.addEventListener('focus', function() {
+            if (parseNum(this.value) === 0) {
+                this.value = '';
+            }
+        });
     });
 
     ['responsableApertura', 'responsableCierre'].forEach(id => {
