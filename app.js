@@ -955,3 +955,163 @@ window.downloadResumenCSV = downloadResumenCSV;
 window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
+
+// API integration utilities
+function safeNum(v) {
+    return Number(v) || 0;
+}
+
+function buildPayloadFromForm() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        if (!el) {
+            console.warn(`Elemento ${id} no encontrado`);
+            return '';
+        }
+        return el.value;
+    };
+
+    return {
+        fecha: getVal('fecha'),
+        hora: getVal('hora'),
+        sucursal: getVal('sucursal'),
+        apertura: safeNum(getVal('apertura')),
+        ingresos: safeNum(getVal('ingresos')),
+        tarjetaExora: safeNum(getVal('tx')),
+        tarjetaDatafono: safeNum(getVal('td')),
+        dif: safeNum(getVal('dif')),
+        entradas: safeNum(getVal('entradas')),
+        salidas: safeNum(getVal('salidas')),
+        total: safeNum(getVal('total')),
+        cierre: safeNum(getVal('cierre'))
+    };
+}
+
+async function createRecord() {
+    const payload = buildPayloadFromForm();
+    try {
+        const resp = await fetch('/api/append-record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+            alert(data.message || 'Error al crear registro');
+            return null;
+        }
+        const id = data.id;
+        const hidden = document.getElementById('registroId');
+        if (hidden) {
+            hidden.value = id;
+        } else {
+            localStorage.setItem('ultimoID', id);
+        }
+        return data;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+        return null;
+    }
+}
+
+async function updateRecord(id) {
+    const payload = { id, ...buildPayloadFromForm() };
+    try {
+        const resp = await fetch('/api/update-record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+            alert(data.message || 'Error al actualizar registro');
+            return null;
+        }
+        return data;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+        return null;
+    }
+}
+
+async function deleteRecord(id) {
+    try {
+        const resp = await fetch('/api/delete-record', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id })
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+            alert(data.message || 'Error al borrar registro');
+            return null;
+        }
+        return data;
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+        return null;
+    }
+}
+
+function wireUI() {
+    const getId = () => document.getElementById('registroId')?.value || localStorage.getItem('ultimoID');
+
+    const btnGuardar = document.getElementById('btnGuardar');
+    if (btnGuardar) {
+        btnGuardar.addEventListener('click', async () => {
+            btnGuardar.disabled = true;
+            try {
+                await createRecord();
+            } catch (err) {
+                console.error(err);
+            } finally {
+                btnGuardar.disabled = false;
+            }
+        });
+    }
+
+    const btnEditar = document.getElementById('btnEditar');
+    if (btnEditar) {
+        btnEditar.addEventListener('click', async () => {
+            const id = getId();
+            if (!id) {
+                alert('ID no disponible');
+                return;
+            }
+            btnEditar.disabled = true;
+            try {
+                await updateRecord(id);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                btnEditar.disabled = false;
+            }
+        });
+    }
+
+    const btnBorrar = document.getElementById('btnBorrar');
+    if (btnBorrar) {
+        btnBorrar.addEventListener('click', async () => {
+            const id = getId();
+            if (!id) {
+                alert('ID no disponible');
+                return;
+            }
+            btnBorrar.disabled = true;
+            try {
+                await deleteRecord(id);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                btnBorrar.disabled = false;
+            }
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', wireUI);
+
+window.API = { createRecord, updateRecord, deleteRecord };
