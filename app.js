@@ -294,6 +294,28 @@ async function saveDay() {
 
     try {
         currentEditKey = saveDayData(fecha, dayData, currentEditKey);
+        // Integración Google Sheets
+try {
+  const { appendRecord } = await import('./api/googleSheets.js');
+  await appendRecord({
+    fecha: formatDate(fecha),
+    hora: new Date().toLocaleTimeString('es-ES'),
+    sucursal,
+    apertura,
+    ingresos,
+    tarjetaExora: ingresosTarjetaExora,
+    tarjetaDatafono: ingresosTarjetaDatafono,
+    difTarjeta: ingresosTarjetaExora - ingresosTarjetaDatafono,
+    entradas: computeTotals(apertura, ingresos, currentMovimientos, cierre).entradas,
+    salidas: computeTotals(apertura, ingresos, currentMovimientos, cierre).salidas,
+    total: computeTotals(apertura, ingresos, currentMovimientos, cierre).total,
+    cierre,
+    dif: computeTotals(apertura, ingresos, currentMovimientos, cierre).diff
+  });
+  console.log('Registro guardado en Google Sheets');
+} catch (gsError) {
+  console.error('Error Google Sheets:', gsError);
+}
         localStorage.removeItem('caja:draft');
 
         if (API_KEY) {
