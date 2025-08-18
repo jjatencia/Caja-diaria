@@ -9,12 +9,18 @@ let sheetsClient = null;
 let sheetNumericId = null;
 
 function loadCredentials() {
-  const credentialsPath = process.env.GSHEET_CREDENTIALS;
-  if (!credentialsPath) {
+  const credentials = process.env.GSHEET_CREDENTIALS;
+  if (!credentials) {
     throw new Error('GSHEET_CREDENTIALS env var missing');
   }
-  const raw = fs.readFileSync(credentialsPath, 'utf8');
-  return JSON.parse(raw);
+  
+  // Si empieza con { es JSON directo, sino es ruta de archivo
+  if (credentials.startsWith('{')) {
+    return JSON.parse(credentials);
+  } else {
+    const raw = fs.readFileSync(credentials, 'utf8');
+    return JSON.parse(raw);
+  }
 }
 
 async function getSheetsClient() {
