@@ -33,20 +33,35 @@ self.addEventListener('activate', event => {
       })
   );
 });
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
 
-self.addEventListener('fetch', event => {
+  // 1) No tocar nada que no sea GET (evita el error con POST)
+  if (req.method !== 'GET') return;
+
+  // 2) No cachear llamadas a la API ni a otros orígenes
+  const url = new URL(req.url);
+  const isSameOrigin = self.location.origin === url.origin;
+  const isApi = url.pathname.startsWith('/api/');
+  if (!isSameOrigin || isApi) return;
+
   event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        const responseClone = networkResponse.clone();
+    fetch(req)
+      .then((networkResponse) => {
+        // Respuestas “opaques” o con error no se cachean
+        if (!networkResponse || !networkResponse.ok || networkResponse.type === 'opaqueredirect') {
+          return networkResponse;
+        }
+        const respClone = networkResponse.clone();
         event.waitUntil(
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone))
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, respClone))
         );
         return networkResponse;
       })
-      .catch(() => caches.match(event.request))
+      .catch(() => caches.match(req))
   );
 });
+
 
 // Cola de alertas para reenviar cuando haya conexión
 let alertQueue = [];
