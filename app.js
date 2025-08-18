@@ -874,7 +874,14 @@ document.addEventListener('DOMContentLoaded', function() {
             addMovimiento();
         }
     });
-    
+
+    // Limpiar importe si es 0 al enfocar
+    document.getElementById('importeMovimiento').addEventListener('focus', function() {
+        if (parseNum(this.value) === 0) {
+            this.value = '';
+        }
+    });
+
     // Formatear campos de moneda al perder el foco
     document.getElementById('importeMovimiento').addEventListener('blur', function() {
         if (this.value) {
