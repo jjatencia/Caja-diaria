@@ -58,11 +58,11 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 30px;
+    margin: 0 -20px 30px;
     padding: 20px;
     background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
     color: white;
-    border-radius: 12px;
+    border-radius: 0 0 12px 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     position: relative;
 }
