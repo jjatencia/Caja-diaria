@@ -9,7 +9,12 @@ if ('serviceWorker' in navigator) {
             if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        window.location.reload();
+                        const prompt = document.getElementById('updatePrompt');
+                        const reloadBtn = document.getElementById('reloadApp');
+                        if (prompt && reloadBtn) {
+                            prompt.style.display = 'flex';
+                            reloadBtn.addEventListener('click', () => window.location.reload(), { once: true });
+                        }
                     }
                 });
             }
