@@ -32,6 +32,7 @@ export default async function handler(req, res) {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range,
+      valueRenderOption: 'UNFORMATTED_VALUE',
     });
     const rows = response.data.values || [];
 
