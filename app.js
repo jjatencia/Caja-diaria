@@ -57,22 +57,29 @@ function applySucursal() {
     updateResponsables();
 }
 
+function handleSucursalSave(e) {
+    e.preventDefault();
+    const modal = document.getElementById('sucursalSetup');
+    const selectInicial = document.getElementById('sucursalInicial');
+    if (selectInicial) {
+        const selected = selectInicial.value;
+        localStorage.setItem('sucursal', selected);
+    }
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    applySucursal();
+}
+
 function openSucursalModal() {
     const modal = document.getElementById('sucursalSetup');
-    const saveBtn = document.getElementById('guardarSucursal');
     const selectInicial = document.getElementById('sucursalInicial');
-    if (modal && saveBtn && selectInicial) {
+    if (modal && selectInicial) {
         const current = localStorage.getItem('sucursal');
         if (current) {
             selectInicial.value = current;
         }
         modal.style.display = 'flex';
-        saveBtn.addEventListener('click', () => {
-            const selected = selectInicial.value;
-            localStorage.setItem('sucursal', selected);
-            modal.style.display = 'none';
-            applySucursal();
-        }, { once: true });
     }
 }
 
@@ -983,6 +990,7 @@ window.editDay = editDay;
 window.deleteDayFromHistorial = deleteDayFromHistorial;
 window.loadDraft = loadDraft;
 window.changeSucursal = changeSucursal;
+window.handleSucursalSave = handleSucursalSave;
 window.downloadDayCSV = downloadDayCSV;
 window.emailDay = emailDay;
 window.downloadResumenCSV = downloadResumenCSV;
