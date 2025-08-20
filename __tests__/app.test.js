@@ -118,7 +118,7 @@ describe('addMovimiento', () => {
 });
 
 describe('changeSucursal', () => {
-    let elements, saveHandler;
+    let elements;
 
     beforeEach(() => {
         store = { sucursal: 'Antigua' };
@@ -126,13 +126,8 @@ describe('changeSucursal', () => {
         global.localStorage.getItem.mockImplementation((k) => store[k] || null);
         global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
 
-        saveHandler = null;
         elements = {
             sucursalSetup: { style: { display: 'none' } },
-            guardarSucursal: {
-                addEventListener: (evt, handler) => { saveHandler = handler; },
-                removeEventListener: () => { saveHandler = null; }
-            },
             sucursalInicial: { value: '' },
             currentSucursal: { textContent: '' }
         };
@@ -145,7 +140,7 @@ describe('changeSucursal', () => {
         window.changeSucursal();
         expect(elements.sucursalSetup.style.display).toBe('flex');
         elements.sucursalInicial.value = 'Nueva';
-        saveHandler({ preventDefault: () => {} });
+        window.handleSucursalSave({ preventDefault: () => {} });
         expect(store['sucursal']).toBe('Nueva');
         expect(elements.currentSucursal.textContent).toBe('Nueva');
         expect(elements.sucursalSetup.style.display).toBe('none');

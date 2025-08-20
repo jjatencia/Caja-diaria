@@ -73,16 +73,13 @@ function handleSucursalSave(e) {
 
 function openSucursalModal() {
     const modal = document.getElementById('sucursalSetup');
-    const saveBtn = document.getElementById('guardarSucursal');
     const selectInicial = document.getElementById('sucursalInicial');
-    if (modal && saveBtn && selectInicial) {
+    if (modal && selectInicial) {
         const current = localStorage.getItem('sucursal');
         if (current) {
             selectInicial.value = current;
         }
         modal.style.display = 'flex';
-        saveBtn.removeEventListener('click', handleSucursalSave);
-        saveBtn.addEventListener('click', handleSucursalSave);
     }
 }
 
@@ -993,6 +990,7 @@ window.editDay = editDay;
 window.deleteDayFromHistorial = deleteDayFromHistorial;
 window.loadDraft = loadDraft;
 window.changeSucursal = changeSucursal;
+window.handleSucursalSave = handleSucursalSave;
 window.downloadDayCSV = downloadDayCSV;
 window.emailDay = emailDay;
 window.downloadResumenCSV = downloadResumenCSV;
