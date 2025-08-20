@@ -1,4 +1,5 @@
 import { google } from 'googleapis';
+import { parseNum } from '../utils/parseNum.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -26,7 +27,9 @@ export default async function handler(req, res) {
 
     const desde = req.query.desde || '0000-01-01';
     const hasta = req.query.hasta || '9999-12-31';
-    const sucursal = req.query.sucursal;
+    const sucursal = req.query.sucursal
+      ? String(req.query.sucursal).trim().toLowerCase()
+      : '';
 
     const range = `${sheetName}!A:N`;
     const response = await sheets.spreadsheets.values.get({
@@ -41,28 +44,58 @@ export default async function handler(req, res) {
       if (!row.length || row[0] === 'ID') continue;
       const rawDate = row[1];
       if (!rawDate) continue;
-      let fecha = rawDate;
-      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
-        const [d, m, y] = rawDate.split('/');
-        fecha = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+      let fecha;
+      if (typeof rawDate === 'number') {
+        const date = new Date(Math.round((rawDate - 25569) * 86400 * 1000));
+        fecha = date.toISOString().split('T')[0];
+      } else {
+        fecha = rawDate;
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+          const [d, m, y] = rawDate.split('/');
+          fecha = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        }
       }
       if (fecha < desde || fecha > hasta) continue;
-      if (sucursal && row[3] !== sucursal) continue;
+
+      const rowSucursal = row[3] ? String(row[3]).trim().toLowerCase() : '';
+      if (sucursal && rowSucursal !== sucursal) continue;
+
+      let hora = '';
+      const rawTime = row[2];
+      if (rawTime || rawTime === 0) {
+        if (typeof rawTime === 'number') {
+          const ms = Math.round(rawTime * 86400 * 1000);
+          const d = new Date(ms);
+          const h = d.getUTCHours().toString().padStart(2, '0');
+          const m = d.getUTCMinutes().toString().padStart(2, '0');
+          hora = `${h}:${m}`;
+        } else if (typeof rawTime === 'string') {
+          const cleaned = rawTime.replace(/\s+/g, '').replace('/', ':');
+          const match = cleaned.match(/^(\d{1,2}):(\d{2})/);
+          if (match) {
+            const [_, h, m] = match;
+            hora = `${h.padStart(2, '0')}:${m}`;
+          } else {
+            hora = cleaned;
+          }
+        }
+      }
+
       records.push({
         id: row[0],
         fecha,
-        hora: row[2] || '',
+        hora,
         sucursal: row[3] || '',
-        apertura: Number(row[4] || 0),
-        ingresos: Number(row[5] || 0),
-        tarjetaExora: Number(row[6] || 0),
-        tarjetaDatafono: Number(row[7] || 0),
-        difTarjeta: Number(row[8] || 0),
-        entradas: Number(row[9] || 0),
-        salidas: Number(row[10] || 0),
-        total: Number(row[11] || 0),
-        cierre: Number(row[12] || 0),
-        dif: Number(row[13] || 0),
+        apertura: parseNum(row[4] || 0),
+        ingresos: parseNum(row[5] || 0),
+        tarjetaExora: parseNum(row[6] || 0),
+        tarjetaDatafono: parseNum(row[7] || 0),
+        difTarjeta: parseNum(row[8] || 0),
+        entradas: parseNum(row[9] || 0),
+        salidas: parseNum(row[10] || 0),
+        total: parseNum(row[11] || 0),
+        cierre: parseNum(row[12] || 0),
+        dif: parseNum(row[13] || 0),
       });
     }
 
