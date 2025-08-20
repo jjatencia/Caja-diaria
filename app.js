@@ -179,7 +179,7 @@ function recalc() {
     // Calcular diferencia de tarjeta
     const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
     const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
-    const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
+    const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
     
     const diferenciaTarjetaDiv = document.getElementById('diferenciaTarjetaDisplay');
     if (diferenciaTarjetaDiv) {
@@ -188,9 +188,12 @@ function recalc() {
         if (Math.abs(diferenciaTarjeta) < 0.01) {
             diferenciaTarjetaDiv.className = 'diferencia cuadra';
             diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
+        } else if (diferenciaTarjeta > 0) {
+            diferenciaTarjetaDiv.className = 'diferencia positivo';
+            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - Sobra dinero`;
         } else {
-            diferenciaTarjetaDiv.className = 'diferencia no-cuadra';
-            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - No cuadra`;
+            diferenciaTarjetaDiv.className = 'diferencia negativo';
+            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - Falta Dinero`;
         }
     }
     saveDraft();
@@ -553,7 +556,7 @@ function downloadDayCSV(date) {
     }
 
     const totals = computeTotals(dayData.apertura, dayData.ingresos, dayData.movimientos, dayData.cierre);
-    const diferenciaTarjeta = (dayData.ingresosTarjetaExora || 0) - (dayData.ingresosTarjetaDatafono || 0);
+    const diferenciaTarjeta = (dayData.ingresosTarjetaDatafono || 0) - (dayData.ingresosTarjetaExora || 0);
     const cajaHeaders = [
         'Fecha', 'Hora', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
         'Ingresos en efectivo (€)', 'Ingresos tarjeta (Exora)', 'Ingresos tarjeta (Datáfono)', 'Diferencia tarjeta (€)',
@@ -627,11 +630,11 @@ function emailDay(date) {
     } = dayData;
 
     const totals = computeTotals(apertura, ingresos, movimientos, cierre);
-    const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
+    const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
 
     const emailTo = 'juanjo@labarberiadejuanjo.com';
     const emailSubject = `Resumen Caja LBJ - ${sucursal} - ${formatDate(date.split('#')[0])}`;
-    const emailBody = `Hola Juanjo,\n\nRESUMEN DE CAJA LBJ\nFecha: ${formatDate(date.split('#')[0])}\nSucursal: ${sucursal}\n\n═══════════════════════════════════════\n\n1. APERTURA DE CAJA:\n   • Apertura: ${formatCurrency(apertura)} €\n   • Responsable: ${responsableApertura || 'No especificado'}\n\n2. INGRESOS EN EFECTIVO:\n   • Ingresos (Exora): ${formatCurrency(ingresos)} €\n\n3. GESTIÓN DE TESORERÍA:\n   • Total Entradas: ${formatCurrency(totals.entradas)} €\n   • Total Salidas: ${formatCurrency(totals.salidas)} €\n   ${movimientos.length > 0 ? '\n   Detalle movimientos:\n' + movimientos.map(mov => `   - ${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}: ${formatCurrency(mov.importe)} € (${mov.quien || 'No especificado'})`).join('\n') : '   • No hay movimientos registrados'}\n\n4. INGRESOS EN TARJETA:\n   • Ingresos tarjeta (Exora): ${formatCurrency(ingresosTarjetaExora)} €\n   • Ingresos tarjeta (Datáfono): ${formatCurrency(ingresosTarjetaDatafono)} €\n\n5. CIERRE DE CAJA:\n   • Cierre: ${formatCurrency(cierre)} €\n   • Responsable: ${responsableCierre || 'No especificado'}\n\n6. DIFERENCIAS:\n   • Diferencia Efectivo: ${formatCurrency(totals.diff)} € ${Math.abs(totals.diff) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}\n   • Diferencia Tarjeta: ${formatCurrency(diferenciaTarjeta)} € ${Math.abs(diferenciaTarjeta) < 0.01 ? '✓ CUADRA' : '⚠ NO CUADRA'}\n\n═══════════════════════════════════════\n\nSistema de Gestión de Caja LBJ\nGenerado automáticamente el ${formatDate(new Date().toISOString().split('T')[0])}`;
+    const emailBody = `Hola Juanjo,\n\nRESUMEN DE CAJA LBJ\nFecha: ${formatDate(date.split('#')[0])}\nSucursal: ${sucursal}\n\n═══════════════════════════════════════\n\n1. APERTURA DE CAJA:\n   • Apertura: ${formatCurrency(apertura)} €\n   • Responsable: ${responsableApertura || 'No especificado'}\n\n2. INGRESOS EN EFECTIVO:\n   • Ingresos (Exora): ${formatCurrency(ingresos)} €\n\n3. GESTIÓN DE TESORERÍA:\n   • Total Entradas: ${formatCurrency(totals.entradas)} €\n   • Total Salidas: ${formatCurrency(totals.salidas)} €\n   ${movimientos.length > 0 ? '\n   Detalle movimientos:\n' + movimientos.map(mov => `   - ${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}: ${formatCurrency(mov.importe)} € (${mov.quien || 'No especificado'})`).join('\n') : '   • No hay movimientos registrados'}\n\n4. INGRESOS EN TARJETA:\n   • Ingresos tarjeta (Exora): ${formatCurrency(ingresosTarjetaExora)} €\n   • Ingresos tarjeta (Datáfono): ${formatCurrency(ingresosTarjetaDatafono)} €\n\n5. CIERRE DE CAJA:\n   • Cierre: ${formatCurrency(cierre)} €\n   • Responsable: ${responsableCierre || 'No especificado'}\n\n6. DIFERENCIAS:\n   • Diferencia Efectivo: ${formatCurrency(totals.diff)} € ${Math.abs(totals.diff) < 0.01 ? '✓ ¡Cuadra!' : (totals.diff > 0 ? '⚠ Sobra dinero' : '⚠ Falta Dinero')}\n   • Diferencia Tarjeta: ${formatCurrency(diferenciaTarjeta)} € ${Math.abs(diferenciaTarjeta) < 0.01 ? '✓ ¡Cuadra!' : (diferenciaTarjeta > 0 ? '⚠ Sobra dinero' : '⚠ Falta Dinero')}\n\n═══════════════════════════════════════\n\nSistema de Gestión de Caja LBJ\nGenerado automáticamente el ${formatDate(new Date().toISOString().split('T')[0])}`;
 
     sendEmail(emailTo, emailSubject, emailBody);
 }

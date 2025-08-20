@@ -99,6 +99,22 @@ describe('addMovimiento', () => {
         expect(renderMovimientos).not.toHaveBeenCalled();
         expect(computeTotals).not.toHaveBeenCalled();
     });
+
+    test('muestra mensaje de sobra dinero en diferencia tarjeta cuando el datáfono es mayor', () => {
+        elements.ingresosTarjetaExora.value = '100';
+        elements.ingresosTarjetaDatafono.value = '150';
+        elements.importeMovimiento.value = '1';
+        window.addMovimiento();
+        expect(elements.diferenciaTarjetaDisplay.innerHTML).toContain('Sobra dinero');
+    });
+
+    test('muestra mensaje de falta dinero en diferencia tarjeta cuando el datáfono es menor', () => {
+        elements.ingresosTarjetaExora.value = '150';
+        elements.ingresosTarjetaDatafono.value = '100';
+        elements.importeMovimiento.value = '1';
+        window.addMovimiento();
+        expect(elements.diferenciaTarjetaDisplay.innerHTML).toContain('Falta Dinero');
+    });
 });
 
 describe('changeSucursal', () => {
