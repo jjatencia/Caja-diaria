@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     const spreadsheetId = process.env.GSHEET_ID;
-    const sheetName = process.env.GSHEET_NAME || 'Cierres';
+    const sheetName = process.env.GSHEET_NAME || 'LBJ';
 
     const desde = req.query.desde || '0000-01-01';
     const hasta = req.query.hasta || '9999-12-31';

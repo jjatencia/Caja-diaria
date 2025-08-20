@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     const spreadsheetId = process.env.GSHEET_ID;
-    const sheetName = process.env.GSHEET_NAME || 'Cierres';
+    const sheetName = process.env.GSHEET_NAME || 'LBJ';
 
     // 1) Necesitamos al menos el ID
     const id = req.body?.id;
