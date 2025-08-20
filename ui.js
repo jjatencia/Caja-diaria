@@ -1,6 +1,38 @@
 import { formatCurrency, formatDate, computeTotals, parseNum } from './utils/index.js';
 import { getDayIndex, loadDay } from './storage.js';
 
+function loadLocalRecords(filteredDates) {
+    let dates = getDayIndex();
+    if (filteredDates) {
+        dates = dates.filter(date => {
+            const day = date.split('#')[0];
+            return day >= filteredDates.desde && day <= filteredDates.hasta;
+        });
+    }
+    return dates.map(key => {
+        const data = loadDay(key);
+        if (!data) return null;
+        const [day, turno] = key.split('#');
+        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
+        return {
+            id: key,
+            fecha: day,
+            turno,
+            hora: data.horaGuardado ? new Date(data.horaGuardado).toLocaleTimeString('es-ES') : '',
+            sucursal: data.sucursal,
+            apertura: parseNum(data.apertura),
+            ingresos: parseNum(data.ingresos),
+            tarjetaExora: parseNum(data.ingresosTarjetaExora || 0),
+            tarjetaDatafono: parseNum(data.ingresosTarjetaDatafono || 0),
+            entradas: totals.entradas,
+            salidas: totals.salidas,
+            total: totals.total,
+            cierre: parseNum(data.cierre),
+            dif: totals.diff,
+        };
+    }).filter(Boolean);
+}
+
 export function renderMovimientos(movimientos) {
     const container = document.getElementById('movimientosList');
 
@@ -19,19 +51,39 @@ export function renderMovimientos(movimientos) {
     `).join('');
 }
 
-export function renderResumen(filteredDates) {
+export async function renderResumen(filteredDates, records) {
     const tbody = document.getElementById('resumenTable');
     const tfoot = document.getElementById('resumenTotals');
-    let dates = getDayIndex();
 
-    if (filteredDates) {
-        dates = dates.filter(date => {
-            const day = date.split('#')[0];
-            return day >= filteredDates.desde && day <= filteredDates.hasta;
-        });
+    if (!records) {
+        records = [];
+        const sucursal = localStorage.getItem('sucursal');
+        if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+            try {
+                let url = '/api/list-records';
+                const params = [];
+                if (filteredDates) {
+                    params.push(`desde=${filteredDates.desde}`, `hasta=${filteredDates.hasta}`);
+                }
+                if (sucursal) {
+                    params.push(`sucursal=${encodeURIComponent(sucursal)}`);
+                }
+                if (params.length) url += `?${params.join('&')}`;
+                const res = await fetch(url);
+                if (res.ok) {
+                    const json = await res.json();
+                    records = json.records || [];
+                }
+            } catch (err) {
+                console.error('No se pudo obtener desde Sheets', err);
+            }
+        }
+        if (!records.length) {
+            records = loadLocalRecords(filteredDates);
+        }
     }
 
-    if (!dates.length) {
+    if (!records.length) {
         if (tbody) {
             tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay datos para mostrar</td></tr>';
         }
@@ -42,21 +94,18 @@ export function renderResumen(filteredDates) {
     }
 
     const summary = {};
-    dates.forEach(key => {
-        const day = key.split('#')[0];
-        const data = loadDay(key);
-        if (!data) return;
-        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
+    records.forEach(r => {
+        const day = r.fecha;
         if (!summary[day]) {
             summary[day] = { apertura: 0, ingresos: 0, entradas: 0, salidas: 0, total: 0, cierre: 0, diff: 0 };
         }
-        summary[day].apertura += parseNum(data.apertura);
-        summary[day].ingresos += parseNum(data.ingresos);
-        summary[day].entradas += totals.entradas;
-        summary[day].salidas += totals.salidas;
-        summary[day].total += totals.total;
-        summary[day].cierre += parseNum(data.cierre);
-        summary[day].diff += totals.diff;
+        summary[day].apertura += parseNum(r.apertura);
+        summary[day].ingresos += parseNum(r.ingresos);
+        summary[day].entradas += parseNum(r.entradas);
+        summary[day].salidas += parseNum(r.salidas);
+        summary[day].total += parseNum(r.total);
+        summary[day].cierre += parseNum(r.cierre);
+        summary[day].diff += parseNum(r.dif);
     });
 
     const days = Object.keys(summary).sort((a, b) => b.localeCompare(a));
@@ -110,67 +159,75 @@ export function renderResumen(filteredDates) {
     }
 }
 
-export function renderHistorial(filteredDates) {
+export async function renderHistorial(filteredDates) {
     const tbody = document.getElementById('historialTable');
-    let dates = getDayIndex();
+    const sucursal = localStorage.getItem('sucursal');
+    let records = [];
 
-    if (filteredDates) {
-        dates = dates.filter(date => {
-            const day = date.split('#')[0];
-            return day >= filteredDates.desde && day <= filteredDates.hasta;
-        });
+    if (typeof window !== 'undefined' && typeof fetch !== 'undefined') {
+        try {
+            let url = '/api/list-records';
+            const params = [];
+            if (filteredDates) {
+                params.push(`desde=${filteredDates.desde}`, `hasta=${filteredDates.hasta}`);
+            }
+            if (sucursal) {
+                params.push(`sucursal=${encodeURIComponent(sucursal)}`);
+            }
+            if (params.length) url += `?${params.join('&')}`;
+            const res = await fetch(url);
+            if (res.ok) {
+                const json = await res.json();
+                records = json.records || [];
+            }
+        } catch (err) {
+            console.error('No se pudo obtener desde Sheets', err);
+        }
     }
 
-    if (!dates.length) {
+    if (!records.length) {
+        records = loadLocalRecords(filteredDates);
+    }
+
+    if (!records.length) {
         tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay datos para mostrar</td></tr>';
-        renderResumen(filteredDates);
+        await renderResumen(filteredDates, records);
         return;
     }
 
-    dates.sort((a, b) => {
-        const [dateA, turnoA] = a.split('#');
-        const [dateB, turnoB] = b.split('#');
-        if (dateA === dateB) {
-            return Number(turnoB || 0) - Number(turnoA || 0);
+    records.sort((a, b) => {
+        if (a.fecha === b.fecha) {
+            return (b.turno || 0) - (a.turno || 0);
         }
-        return dateB.localeCompare(dateA);
+        return b.fecha.localeCompare(a.fecha);
     });
 
-    tbody.innerHTML = dates.map(date => {
-        const data = loadDay(date);
-        if (!data) return '';
-        const [day, turno] = date.split('#');
-        const totals = computeTotals(data.apertura, data.ingresos, data.movimientos, data.cierre);
-        const tarjetaExora = parseNum(data.ingresosTarjetaExora || 0);
-        const tarjetaDatafono = parseNum(data.ingresosTarjetaDatafono || 0);
-        const diffTarjeta = tarjetaExora - tarjetaDatafono;
-
-        const hora = data.horaGuardado ? new Date(data.horaGuardado).toLocaleTimeString('es-ES') : '';
-        const safeId = date.replace(/[^a-z0-9]/gi, '_');
-
+    tbody.innerHTML = records.map(r => {
+        const diffTarjeta = r.tarjetaExora - r.tarjetaDatafono;
+        const safeId = String(r.id).replace(/[^a-z0-9]/gi, '_');
         return `
             <tr>
-                <td>${formatDate(day)}${turno ? ` (Turno ${turno})` : ''}</td>
-                <td>${hora}</td>
-                <td>${data.sucursal}</td>
-                <td class="text-right">${formatCurrency(data.apertura)} €</td>
-                <td class="text-right">${formatCurrency(data.ingresos)} €</td>
-                <td class="text-right">${formatCurrency(tarjetaExora)} €</td>
-                <td class="text-right">${formatCurrency(tarjetaDatafono)} €</td>
+                <td>${formatDate(r.fecha)}${r.turno ? ` (Turno ${r.turno})` : ''}</td>
+                <td>${r.hora}</td>
+                <td>${r.sucursal}</td>
+                <td class="text-right">${formatCurrency(r.apertura)} €</td>
+                <td class="text-right">${formatCurrency(r.ingresos)} €</td>
+                <td class="text-right">${formatCurrency(r.tarjetaExora)} €</td>
+                <td class="text-right">${formatCurrency(r.tarjetaDatafono)} €</td>
                 <td class="text-right" style="color: ${Math.abs(diffTarjeta) < 0.01 ? 'var(--color-exito)' : (diffTarjeta < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(diffTarjeta)} €</td>
-                <td class="text-right">${formatCurrency(totals.entradas)} €</td>
-                <td class="text-right">${formatCurrency(totals.salidas)} €</td>
-                <td class="text-right">${formatCurrency(totals.total)} €</td>
-                <td class="text-right">${formatCurrency(data.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(totals.diff) < 0.01 ? 'var(--color-exito)' : (totals.diff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(totals.diff)} €</td>
+                <td class="text-right">${formatCurrency(r.entradas)} €</td>
+                <td class="text-right">${formatCurrency(r.salidas)} €</td>
+                <td class="text-right">${formatCurrency(r.total)} €</td>
+                <td class="text-right">${formatCurrency(r.cierre)} €</td>
+                <td class="text-right" style="color: ${Math.abs(r.dif) < 0.01 ? 'var(--color-exito)' : (r.dif < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(r.dif)} €</td>
                 <td class="text-center">
                     <div class="actions-dropdown">
                         <button class="btn btn-secondary btn-small" onclick="toggleActionsMenu('actions-${safeId}')">⋮</button>
                         <div id="actions-${safeId}" class="dropdown-menu">
-                            <button onclick="closeAllActionsMenus(); editDay('${date}')">Editar</button>
-                            <button onclick="closeAllActionsMenus(); emailDay('${date}')">Enviar por email</button>
-                            <button onclick="closeAllActionsMenus(); downloadDayCSV('${date}')">Descargar CSV</button>
-                            <button class="delete" onclick="closeAllActionsMenus(); deleteDayFromHistorial('${date}')">Eliminar</button>
+                            <button onclick="closeAllActionsMenus(); editDay('${r.id}')">Editar</button>
+                            <button onclick="closeAllActionsMenus(); emailDay('${r.id}')">Enviar por email</button>
+                            <button onclick="closeAllActionsMenus(); downloadDayCSV('${r.id}')">Descargar CSV</button>
+                            <button class="delete" onclick="closeAllActionsMenus(); deleteDayFromHistorial('${r.id}')">Eliminar</button>
                         </div>
                     </div>
                 </td>
@@ -178,7 +235,7 @@ export function renderHistorial(filteredDates) {
         `;
     }).join('');
 
-    renderResumen(filteredDates);
+    await renderResumen(filteredDates, records);
 }
 
 export function showAlert(message, type = 'info') {
