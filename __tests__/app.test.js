@@ -129,7 +129,10 @@ describe('changeSucursal', () => {
         saveHandler = null;
         elements = {
             sucursalSetup: { style: { display: 'none' } },
-            guardarSucursal: { addEventListener: (evt, handler) => { saveHandler = handler; } },
+            guardarSucursal: {
+                addEventListener: (evt, handler) => { saveHandler = handler; },
+                removeEventListener: () => { saveHandler = null; }
+            },
             sucursalInicial: { value: '' },
             currentSucursal: { textContent: '' }
         };
@@ -142,7 +145,7 @@ describe('changeSucursal', () => {
         window.changeSucursal();
         expect(elements.sucursalSetup.style.display).toBe('flex');
         elements.sucursalInicial.value = 'Nueva';
-        saveHandler();
+        saveHandler({ preventDefault: () => {} });
         expect(store['sucursal']).toBe('Nueva');
         expect(elements.currentSucursal.textContent).toBe('Nueva');
         expect(elements.sucursalSetup.style.display).toBe('none');

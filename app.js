@@ -57,6 +57,20 @@ function applySucursal() {
     updateResponsables();
 }
 
+function handleSucursalSave(e) {
+    e.preventDefault();
+    const modal = document.getElementById('sucursalSetup');
+    const selectInicial = document.getElementById('sucursalInicial');
+    if (selectInicial) {
+        const selected = selectInicial.value;
+        localStorage.setItem('sucursal', selected);
+    }
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    applySucursal();
+}
+
 function openSucursalModal() {
     const modal = document.getElementById('sucursalSetup');
     const saveBtn = document.getElementById('guardarSucursal');
@@ -67,12 +81,8 @@ function openSucursalModal() {
             selectInicial.value = current;
         }
         modal.style.display = 'flex';
-        saveBtn.addEventListener('click', () => {
-            const selected = selectInicial.value;
-            localStorage.setItem('sucursal', selected);
-            modal.style.display = 'none';
-            applySucursal();
-        }, { once: true });
+        saveBtn.removeEventListener('click', handleSucursalSave);
+        saveBtn.addEventListener('click', handleSucursalSave);
     }
 }
 
