@@ -93,7 +93,7 @@ body {
     gap: 30px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 820px) {
     .main-content {
         grid-template-columns: 1fr 1fr;
     }
@@ -494,7 +494,7 @@ tr:hover {
     color: var(--color-peligro-text);
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 819px) {
     .container {
         padding: 15px;
     }
