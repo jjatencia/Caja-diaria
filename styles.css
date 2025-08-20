@@ -126,6 +126,7 @@ body {
     padding: 25px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     overflow-x: hidden;
+    touch-action: pan-y;
 }
 
 .panel h2 {
