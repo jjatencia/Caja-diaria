@@ -110,7 +110,7 @@ body {
 
     .main-content {
         flex: 1;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 260px 1fr;
         overflow: hidden;
     }
 
@@ -421,7 +421,7 @@ table {
 
 @media (min-width: 820px) {
     table {
-        min-width: 800px;
+        min-width: 650px;
     }
 }
 
