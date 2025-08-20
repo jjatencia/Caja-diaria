@@ -179,7 +179,7 @@ function recalc() {
     // Calcular diferencia de tarjeta
     const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
     const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
-    const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
+    const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
     
     const diferenciaTarjetaDiv = document.getElementById('diferenciaTarjetaDisplay');
     if (diferenciaTarjetaDiv) {
@@ -553,7 +553,7 @@ function downloadDayCSV(date) {
     }
 
     const totals = computeTotals(dayData.apertura, dayData.ingresos, dayData.movimientos, dayData.cierre);
-    const diferenciaTarjeta = (dayData.ingresosTarjetaExora || 0) - (dayData.ingresosTarjetaDatafono || 0);
+    const diferenciaTarjeta = (dayData.ingresosTarjetaDatafono || 0) - (dayData.ingresosTarjetaExora || 0);
     const cajaHeaders = [
         'Fecha', 'Hora', 'Sucursal', 'Apertura de caja (€)', 'Responsable apertura de caja',
         'Ingresos en efectivo (€)', 'Ingresos tarjeta (Exora)', 'Ingresos tarjeta (Datáfono)', 'Diferencia tarjeta (€)',
@@ -627,7 +627,7 @@ function emailDay(date) {
     } = dayData;
 
     const totals = computeTotals(apertura, ingresos, movimientos, cierre);
-    const diferenciaTarjeta = ingresosTarjetaExora - ingresosTarjetaDatafono;
+    const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
 
     const emailTo = 'juanjo@labarberiadejuanjo.com';
     const emailSubject = `Resumen Caja LBJ - ${sucursal} - ${formatDate(date.split('#')[0])}`;
