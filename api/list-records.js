@@ -22,7 +22,7 @@ export default async function handler(req, res) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     const spreadsheetId = process.env.GSHEET_ID;
-    const sheetName = process.env.GSHEET_NAME || 'Cierres';
+    const sheetName = process.env.GSHEET_NAME || 'LBJ';
 
     const desde = req.query.desde || '0000-01-01';
     const hasta = req.query.hasta || '9999-12-31';
@@ -41,10 +41,16 @@ export default async function handler(req, res) {
       if (!row.length || row[0] === 'ID') continue;
       const rawDate = row[1];
       if (!rawDate) continue;
-      let fecha = rawDate;
-      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
-        const [d, m, y] = rawDate.split('/');
-        fecha = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+      let fecha;
+      if (typeof rawDate === 'number') {
+        const date = new Date(Math.round((rawDate - 25569) * 86400 * 1000));
+        fecha = date.toISOString().split('T')[0];
+      } else {
+        fecha = rawDate;
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+          const [d, m, y] = rawDate.split('/');
+          fecha = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+        }
       }
       if (fecha < desde || fecha > hasta) continue;
       if (sucursal && row[3] !== sucursal) continue;
