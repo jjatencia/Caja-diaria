@@ -38,7 +38,13 @@ export default async function handler(req, res) {
     const records = [];
     for (const row of rows) {
       if (!row.length || row[0] === 'ID') continue;
-      const fecha = row[1];
+      const rawDate = row[1];
+      if (!rawDate) continue;
+      let fecha = rawDate;
+      if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(rawDate)) {
+        const [d, m, y] = rawDate.split('/');
+        fecha = `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+      }
       if (fecha < desde || fecha > hasta) continue;
       if (sucursal && row[3] !== sucursal) continue;
       records.push({
