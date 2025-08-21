@@ -69,7 +69,7 @@ export async function renderResumen(filteredDates, records) {
                     params.push(`sucursal=${encodeURIComponent(sucursal)}`);
                 }
                 if (params.length) url += `?${params.join('&')}`;
-                const res = await fetch(url);
+                const res = await fetch(url, { cache: 'no-store' });
                 if (res.ok) {
                     const json = await res.json();
                     records = json.records || [];
@@ -175,7 +175,7 @@ export async function renderHistorial(filteredDates) {
                 params.push(`sucursal=${encodeURIComponent(sucursal)}`);
             }
             if (params.length) url += `?${params.join('&')}`;
-            const res = await fetch(url);
+            const res = await fetch(url, { cache: 'no-store' });
             if (res.ok) {
                 const json = await res.json();
                 records = json.records || [];
