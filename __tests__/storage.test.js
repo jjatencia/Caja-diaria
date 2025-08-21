@@ -31,24 +31,24 @@ describe('saveDayData with multiple closings per day', () => {
     expect(loadDay(key1).cierre).toBe(150);
   });
 
-  test('deleteDay removes entry and index', () => {
-    const key = saveDayData('2024-01-01', { cierre: 100 });
-    deleteDay(key);
-    expect(getDayIndex()).toHaveLength(0);
-    expect(loadDay(key)).toBeNull();
-  });
+    test('deleteDay removes entry and index', async () => {
+      const key = saveDayData('2024-01-01', { cierre: 100 });
+      await deleteDay(key);
+      expect(getDayIndex()).toHaveLength(0);
+      expect(loadDay(key)).toBeNull();
+    });
 
-  test('deleteDay calls API when sheetId exists', () => {
-    global.fetch = jest.fn(() => Promise.resolve({}));
-    const key = saveDayData('2024-01-01', { cierre: 100, sheetId: 'abc' });
-    deleteDay(key);
-    expect(fetch).toHaveBeenCalledWith(
-      '/api/delete-record',
-      expect.objectContaining({
-        method: 'POST',
-        body: JSON.stringify({ id: 'abc' })
-      })
-    );
-  });
+    test('deleteDay calls API when sheetId exists', async () => {
+      global.fetch = jest.fn(() => Promise.resolve({}));
+      const key = saveDayData('2024-01-01', { cierre: 100, sheetId: 'abc' });
+      await deleteDay(key);
+      expect(fetch).toHaveBeenCalledWith(
+        '/api/delete-record',
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ id: 'abc' })
+        })
+      );
+    });
 });
 

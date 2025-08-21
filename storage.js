@@ -55,14 +55,14 @@ export function saveDayData(date, data, existingKey = null) {
     return key;
 }
 
-export function deleteDay(date) {
+export async function deleteDay(date) {
     const data = loadDay(date);
     localStorage.removeItem(`caja:${date}`);
     updateDayIndex(date, 'remove');
 
     if (data?.sheetId && typeof fetch !== 'undefined') {
         try {
-            fetch('/api/delete-record', {
+            await fetch('/api/delete-record', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: data.sheetId })
