@@ -267,13 +267,17 @@ input[type="date"]:valid::-webkit-datetime-edit {
 
 .movimiento-item {
     display: grid;
-    grid-template-columns: 120px 2fr 1fr 60px;
+    grid-template-columns: 120px minmax(0, 2fr) minmax(0, 1fr) 60px;
     gap: 10px;
     align-items: center;
     padding: 10px;
     background: white;
     border-radius: 6px;
     margin-bottom: 10px;
+}
+
+.movimiento-item span {
+    overflow-wrap: anywhere;
 }
 
 .movimiento-form {
@@ -315,7 +319,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
     /* REDISEÑO COMPLETO DE MOVIMIENTOS PARA HORIZONTAL */
     .movimiento-form {
         display: grid;
-        grid-template-columns: 120px 2fr 1fr 80px;
+        grid-template-columns: 120px minmax(0, 2fr) minmax(0, 1fr) 80px;
         gap: 15px;
         align-items: end;
         padding: 15px;
@@ -336,7 +340,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
     
     .movimiento-item {
         display: grid;
-        grid-template-columns: 120px 2fr 1fr 80px;
+        grid-template-columns: 120px minmax(0, 2fr) minmax(0, 1fr) 80px;
         gap: 15px;
         align-items: center;
         padding: 12px;
