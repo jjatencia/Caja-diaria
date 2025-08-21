@@ -227,7 +227,7 @@ export async function renderHistorial(filteredDates) {
                             <button onclick="closeAllActionsMenus(); editDay('${r.id}')">Editar</button>
                             <button onclick="closeAllActionsMenus(); emailDay('${r.id}')">Enviar por email</button>
                             <button onclick="closeAllActionsMenus(); downloadDayCSV('${r.id}')">Descargar CSV</button>
-                            <button class="delete" onclick="closeAllActionsMenus(); deleteDayFromHistorial('${r.id}')">Eliminar</button>
+                            <button class="delete" onclick="closeAllActionsMenus(); deleteDayFromHistorial('${r.id}', '${r.fecha}')">Eliminar</button>
                         </div>
                     </div>
                 </td>
