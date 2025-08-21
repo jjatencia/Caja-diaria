@@ -443,6 +443,8 @@ async function deleteDayFromHistorial(id, fecha) {
             }
         }
 
+        // Esperar un momento para que la eliminación se refleje en Google Sheets
+        await new Promise(resolve => setTimeout(resolve, 1000));
         await renderHistorial(filteredDates);
         showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
     }
