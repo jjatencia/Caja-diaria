@@ -400,21 +400,21 @@ function newDay() {
     showAlert('Formulario limpiado para nuevo día', 'info');
 }
 
-function deleteCurrentDay() {
+async function deleteCurrentDay() {
     if (!currentEditKey) {
         showAlert('No hay un día cargado para borrar', 'danger');
         return;
     }
 
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(currentEditKey)}?`)) {
-        deleteDay(currentEditKey);
+        await deleteDay(currentEditKey);
         clearForm();
-        renderHistorial(filteredDates);
+        await renderHistorial(filteredDates);
         showAlert(`Día ${formatDate(currentEditKey)} borrado correctamente`, 'success');
     }
 }
 
-function deleteDayFromHistorial(id, fecha) {
+async function deleteDayFromHistorial(id, fecha) {
     const index = getDayIndex();
     let key = id;
 
@@ -427,13 +427,13 @@ function deleteDayFromHistorial(id, fecha) {
 
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
         if (key) {
-            deleteDay(key);
+            await deleteDay(key);
             if (currentEditKey === key) {
                 clearForm();
             }
         } else {
             try {
-                fetch('/api/delete-record', {
+                await fetch('/api/delete-record', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id })
@@ -443,17 +443,27 @@ function deleteDayFromHistorial(id, fecha) {
             }
         }
 
-        renderHistorial(filteredDates);
+        await renderHistorial(filteredDates);
         showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
     }
 }
 
-function editDay(fecha) {
-    const data = loadDay(fecha);
+function editDay(id) {
+    const index = getDayIndex();
+    let key = id;
+
+    if (!index.includes(id)) {
+        key = index.find(k => {
+            const data = loadDay(k);
+            return data?.sheetId === id;
+        }) || null;
+    }
+
+    const data = key ? loadDay(key) : null;
     if (data) {
         loadFormData(data);
-        currentEditKey = fecha;
-        showAlert(`Día ${formatDate(fecha)} cargado para edición`, 'info');
+        currentEditKey = key;
+        showAlert(`Día ${formatDate(key)} cargado para edición`, 'info');
         // Hacer scroll hacia arriba para ver el formulario
         document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
     } else {
