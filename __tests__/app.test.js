@@ -183,3 +183,56 @@ describe('saveDay', () => {
         expect(saved.horaGuardado).toBeDefined();
     });
 });
+
+describe('editDay', () => {
+    let elements;
+    beforeEach(() => {
+        store = {};
+        global.localStorage.setItem.mockImplementation((k, v) => { store[k] = v; });
+        global.localStorage.getItem.mockImplementation((k) => store[k] || null);
+        global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
+
+        store['caja:index'] = JSON.stringify(['2025-02-01#1']);
+        store['caja:2025-02-01#1'] = JSON.stringify({
+            fecha: '2025-02-01',
+            sucursal: 'Central',
+            apertura: 0,
+            responsableApertura: '',
+            ingresos: 0,
+            ingresosTarjetaExora: 0,
+            ingresosTarjetaDatafono: 0,
+            movimientos: [],
+            cierre: 0,
+            responsableCierre: '',
+            sheetId: 123
+        });
+
+        elements = {
+            fecha: { value: '' },
+            apertura: { value: '' },
+            responsableApertura: { value: '', innerHTML: '' },
+            ingresos: { value: '' },
+            ingresosTarjetaExora: { value: '' },
+            ingresosTarjetaDatafono: { value: '' },
+            cierre: { value: '' },
+            responsableCierre: { value: '', innerHTML: '' },
+            quienMovimiento: { value: '', innerHTML: '' },
+            diferenciaDisplay: { className: '', innerHTML: '' },
+            diferenciaTarjetaDisplay: { className: '', innerHTML: '' },
+            currentSucursal: { textContent: '' }
+        };
+        global.document = {
+            getElementById: (id) => elements[id],
+            querySelector: () => ({ scrollIntoView: jest.fn() }),
+            addEventListener: jest.fn()
+        };
+        renderMovimientos.mockClear();
+        showAlert.mockClear();
+    });
+
+    test('editDay carga registro usando sheetId numérico', () => {
+        window.editDay('123');
+        expect(elements.fecha.value).toBe('2025-02-01');
+        expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('cargado'), 'info');
+    });
+});
