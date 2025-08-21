@@ -414,11 +414,33 @@ function deleteCurrentDay() {
     }
 }
 
-function deleteDayFromHistorial(fecha) {
+function deleteDayFromHistorial(id, fecha) {
+    const index = getDayIndex();
+    let key = id;
+
+    if (!index.includes(id)) {
+        key = index.find(k => {
+            const data = loadDay(k);
+            return data?.sheetId === id;
+        }) || null;
+    }
+
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
-        deleteDay(fecha);
-        if (currentEditKey === fecha) {
-            clearForm();
+        if (key) {
+            deleteDay(key);
+            if (currentEditKey === key) {
+                clearForm();
+            }
+        } else {
+            try {
+                fetch('/api/delete-record', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+            } catch (err) {
+                console.error('No se pudo borrar en Sheets', err);
+            }
         }
 
         renderHistorial(filteredDates);
