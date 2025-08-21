@@ -421,7 +421,7 @@ async function deleteDayFromHistorial(id, fecha) {
     if (!index.includes(id)) {
         key = index.find(k => {
             const data = loadDay(k);
-            return data?.sheetId === id;
+            return String(data?.sheetId) === String(id);
         }) || null;
     }
 
@@ -457,7 +457,7 @@ function editDay(id) {
     if (!index.includes(id)) {
         key = index.find(k => {
             const data = loadDay(k);
-            return data?.sheetId === id;
+            return String(data?.sheetId) === String(id);
         }) || null;
     }
 
