@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar UI
     loadDraft();
     renderMovimientos(currentMovimientos);
-    filterToday();
+    clearDateFilter();
     recalc();
     
     console.log('📊 Sistema de Caja LBJ inicializado correctamente');
