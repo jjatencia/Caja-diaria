@@ -133,11 +133,12 @@ export async function updateRecord(id, data) {
   }
 }
 
-function buildTesoreriaRow(id, fecha, mov) {
+export function buildTesoreriaRow(id, fecha, mov) {
   return [
     id,
     fecha || '',
     mov.tipo === 'entrada' ? 'Entrada' : 'Salida',
+    mov.quien || '',
     mov.importe || 0,
   ];
 }
@@ -150,7 +151,7 @@ export async function appendTesoreriaMovimientos(cierreId, fecha, movimientos = 
   );
   await client.spreadsheets.values.append({
     spreadsheetId: SHEET_ID,
-    range: `${TESORERIA_SHEET_NAME}!A:D`,
+    range: `${TESORERIA_SHEET_NAME}!A:E`,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
     requestBody: { values },
