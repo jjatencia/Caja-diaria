@@ -8,6 +8,7 @@ const TESORERIA_SHEET_NAME = process.env.GSHEET_TREASURY_NAME || 'Tesorería';
 
 let sheetsClient = null;
 let sheetNumericId = null;
+let tesoreriaSheetNumericId = null;
 
 function loadCredentials() {
   const credentials = process.env.GSHEET_CREDENTIALS;
@@ -37,10 +38,17 @@ async function getSheetsClient() {
     fields: 'sheets(properties(sheetId,title))',
   });
   const sheet = meta.data.sheets.find(s => s.properties.title === SHEET_NAME);
+  const tesoreriaSheet = meta.data.sheets.find(
+    s => s.properties.title === TESORERIA_SHEET_NAME
+  );
   if (!sheet) {
     throw new Error(`Sheet ${SHEET_NAME} not found`);
   }
+  if (!tesoreriaSheet) {
+    throw new Error(`Sheet ${TESORERIA_SHEET_NAME} not found`);
+  }
   sheetNumericId = sheet.properties.sheetId;
+  tesoreriaSheetNumericId = tesoreriaSheet.properties.sheetId;
   return sheetsClient;
 }
 
@@ -143,20 +151,60 @@ export function buildTesoreriaRow(id, fecha, mov) {
   ];
 }
 
-export async function appendTesoreriaMovimientos(cierreId, fecha, movimientos = []) {
-  if (!movimientos.length) return;
+export async function appendTesoreriaMovimientos(
+  cierreId,
+  fecha,
+  movimientos = []
+) {
   const client = await getSheetsClient();
-  const values = movimientos.map((mov, idx) =>
-    buildTesoreriaRow(`${cierreId}-${idx + 1}`, fecha, mov)
-  );
-  await client.spreadsheets.values.append({
+
+  // Buscar filas existentes de este cierre
+  const res = await client.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
-    range: `${TESORERIA_SHEET_NAME}!A:E`,
-    valueInputOption: 'USER_ENTERED',
-    insertDataOption: 'INSERT_ROWS',
-    requestBody: { values },
+    range: `${TESORERIA_SHEET_NAME}!A:A`,
   });
-  console.log(`Tesorería rows appended for cierre ${cierreId}`);
+  const rows = res.data.values || [];
+  const rowsToDelete = [];
+  rows.forEach((r, idx) => {
+    if ((r[0] || '').startsWith(`${cierreId}-`)) {
+      rowsToDelete.push(idx + 1);
+    }
+  });
+
+  if (rowsToDelete.length) {
+    const requests = rowsToDelete
+      .sort((a, b) => b - a)
+      .map(row => ({
+        deleteDimension: {
+          range: {
+            sheetId: tesoreriaSheetNumericId,
+            dimension: 'ROWS',
+            startIndex: row - 1,
+            endIndex: row,
+          },
+        },
+      }));
+
+    await client.spreadsheets.batchUpdate({
+      spreadsheetId: SHEET_ID,
+      requestBody: { requests },
+    });
+  }
+
+  if (movimientos.length) {
+    const values = movimientos.map((mov, idx) =>
+      buildTesoreriaRow(`${cierreId}-${idx + 1}`, fecha, mov)
+    );
+    await client.spreadsheets.values.append({
+      spreadsheetId: SHEET_ID,
+      range: `${TESORERIA_SHEET_NAME}!A:E`,
+      valueInputOption: 'USER_ENTERED',
+      insertDataOption: 'INSERT_ROWS',
+      requestBody: { values },
+    });
+  }
+
+  console.log(`Tesorería rows synced for cierre ${cierreId}`);
 }
 
 export async function deleteRecord(id) {
