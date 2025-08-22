@@ -1,6 +1,21 @@
 import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils/index.js";
 import { getDayIndex, loadDay, saveDayData, deleteDay, saveToLocalStorage, getFromLocalStorage } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
+
+function updateViewportHeight() {
+    const height = (window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01;
+    document.documentElement.style.setProperty('--vh', `${height}px`);
+}
+
+if (typeof window !== 'undefined' && window.addEventListener) {
+    const refresh = () => requestAnimationFrame(updateViewportHeight);
+    window.addEventListener('resize', refresh);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', refresh);
+    }
+    document.addEventListener('focusout', () => setTimeout(refresh, 50));
+    refresh();
+}
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(registration => {
         registration.update();
