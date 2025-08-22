@@ -25,7 +25,7 @@ function loadCredentials() {
   }
 }
 
-async function getSheetsClient() {
+export async function getSheetsClient() {
   if (sheetsClient) return sheetsClient;
   const credentials = loadCredentials();
   const auth = new google.auth.GoogleAuth({
@@ -151,14 +151,9 @@ export function buildTesoreriaRow(id, fecha, mov) {
   ];
 }
 
-export async function appendTesoreriaMovimientos(
-  cierreId,
-  fecha,
-  movimientos = []
-) {
+export async function deleteTesoreriaMovimientos(cierreId) {
   const client = await getSheetsClient();
 
-  // Buscar filas existentes de este cierre
   const res = await client.spreadsheets.values.get({
     spreadsheetId: SHEET_ID,
     range: `${TESORERIA_SHEET_NAME}!A:A`,
@@ -191,6 +186,19 @@ export async function appendTesoreriaMovimientos(
     });
   }
 
+  console.log(`Tesorería rows deleted for cierre ${cierreId}`);
+}
+
+export async function appendTesoreriaMovimientos(
+  cierreId,
+  fecha,
+  movimientos = []
+) {
+  const client = await getSheetsClient();
+
+  // Remover filas existentes para este cierre
+  await deleteTesoreriaMovimientos(cierreId);
+
   if (movimientos.length) {
     const values = movimientos.map((mov, idx) =>
       buildTesoreriaRow(`${cierreId}-${idx + 1}`, fecha, mov)
@@ -210,7 +218,7 @@ export async function appendTesoreriaMovimientos(
 export async function deleteRecord(id) {
   try {
     const client = await getSheetsClient();
-    const row = await findRowById(id);
+    const row = await getRecordRow(id);
     if (!row) throw new Error(`ID ${id} not found`);
     await client.spreadsheets.batchUpdate({
       spreadsheetId: SHEET_ID,
@@ -229,6 +237,7 @@ export async function deleteRecord(id) {
         ],
       },
     });
+    await deleteTesoreriaMovimientos(id);
     console.log(`Row ${row} deleted for ID ${id}`);
   } catch (err) {
     console.error('Delete failed', err);

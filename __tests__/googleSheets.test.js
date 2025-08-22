@@ -1,3 +1,4 @@
+import { test, expect, describe } from '@jest/globals';
 import { buildTesoreriaRow } from '../api/googleSheets.js';
 
 describe('buildTesoreriaRow', () => {
@@ -10,3 +11,4 @@ describe('buildTesoreriaRow', () => {
     expect(row).toEqual(['1', '2024-01-01', 'Entrada', 'Juan', 10]);
   });
 });
+
