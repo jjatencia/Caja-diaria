@@ -43,6 +43,7 @@ body {
     color: #333;
     background-color: var(--color-claro);
     overflow-x: hidden;
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
 .visually-hidden {
@@ -67,6 +68,7 @@ body {
     text-align: center;
     margin: 0 0 30px;
     padding: 20px;
+    padding-top: calc(20px + env(safe-area-inset-top));
     background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-secundario) 100%);
     color: white;
     border-radius: 0 0 12px 12px;
