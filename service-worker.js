@@ -68,6 +68,7 @@ self.addEventListener('message', event => {
 self.addEventListener('sync', event => {
   if (event.tag === 'send-alert') {
     event.waitUntil((async () => {
+      if (!API_KEY) return;
       const remaining = [];
       for (const data of alertQueue) {
         try {
