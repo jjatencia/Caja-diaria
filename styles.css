@@ -280,7 +280,9 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .movimiento-item span {
-    overflow-wrap: anywhere;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .movimiento-form {
@@ -544,21 +546,29 @@ tr:hover {
     .container {
         padding: 15px;
     }
-    
+
     .header h1 {
         font-size: 1.8em;
     }
-    
+
     .movimiento-item,
     .movimiento-form {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: 70px minmax(0, 1fr) 70px 40px;
         gap: 8px;
+        font-size: 12px;
     }
-    
+
+    .movimiento-form select,
+    .movimiento-form input[type="text"] {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
     .inline-inputs {
         grid-template-columns: 1fr;
     }
-    
+
     .btn-group {
         justify-content: center;
     }
