@@ -35,20 +35,27 @@ function loadLocalRecords(filteredDates) {
 
 export function renderMovimientos(movimientos) {
     const container = document.getElementById('movimientosList');
+    if (!container) return;
 
     if (!movimientos.length) {
         container.innerHTML = '<p style="text-align: center; color: var(--color-gris); padding: 20px;">No hay movimientos registrados</p>';
         return;
     }
 
-    container.innerHTML = movimientos.map((mov, index) => `
+    container.innerHTML = movimientos
+        .map((mov, index) => {
+            const nombre = mov.quien && mov.quien.trim() ? mov.quien.trim() : 'No especificado';
+            const importe = typeof mov.importe === 'number' ? mov.importe : parseNum(mov.importe);
+
+            return `
         <div class="movimiento-item">
             <strong>${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}</strong>
-            <span>${mov.quien || 'No especificado'}</span>
-            <span class="text-right">${formatCurrency(mov.importe)} €</span>
+            <span class="movimiento-nombre">${nombre}</span>
+            <span class="text-right movimiento-importe">${formatCurrency(importe)} €</span>
             <button type="button" class="btn btn-danger btn-small" onclick="removeMovimiento(${index})">🗑️</button>
-        </div>
-    `).join('');
+        </div>`;
+        })
+        .join('');
 }
 
 export async function renderResumen(filteredDates, records) {
