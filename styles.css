@@ -677,3 +677,56 @@ tr:hover {
 .dropdown-menu button.delete {
     color: var(--color-peligro);
 }
+
+@media (max-width: 480px) {
+    body {
+        font-size: 15px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    .header {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 1.6em;
+    }
+
+    h2 {
+        font-size: 1.3em;
+    }
+
+    h3 {
+        font-size: 1.1em;
+    }
+
+    h4 {
+        font-size: 1em;
+    }
+
+    .movimiento-item,
+    .movimiento-form {
+        grid-template-columns: 60px minmax(0, 1fr) 60px 40px;
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .movimiento-form select,
+    .movimiento-form input[type="text"] {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 15px;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
