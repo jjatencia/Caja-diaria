@@ -6,6 +6,7 @@ Este módulo permite sincronizar los cierres de caja con la hoja de cálculo de 
 
 1. **Credenciales**: guardar el JSON de la cuenta de servicio en un archivo local y establecer la variable de entorno `GSHEET_CREDENTIALS` con la ruta al archivo.
 2. **Hoja de cálculo**: si se desea usar otro libro u hoja, definir `GSHEET_ID` y `GSHEET_NAME` en las variables de entorno.
+3. **Tesorería**: para registrar movimientos de tesorería en una hoja separada, establecer `GSHEET_TREASURY_NAME` con el nombre de dicha hoja.
 
 ## Uso
 
