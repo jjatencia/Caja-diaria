@@ -16,11 +16,12 @@ if (typeof window !== 'undefined' && window.addEventListener) {
 }
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(registration => {
-        registration.update();
         registration.addEventListener('updatefound', () => {
+            console.log('[SW] Update found');
             const newWorker = registration.installing;
             if (newWorker) {
                 newWorker.addEventListener('statechange', () => {
+                    console.log('[SW] state changed:', newWorker.state);
                     if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                         const prompt = document.getElementById('updatePrompt');
                         const reloadBtn = document.getElementById('reloadApp');
@@ -32,6 +33,8 @@ if ('serviceWorker' in navigator) {
                 });
             }
         });
+        // Trigger a check for an updated service worker after the listener is attached
+        registration.update();
     });
 }
 
