@@ -314,6 +314,7 @@ async function saveDay() {
         const existing = loadDay(currentEditKey);
         sheetId = existing?.sheetId;
     }
+    const wasNewRecord = !sheetId;
 
     const dayData = {
         fecha,
@@ -372,6 +373,17 @@ async function saveDay() {
                 sheetId = data.id;
                 dayData.sheetId = sheetId;
                 saveDayData(fecha, dayData, currentEditKey);
+            }
+            if (wasNewRecord && sheetId && currentMovimientos.length) {
+                try {
+                    await fetch('/api/append-tesoreria', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cierreId: sheetId, fecha, movimientos: currentMovimientos })
+                    });
+                } catch (err) {
+                    console.error('No se pudo guardar movimientos en Tesorería', err);
+                }
             }
         } catch (err) {
             console.error(err);

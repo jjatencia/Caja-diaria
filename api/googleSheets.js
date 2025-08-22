@@ -4,6 +4,7 @@ import fs from 'fs';
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const SHEET_ID = process.env.GSHEET_ID || '1lkROQ9BNKdVW2tk1YsOhAt5KMpm_e4jsHqooWqajO7Q';
 const SHEET_NAME = process.env.GSHEET_NAME || 'LBJ';
+const TESORERIA_SHEET_NAME = process.env.GSHEET_TREASURY_NAME || 'Tesorería';
 
 let sheetsClient = null;
 let sheetNumericId = null;
@@ -130,6 +131,32 @@ export async function updateRecord(id, data) {
     console.error('Update failed', err);
     throw err;
   }
+}
+
+function buildTesoreriaRow(id, fecha, mov) {
+  return [
+    id,
+    fecha || '',
+    mov.tipo === 'entrada' ? 'Entrada' : 'Salida',
+    mov.quien || '',
+    mov.importe || 0,
+  ];
+}
+
+export async function appendTesoreriaMovimientos(cierreId, fecha, movimientos = []) {
+  if (!movimientos.length) return;
+  const client = await getSheetsClient();
+  const values = movimientos.map((mov, idx) =>
+    buildTesoreriaRow(`${cierreId}-${idx + 1}`, fecha, mov)
+  );
+  await client.spreadsheets.values.append({
+    spreadsheetId: SHEET_ID,
+    range: `${TESORERIA_SHEET_NAME}!A:E`,
+    valueInputOption: 'USER_ENTERED',
+    insertDataOption: 'INSERT_ROWS',
+    requestBody: { values },
+  });
+  console.log(`Tesorería rows appended for cierre ${cierreId}`);
 }
 
 export async function deleteRecord(id) {
