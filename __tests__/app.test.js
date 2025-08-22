@@ -230,9 +230,37 @@ describe('editDay', () => {
         showAlert.mockClear();
     });
 
-    test('editDay carga registro usando sheetId numérico', () => {
-        window.editDay('123');
+    test('editDay carga registro usando sheetId numérico', async () => {
+        await window.editDay('123');
         expect(elements.fecha.value).toBe('2025-02-01');
+        expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('cargado'), 'info');
+    });
+
+    test('editDay obtiene registro de Google Sheets si no está en localStorage', async () => {
+        store = {};
+        global.localStorage.setItem.mockImplementation((k, v) => { store[k] = v; });
+        global.localStorage.getItem.mockImplementation((k) => store[k] || null);
+        global.localStorage.removeItem.mockImplementation((k) => { delete store[k]; });
+
+        const record = {
+            id: '999',
+            fecha: '2025-03-10',
+            sucursal: 'Central',
+            apertura: 0,
+            ingresos: 0,
+            tarjetaExora: 0,
+            tarjetaDatafono: 0,
+            cierre: 0
+        };
+        global.fetch = jest.fn(() => Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ ok: true, records: [record] })
+        }));
+
+        await window.editDay('999');
+
+        expect(global.fetch).toHaveBeenCalledWith('/api/list-records?id=999');
+        expect(elements.fecha.value).toBe('2025-03-10');
         expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('cargado'), 'info');
     });
 });

@@ -466,7 +466,7 @@ async function deleteDayFromHistorial(id, fecha) {
     }
 }
 
-function editDay(id) {
+async function editDay(id) {
     const index = getDayIndex();
     let key = id;
 
@@ -477,7 +477,34 @@ function editDay(id) {
         }) || null;
     }
 
-    const data = key ? loadDay(key) : null;
+    let data = key ? loadDay(key) : null;
+
+    if (!data) {
+        try {
+            const resp = await fetch(`/api/list-records?id=${id}`);
+            const json = await resp.json().catch(() => ({}));
+            const record = json.records && json.records[0];
+            if (record) {
+                data = {
+                    fecha: record.fecha,
+                    sucursal: record.sucursal,
+                    apertura: record.apertura,
+                    responsableApertura: '',
+                    ingresos: record.ingresos,
+                    ingresosTarjetaExora: record.tarjetaExora,
+                    ingresosTarjetaDatafono: record.tarjetaDatafono,
+                    movimientos: [],
+                    cierre: record.cierre,
+                    responsableCierre: '',
+                    sheetId: record.id
+                };
+                key = saveDayData(record.fecha, data);
+            }
+        } catch (err) {
+            console.error('No se pudo obtener de Sheets', err);
+        }
+    }
+
     if (data) {
         loadFormData(data);
         currentEditKey = key;

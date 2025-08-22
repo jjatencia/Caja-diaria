@@ -30,6 +30,7 @@ export default async function handler(req, res) {
     const sucursal = req.query.sucursal
       ? String(req.query.sucursal).trim().toLowerCase()
       : '';
+    const id = req.query.id ? String(req.query.id).trim() : '';
 
     const range = `${sheetName}!A:N`;
     const response = await sheets.spreadsheets.values.get({
@@ -42,6 +43,7 @@ export default async function handler(req, res) {
     const records = [];
     for (const row of rows) {
       if (!row.length || row[0] === 'ID') continue;
+      if (id && String(row[0]) !== id) continue;
       const rawDate = row[1];
       if (!rawDate) continue;
       let fecha;
