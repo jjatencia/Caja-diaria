@@ -517,6 +517,23 @@ async function editDay(id) {
     }
 
     if (data) {
+        // Si no hay movimientos cargados, intenta obtenerlos de Tesorería
+        const tesoreriaId = data.sheetId || (id && /^\d+$/.test(id) ? id : null);
+        if ((!data.movimientos || !data.movimientos.length) && tesoreriaId) {
+            try {
+                const respMov = await fetch(`/api/list-tesoreria?id=${tesoreriaId}`);
+                const jsonMov = await respMov.json().catch(() => ({}));
+                if (Array.isArray(jsonMov.movimientos)) {
+                    data.movimientos = jsonMov.movimientos;
+                    if (key) {
+                        saveDayData(key, data);
+                    }
+                }
+            } catch (err) {
+                console.error('No se pudieron cargar los movimientos de Tesorería', err);
+            }
+        }
+
         loadFormData(data);
         currentEditKey = key;
         showAlert(`Día ${formatDate(key)} cargado para edición`, 'info');

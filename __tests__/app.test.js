@@ -228,11 +228,23 @@ describe('editDay', () => {
         };
         renderMovimientos.mockClear();
         showAlert.mockClear();
+
+        global.fetch = jest.fn((url) => {
+            if (url.startsWith('/api/list-tesoreria')) {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ ok: true, movimientos: [{ tipo: 'entrada', quien: 'Test', importe: 50 }] })
+                });
+            }
+            return Promise.resolve({ ok: true, json: () => Promise.resolve({ ok: true, records: [] }) });
+        });
     });
 
     test('editDay carga registro usando sheetId numérico', async () => {
         await window.editDay('123');
         expect(elements.fecha.value).toBe('2025-02-01');
+        expect(renderMovimientos).toHaveBeenCalledWith([{ tipo: 'entrada', quien: 'Test', importe: 50 }]);
+        expect(global.fetch).toHaveBeenCalledWith('/api/list-tesoreria?id=123');
         expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('cargado'), 'info');
     });
 
@@ -252,15 +264,28 @@ describe('editDay', () => {
             tarjetaDatafono: 0,
             cierre: 0
         };
-        global.fetch = jest.fn(() => Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ ok: true, records: [record] })
-        }));
+        global.fetch = jest.fn((url) => {
+            if (url === '/api/list-records?id=999') {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ ok: true, records: [record] })
+                });
+            }
+            if (url === '/api/list-tesoreria?id=999') {
+                return Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ ok: true, movimientos: [{ tipo: 'salida', quien: 'Otro', importe: 20 }] })
+                });
+            }
+            return Promise.resolve({ ok: false, json: () => Promise.resolve({}) });
+        });
 
         await window.editDay('999');
 
         expect(global.fetch).toHaveBeenCalledWith('/api/list-records?id=999');
+        expect(global.fetch).toHaveBeenCalledWith('/api/list-tesoreria?id=999');
         expect(elements.fecha.value).toBe('2025-03-10');
+        expect(renderMovimientos).toHaveBeenCalledWith([{ tipo: 'salida', quien: 'Otro', importe: 20 }]);
         expect(showAlert).toHaveBeenCalledWith(expect.stringContaining('cargado'), 'info');
     });
 });
