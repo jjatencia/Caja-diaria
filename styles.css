@@ -677,3 +677,56 @@ tr:hover {
 .dropdown-menu button.delete {
     color: var(--color-peligro);
 }
+@media (max-width: 480px) {
+    .table-container {
+        overflow-x: visible;
+    }
+
+    .table-container table,
+    .table-container thead,
+    .table-container tbody,
+    .table-container th,
+    .table-container td,
+    .table-container tr {
+        display: block;
+    }
+
+    .table-container thead {
+        display: none;
+    }
+
+    .table-container tr {
+        margin-bottom: 15px;
+        border: 1px solid var(--color-borde);
+        border-radius: 8px;
+        padding: 10px;
+        background: white;
+    }
+
+    .table-container td {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 10px;
+        border: none;
+        border-bottom: 1px solid var(--color-borde);
+    }
+
+    .table-container td:last-child {
+        border-bottom: none;
+    }
+
+    .table-container td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-gris);
+        margin-right: 10px;
+    }
+
+    .table-container td[data-label="Acciones"] {
+        justify-content: center;
+    }
+
+    .table-container td[data-label="Acciones"]::before {
+        display: none;
+    }
+}

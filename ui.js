@@ -1,6 +1,19 @@
 import { formatCurrency, formatDate, computeTotals, parseNum } from './utils/index.js';
 import { getDayIndex, loadDay } from './storage.js';
 
+function applyResponsiveLabels(table) {
+    if (!table || typeof table.querySelectorAll !== 'function') return;
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    const rows = table.querySelectorAll('tbody tr, tfoot tr');
+    rows.forEach(row => {
+        Array.from(row.children).forEach((cell, i) => {
+            if (headers[i]) {
+                cell.setAttribute('data-label', headers[i]);
+            }
+        });
+    });
+}
+
 function loadLocalRecords(filteredDates) {
     let dates = getDayIndex();
     if (filteredDates) {
@@ -93,6 +106,10 @@ export async function renderResumen(filteredDates, records) {
     if (!records.length) {
         if (tbody) {
             tbody.innerHTML = '<tr><td colspan="8" class="text-center">No hay datos para mostrar</td></tr>';
+            const table = typeof tbody.closest === 'function' ? tbody.closest('table') : null;
+            if (table) {
+                applyResponsiveLabels(table);
+            }
         }
         if (tfoot) {
             tfoot.innerHTML = '';
@@ -164,6 +181,11 @@ export async function renderResumen(filteredDates, records) {
                 <td class="text-right" style="color: ${Math.abs(totalDiff) < 0.01 ? 'var(--color-exito)' : (totalDiff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(totalDiff)} €</td>
             </tr>`;
     }
+
+    const table = tbody && typeof tbody.closest === 'function' ? tbody.closest('table') : null;
+    if (table) {
+        applyResponsiveLabels(table);
+    }
 }
 
 export async function renderHistorial(filteredDates) {
@@ -198,6 +220,10 @@ export async function renderHistorial(filteredDates) {
 
     if (!records.length) {
         tbody.innerHTML = '<tr><td colspan="11" class="text-center">No hay datos para mostrar</td></tr>';
+        const table = tbody && typeof tbody.closest === 'function' ? tbody.closest('table') : null;
+        if (table) {
+            applyResponsiveLabels(table);
+        }
         await renderResumen(filteredDates, records);
         return;
     }
@@ -241,6 +267,11 @@ export async function renderHistorial(filteredDates) {
             </tr>
         `;
     }).join('');
+
+    const table = tbody && typeof tbody.closest === 'function' ? tbody.closest('table') : null;
+    if (table) {
+        applyResponsiveLabels(table);
+    }
 
     await renderResumen(filteredDates, records);
 }
