@@ -163,8 +163,8 @@ function recalc() {
         }
     }
 
-    // Si falta dinero, intenta enviar una alerta
-    if (totals.diff < 0) {
+    // Si falta dinero, intenta enviar una alerta solo si hay API_KEY
+    if (totals.diff < 0 && API_KEY) {
         const alertData = {
             sucursal: localStorage.getItem('sucursal'),
             fecha: document.getElementById('fecha').value,
