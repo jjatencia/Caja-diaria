@@ -112,7 +112,7 @@ body {
 
     .main-content {
         flex: 1;
-        grid-template-columns: 260px 1fr;
+        grid-template-columns: 360px 1fr;
         overflow: hidden;
     }
 
@@ -129,6 +129,11 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
     overflow-x: hidden;
     touch-action: pan-y;
+}
+
+.historial-panel {
+    overflow-x: auto;
+    touch-action: pan-x pan-y;
 }
 
 .panel h2 {
@@ -309,7 +314,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
     }
     
     .main-content {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 360px 1fr;
         gap: 25px;
     }
     
