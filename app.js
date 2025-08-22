@@ -314,7 +314,6 @@ async function saveDay() {
         const existing = loadDay(currentEditKey);
         sheetId = existing?.sheetId;
     }
-    const wasNewRecord = !sheetId;
 
     const dayData = {
         fecha,
@@ -374,7 +373,7 @@ async function saveDay() {
                 dayData.sheetId = sheetId;
                 saveDayData(fecha, dayData, currentEditKey);
             }
-            if (wasNewRecord && sheetId && currentMovimientos.length) {
+            if (sheetId) {
                 try {
                     await fetch('/api/append-tesoreria', {
                         method: 'POST',
