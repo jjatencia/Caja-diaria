@@ -255,9 +255,9 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-small {
-    padding: 8px 16px;
+    padding: 10px 16px;
     font-size: 14px;
-    min-height: 36px;
+    min-height: 44px;
 }
 
 .btn-group {
@@ -389,9 +389,9 @@ input[type="date"]:valid::-webkit-datetime-edit {
     }
     
     .btn-small {
-        padding: 6px 12px;
+        padding: 8px 12px;
         font-size: 13px;
-        min-height: 32px;
+        min-height: 44px;
     }
 }
 
