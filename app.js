@@ -81,6 +81,7 @@ if (typeof document !== "undefined") {
 let currentMovimientos = [];
 let filteredDates = null;
 let currentEditKey = null;
+let filterRestoreTimeout = null;
 const API_KEY = globalThis.API_KEY || '';
 
 const empleadosPorSucursal = {
@@ -475,7 +476,7 @@ async function deleteCurrentDay() {
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(currentEditKey)}?`)) {
         await deleteDay(currentEditKey);
         clearForm();
-        await renderHistorial(filteredDates);
+        await temporarilyDisableTodayFilter();
         showAlert(`Día ${formatDate(currentEditKey)} borrado correctamente`, 'success');
     }
 }
@@ -511,7 +512,7 @@ async function deleteDayFromHistorial(id, fecha) {
 
         // Esperar un momento para que la eliminación se refleje en Google Sheets
         await new Promise(resolve => setTimeout(resolve, 1000));
-        await renderHistorial(filteredDates);
+        await temporarilyDisableTodayFilter();
         showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
     }
 }
@@ -671,6 +672,20 @@ function clearDateFilter() {
     document.getElementById('fechaHasta').value = '';
     renderHistorial(filteredDates);
     showAlert('Filtro de fechas eliminado', 'info');
+}
+
+async function temporarilyDisableTodayFilter() {
+    filteredDates = null;
+    document.getElementById('fechaDesde').value = '';
+    document.getElementById('fechaHasta').value = '';
+    await renderHistorial(filteredDates);
+    if (filterRestoreTimeout) {
+        clearTimeout(filterRestoreTimeout);
+    }
+    filterRestoreTimeout = setTimeout(() => {
+        filterToday();
+        filterRestoreTimeout = null;
+    }, 5000);
 }
 
 // Funciones de exportación
@@ -1296,6 +1311,7 @@ function wireUI() {
             btnBorrar.disabled = true;
             try {
                 await deleteRecord(id);
+                await temporarilyDisableTodayFilter();
             } catch (err) {
                 console.error(err);
             } finally {
