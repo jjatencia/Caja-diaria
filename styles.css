@@ -98,8 +98,8 @@ body {
 
 
 .header-logo {
-    width: 90px;
-    height: 90px;
+    max-width: 90px;
+    height: auto;
     display: block;
     margin: 0 auto 10px;
 }
@@ -716,6 +716,12 @@ tr:hover {
     .header {
         padding: 15px;
         padding-top: calc(15px + env(safe-area-inset-top));
+    }
+
+    .header-logo {
+        max-width: 60px;
+        height: auto;
+        margin: 0 auto 8px;
     }
 
     .header h1 {
