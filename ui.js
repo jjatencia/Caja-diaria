@@ -49,7 +49,7 @@ export function renderMovimientos(movimientos) {
 
             return `
         <div class="movimiento-item">
-            <strong>${mov.tipo === 'entrada' ? 'Entrada' : 'Salida'}</strong>
+            <strong class="movimiento-tipo">${mov.tipo === 'entrada' ? 'ENT' : 'SAL'}</strong>
             <span class="movimiento-nombre">${nombre}</span>
             <span class="text-right movimiento-importe">${formatCurrency(importe)} €</span>
             <button type="button" class="btn btn-danger btn-small" onclick="removeMovimiento(${index})">🗑️</button>

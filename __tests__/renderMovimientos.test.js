@@ -22,5 +22,6 @@ describe('renderMovimientos', () => {
         renderMovimientos(movimientos);
         expect(container.innerHTML).toContain('movimiento-item');
         expect(container.innerHTML).toContain('Ana');
+        expect(container.innerHTML).toContain('ENT');
     });
 });
