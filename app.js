@@ -585,14 +585,14 @@ async function editDay(id) {
 
 
 // Funciones de filtrado
-function filterToday() {
+function filterToday(silent = false) {
     const today = new Date();
     const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
         .toISOString()
         .split('T')[0];
     document.getElementById('fechaDesde').value = todayStr;
     document.getElementById('fechaHasta').value = todayStr;
-    applyDateFilter();
+    applyDateFilter(silent);
 }
 
 function filterThisWeek() {
@@ -644,23 +644,25 @@ function filterThisMonth() {
     applyDateFilter();
 }
 
-function applyDateFilter() {
+function applyDateFilter(silent = false) {
     const desde = document.getElementById('fechaDesde').value;
     const hasta = document.getElementById('fechaHasta').value;
-    
+
     if (!desde || !hasta) {
         showAlert('Por favor, selecciona ambas fechas', 'danger');
         return;
     }
-    
+
     if (desde > hasta) {
         showAlert('La fecha "Desde" no puede ser mayor que "Hasta"', 'danger');
         return;
     }
-    
+
     filteredDates = { desde, hasta };
     renderHistorial(filteredDates);
-    showAlert(`Filtro aplicado: ${formatDate(desde)} - ${formatDate(hasta)}`, 'info');
+    if (!silent) {
+        showAlert(`Filtro aplicado: ${formatDate(desde)} - ${formatDate(hasta)}`, 'info');
+    }
 }
 
 function clearDateFilter() {
@@ -1117,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Inicializar UI
     loadDraft();
     renderMovimientos(currentMovimientos);
-    clearDateFilter();
+    filterToday(true);
     recalc();
     
     console.log('📊 Sistema de Caja LBJ inicializado correctamente');
