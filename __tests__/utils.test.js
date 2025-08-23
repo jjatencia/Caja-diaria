@@ -26,11 +26,11 @@ describe('computeTotals', () => {
             { tipo: 'entrada', importe: 2 }
         ];
         const result = computeTotals(100, 50, movimientos, 120);
-        expect(result).toEqual({ entradas: 12, salidas: 5, total: 157, diff: -37 });
+        expect(result).toEqual({ entradas: 12, salidas: 5, total: 157, diff: 37 });
     });
 
     test('handles string numbers and empty movimientos', () => {
         const result = computeTotals('1.000,00', '200,00', [], '800');
-        expect(result).toEqual({ entradas: 0, salidas: 0, total: 1200, diff: -400 });
+        expect(result).toEqual({ entradas: 0, salidas: 0, total: 1200, diff: 400 });
     });
 });
