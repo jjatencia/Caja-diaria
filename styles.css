@@ -854,3 +854,16 @@ body.dark .table-container th {
 body.dark .dropdown-menu button:hover {
     background: #333;
 }
+
+/* === Keypad numérico para iPad === */
+.numpad {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
+  background: #111; padding: 10px 12px; box-shadow: 0 -8px 24px rgba(0,0,0,.3);
+}
+.numpad-grid { display: grid; gap: 8px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+.numpad button { font-size: 22px; padding: 14px 0; border: 0; border-radius: 10px; background: #222; color: #fff; }
+.numpad .ok { background: #2d7; }
+.numpad .del { background: #c33; }
+.numpad .wide { grid-column: span 2; }
+.hidden { display: none !important; }
+body.numpad-open { padding-bottom: 260px; }
