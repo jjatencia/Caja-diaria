@@ -276,7 +276,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
 
 .movimiento-item {
     display: grid;
-    grid-template-columns: 120px minmax(0, 2fr) minmax(0, 1fr) 60px;
+    grid-template-columns: 60px minmax(0, 1fr) auto 60px;
     gap: 10px;
     align-items: center;
     padding: 10px;
@@ -286,10 +286,14 @@ input[type="date"]:valid::-webkit-datetime-edit {
     font-size: 14px;
 }
 
-.movimiento-item span {
+.movimiento-item .movimiento-nombre {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.movimiento-item .movimiento-importe {
+    white-space: nowrap;
 }
 
 .movimiento-form {
@@ -339,7 +343,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
         border-radius: 8px;
         margin-top: 15px;
     }
-    
+
     .movimiento-form select,
     .movimiento-form input[type="text"] {
         font-size: 16px;
@@ -349,10 +353,10 @@ input[type="date"]:valid::-webkit-datetime-edit {
         border-radius: 8px;
         width: 100%;
     }
-    
+
     .movimiento-item {
         display: grid;
-        grid-template-columns: 120px minmax(0, 2fr) minmax(0, 1fr) 80px;
+        grid-template-columns: 60px minmax(0, 1fr) auto 60px;
         gap: 15px;
         align-items: center;
         padding: 12px;
@@ -558,7 +562,13 @@ tr:hover {
         font-size: 1.8em;
     }
 
-    .movimiento-item,
+    .movimiento-item {
+        display: grid;
+        grid-template-columns: 60px minmax(0, 1fr) auto 40px;
+        gap: 8px;
+        font-size: 12px;
+    }
+
     .movimiento-form {
         display: grid;
         grid-template-columns: 70px minmax(0, 1fr) 70px 40px;
@@ -714,7 +724,12 @@ tr:hover {
         font-size: 1em;
     }
 
-    .movimiento-item,
+    .movimiento-item {
+        grid-template-columns: 50px minmax(0, 1fr) auto 40px;
+        gap: 6px;
+        font-size: 12px;
+    }
+
     .movimiento-form {
         grid-template-columns: 60px minmax(0, 1fr) 60px 40px;
         gap: 6px;
