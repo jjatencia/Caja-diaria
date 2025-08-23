@@ -22,7 +22,7 @@ export function computeTotals(apertura, ingresos, movimientos, cierre) {
     }
 
     const total = aperturaNum + ingresosNum + entradas - salidas;
-    const diff = cierreNum - total;
+    const diff = total - cierreNum;
 
     return {
         entradas,
