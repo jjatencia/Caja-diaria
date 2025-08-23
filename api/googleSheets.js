@@ -105,14 +105,30 @@ export async function appendRecord(data) {
     const client = await getSheetsClient();
     const id = await getNextId();
     const values = [buildRow(id, data)];
-    await client.spreadsheets.values.append({
+    await client.spreadsheets.batchUpdate({
       spreadsheetId: SHEET_ID,
-      range: `${SHEET_NAME}!A:N`,
+      requestBody: {
+        requests: [
+          {
+            insertDimension: {
+              range: {
+                sheetId: sheetNumericId,
+                dimension: 'ROWS',
+                startIndex: 1,
+                endIndex: 2,
+              },
+            },
+          },
+        ],
+      },
+    });
+    await client.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `${SHEET_NAME}!A2:N2`,
       valueInputOption: 'USER_ENTERED',
-      insertDataOption: 'INSERT_ROWS',
       requestBody: { values },
     });
-    console.log(`Row appended with ID ${id}`);
+    console.log(`Row inserted with ID ${id}`);
     return id;
   } catch (err) {
     console.error('Append failed', err);
@@ -203,11 +219,27 @@ export async function appendTesoreriaMovimientos(
     const values = movimientos.map((mov, idx) =>
       buildTesoreriaRow(`${cierreId}-${idx + 1}`, fecha, mov)
     );
-    await client.spreadsheets.values.append({
+    await client.spreadsheets.batchUpdate({
       spreadsheetId: SHEET_ID,
-      range: `${TESORERIA_SHEET_NAME}!A:E`,
+      requestBody: {
+        requests: [
+          {
+            insertDimension: {
+              range: {
+                sheetId: tesoreriaSheetNumericId,
+                dimension: 'ROWS',
+                startIndex: 1,
+                endIndex: 1 + values.length,
+              },
+            },
+          },
+        ],
+      },
+    });
+    await client.spreadsheets.values.update({
+      spreadsheetId: SHEET_ID,
+      range: `${TESORERIA_SHEET_NAME}!A2:E${1 + values.length}`,
       valueInputOption: 'USER_ENTERED',
-      insertDataOption: 'INSERT_ROWS',
       requestBody: { values },
     });
   }
