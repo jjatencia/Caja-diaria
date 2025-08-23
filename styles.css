@@ -65,7 +65,9 @@ body {
 }
 
 .header {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin: 0 0 30px;
     padding: 20px;
     padding-top: calc(20px + env(safe-area-inset-top));
@@ -73,35 +75,23 @@ body {
     color: white;
     border-radius: 0 0 12px 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: relative;
 }
 
-#changeSucursalBtn {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-}
-
-#themeToggle {
-    position: absolute;
-    top: 20px;
-    left: 20px;
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .current-sucursal {
-    position: absolute;
-    top: 60px;
-    right: 20px;
     font-size: 1em;
     color: white;
 }
 
-
 .header-logo {
     width: 90px;
     height: 90px;
-    display: block;
-    margin: 0 auto 10px;
+    margin: 0;
 }
 
 .main-content {
