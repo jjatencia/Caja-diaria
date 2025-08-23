@@ -38,6 +38,45 @@ if ('serviceWorker' in navigator) {
     });
 }
 
+function setTheme(theme) {
+    document.body.classList.toggle("dark", theme === "dark");
+    const btn = document.getElementById("themeToggle");
+    if (btn) btn.textContent = theme === "dark" ? "Modo claro" : "Modo oscuro";
+}
+
+async function autoTheme() {
+    try {
+        const res = await fetch("https://api.sunrise-sunset.org/json?lat=40.4168&lng=-3.7038&formatted=0");
+        const data = await res.json();
+        const sunset = new Date(new Date(data.results.sunset).toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+        const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
+        setTheme(now > sunset ? "dark" : "light");
+    } catch (err) {
+        setTheme("light");
+    }
+}
+
+function initTheme() {
+    const stored = localStorage.getItem("theme");
+    if (stored) {
+        setTheme(stored);
+    } else {
+        autoTheme();
+    }
+    const toggle = document.getElementById("themeToggle");
+    if (toggle) {
+        toggle.addEventListener("click", () => {
+            const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
+            setTheme(newTheme);
+            localStorage.setItem("theme", newTheme);
+        });
+    }
+}
+
+if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", initTheme);
+}
+
 // Variables globales
 let currentMovimientos = [];
 let filteredDates = null;
