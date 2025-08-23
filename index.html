@@ -72,7 +72,7 @@
                         <div class="form-group">
                             <label for="apertura">Apertura de caja</label>
                             <div class="currency">
-                                <input type="text" id="apertura" placeholder="0,00" inputmode="decimal">
+                                <input type="number" id="apertura" placeholder="0,00" inputmode="decimal" step="0.01">
                             </div>
                         </div>
                         
@@ -87,7 +87,7 @@
                     <div class="form-group">
                         <label for="ingresos">Ingresos en efectivo (Exora)</label>
                         <div class="currency">
-                            <input type="text" id="ingresos" placeholder="0,00" inputmode="decimal">
+                            <input type="number" id="ingresos" placeholder="0,00" inputmode="decimal" step="0.01">
                         </div>
                     </div>
 
@@ -95,14 +95,14 @@
                         <div class="form-group">
                             <label for="ingresosTarjetaExora">Ingresos en tarjeta (Exora)</label>
                             <div class="currency">
-                                <input type="text" id="ingresosTarjetaExora" placeholder="0,00" inputmode="decimal">
+                                <input type="number" id="ingresosTarjetaExora" placeholder="0,00" inputmode="decimal" step="0.01">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="ingresosTarjetaDatafono">Ingresos en tarjeta (Datáfono)</label>
                             <div class="currency">
-                                <input type="text" id="ingresosTarjetaDatafono" placeholder="0,00" inputmode="decimal">
+                                <input type="number" id="ingresosTarjetaDatafono" placeholder="0,00" inputmode="decimal" step="0.01">
                             </div>
                         </div>
                     </div>
@@ -124,7 +124,7 @@
                                 </select>
                                 <label for="importeMovimiento" class="visually-hidden">Importe del movimiento</label>
                                 <div class="currency">
-                                    <input type="text" id="importeMovimiento" placeholder="0,00" inputmode="decimal" tabindex="0">
+                                    <input type="number" id="importeMovimiento" placeholder="0,00" inputmode="decimal" step="0.01" tabindex="0">
                                 </div>
                                 <button type="button" class="btn btn-primary btn-small" onclick="addMovimiento()" tabindex="0">+</button>
                             </div>
@@ -135,7 +135,7 @@
                         <div class="form-group">
                             <label for="cierre">Cierre de caja</label>
                             <div class="currency">
-                                <input type="text" id="cierre" placeholder="0,00" inputmode="decimal">
+                                <input type="number" id="cierre" placeholder="0,00" inputmode="decimal" step="0.01">
                             </div>
                         </div>
                         
