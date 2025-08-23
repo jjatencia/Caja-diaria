@@ -1380,3 +1380,78 @@ if (typeof buildPayloadFromForm !== 'function') {
 
 // Ejecuta el cableado (sin romper wireUI existentes)
 try { wireNumericKeyboards(); } catch(e) { console.warn('wireNumericKeyboards()', e); }
+
+// === Keypad numérico para iPad (mini-calculadora) ===
+const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+(function initNumPad(){
+  if (!isIPad) return; // en iPhone/desktop no se activa; usan teclado nativo
+  let activeInput = null;
+  let pad = null;
+
+  function buildPad(){
+    pad = document.createElement('div');
+    pad.className = 'numpad hidden';
+    pad.innerHTML = `
+      <div class="numpad-grid">
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button class="del" data-k="back">⌫</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="clear">C</button>
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button class="ok" data-k="ok">OK</button>
+        <button class="wide" data-k="0">0</button><button data-k="sep">,</button><button data-k="minus">±</button>
+      </div>`;
+    document.body.appendChild(pad);
+
+    pad.addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b || !activeInput) return;
+      const kind = b.getAttribute('data-k');
+      const mode = activeInput.dataset.numpad || 'decimal';
+      let v = activeInput.value || '';
+      const set = (nv)=> { activeInput.value = nv; };
+      switch(kind){
+        case 'ok':   hidePad(); activeInput.dispatchEvent(new Event('change',{bubbles:true})); break;
+        case 'back': set(v.slice(0, -1)); break;
+        case 'clear':set(''); break;
+        case 'sep':  if (mode !== 'int' && !v.includes(',') && !v.includes('.')) set(v + ','); break;
+        case 'minus': if (mode === 'int' || mode === 'decimal') set(v.startsWith('-') ? v.slice(1) : ('-' + v)); break;
+        default:     set(v + kind);
+      }
+    });
+  }
+
+  function showPad(input){
+    if (!pad) buildPad();
+    activeInput = input;
+    document.body.classList.add('numpad-open');
+    pad.classList.remove('hidden');
+  }
+  function hidePad(){
+    activeInput = null;
+    if (pad) pad.classList.add('hidden');
+    document.body.classList.remove('numpad-open');
+  }
+
+  // Preparar inputs con data-numpad
+  document.querySelectorAll('input[data-numpad]').forEach(inp=>{
+    inp.setAttribute('readonly', 'readonly');   // evita teclado del sistema en iPad
+    inp.addEventListener('focus', ()=> showPad(inp));
+    inp.addEventListener('click', ()=> showPad(inp));
+  });
+
+  // Cerrar al tocar fuera
+  document.addEventListener('click', (e)=>{
+    if (!pad || pad.classList.contains('hidden')) return;
+    if (e.target.closest('.numpad') || e.target.closest('input[data-numpad]')) return;
+    hidePad();
+  });
+  // Cerrar con Escape (si hay teclado hardware)
+  document.addEventListener('keydown', (e)=> { if (e.key === 'Escape') hidePad(); });
+})();
+
+// Normalizador de dinero (opcional, por si no existe ya)
+if (typeof parseMoney !== 'function') {
+  window.parseMoney = function parseMoney(v) {
+    if (typeof v !== 'string') v = String(v ?? '');
+    v = v.trim().replace(/\./g, '').replace(',', '.');
+    const n = Number(v); return Number.isFinite(n) ? n : 0;
+  }
+}
