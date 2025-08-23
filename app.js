@@ -1149,8 +1149,8 @@ window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
 
-// API integration utilities
-function safeNum(v) {
+// API integration utilities (legacy)
+function legacySafeNum(v) {
     return Number(v) || 0;
 }
 
@@ -1168,15 +1168,15 @@ function buildPayloadFromForm() {
         fecha: getVal('fecha'),
         hora: getVal('hora'),
         sucursal: getVal('sucursal'),
-        apertura: safeNum(getVal('apertura')),
-        ingresos: safeNum(getVal('ingresos')),
-        tarjetaExora: safeNum(getVal('tx')),
-        tarjetaDatafono: safeNum(getVal('td')),
-        dif: safeNum(getVal('dif')),
-        entradas: safeNum(getVal('entradas')),
-        salidas: safeNum(getVal('salidas')),
-        total: safeNum(getVal('total')),
-        cierre: safeNum(getVal('cierre'))
+        apertura: getVal('apertura'),
+        ingresos: getVal('ingresos'),
+        tarjetaExora: getVal('ingresosTarjetaExora'),
+        tarjetaDatafono: getVal('ingresosTarjetaDatafono'),
+        dif: getVal('dif'),
+        entradas: getVal('entradas'),
+        salidas: getVal('salidas'),
+        total: getVal('total'),
+        cierre: getVal('cierre')
     };
 }
 
@@ -1308,3 +1308,75 @@ function wireUI() {
 document.addEventListener('DOMContentLoaded', wireUI);
 
 window.API = { createRecord, updateRecord, deleteRecord };
+
+// === Teclados iPad + normalización numérica ===
+function safeNum(v){ const n = Number(v); return Number.isFinite(n) ? n : 0; }
+function normMoneyStr(v) {
+  if (typeof v !== 'string') v = String(v ?? '');
+  v = v.trim();
+  // Quitar separadores de miles (.) y usar punto para decimales
+  v = v.replace(/\./g, '').replace(',', '.');
+  return v;
+}
+function parseMoney(v) {
+  const n = Number(normMoneyStr(v));
+  return Number.isFinite(n) ? n : 0;
+}
+
+// Restringir caracteres mientras se escribe
+function wireNumericKeyboards(){
+  // Solo dígitos
+  document.querySelectorAll('input[inputmode="numeric"]').forEach(el => {
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D+/g, '');
+    });
+  });
+  // Decimales: dígitos + un separador (coma o punto)
+  document.querySelectorAll('input[inputmode="decimal"]').forEach(el => {
+    el.addEventListener('input', () => {
+      el.value = el.value
+        .replace(/[^0-9,\.]/g, '')
+        .replace(/([,\.]).*?\1/g, '$1'); // solo un separador
+    });
+  });
+}
+
+// Si ya existe buildPayloadFromForm, ACTUALÍZALA; si no, créala con este contenido:
+if (typeof buildPayloadFromForm !== 'function') {
+  window.buildPayloadFromForm = function buildPayloadFromForm(){
+    const v = (sel) => document.querySelector(sel)?.value ?? '';
+    return {
+      fecha:       v('#fecha'),
+      hora:        v('#hora'),
+      sucursal:    v('#sucursal'),
+      apertura:    parseMoney(v('#apertura')),
+      ingresos:    parseMoney(v('#ingresos')),
+      tarjetaExora:    parseMoney(v('#tx')),
+      tarjetaDatafono: parseMoney(v('#td')),
+      dif:         parseMoney(v('#dif')),
+      entradas:    safeNum(v('#entradas')),
+      salidas:     safeNum(v('#salidas')),
+      total:       parseMoney(v('#total')),
+      cierre:      parseMoney(v('#cierre')),
+    };
+  };
+} else {
+  // En caso de existir, envuelve su retorno aplicando parseMoney / safeNum a los campos indicados
+  const _orig = buildPayloadFromForm;
+  window.buildPayloadFromForm = function(){
+    const p = _orig() || {};
+    p.apertura       = parseMoney(p.apertura);
+    p.ingresos       = parseMoney(p.ingresos);
+    p.tarjetaExora   = parseMoney(p.tarjetaExora ?? p.tx);
+    p.tarjetaDatafono= parseMoney(p.tarjetaDatafono ?? p.td);
+    p.dif            = parseMoney(p.dif);
+    p.entradas       = safeNum(p.entradas);
+    p.salidas        = safeNum(p.salidas);
+    p.total          = parseMoney(p.total);
+    p.cierre         = parseMoney(p.cierre);
+    return p;
+  };
+}
+
+// Ejecuta el cableado (sin romper wireUI existentes)
+try { wireNumericKeyboards(); } catch(e) { console.warn('wireNumericKeyboards()', e); }
