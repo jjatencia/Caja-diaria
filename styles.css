@@ -686,7 +686,6 @@ tr:hover {
     .table-container thead,
     .table-container tbody,
     .table-container th,
-    .table-container td,
     .table-container tr {
         display: block;
     }
@@ -704,9 +703,8 @@ tr:hover {
     }
 
     .table-container td {
-        display: flex;
-        justify-content: space-between;
-        padding: 6px 10px;
+        display: block;
+        padding: 8px 10px;
         border: none;
         border-bottom: 1px solid var(--color-borde);
     }
@@ -717,13 +715,14 @@ tr:hover {
 
     .table-container td::before {
         content: attr(data-label);
+        display: block;
         font-weight: 600;
         color: var(--color-gris);
-        margin-right: 10px;
+        margin-bottom: 4px;
     }
 
     .table-container td[data-label="Acciones"] {
-        justify-content: center;
+        text-align: center;
     }
 
     .table-container td[data-label="Acciones"]::before {
