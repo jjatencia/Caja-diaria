@@ -78,19 +78,19 @@ body {
 
 #changeSucursalBtn {
     position: absolute;
-    top: 20px;
+    top: calc(20px + env(safe-area-inset-top));
     right: 20px;
 }
 
 #themeToggle {
     position: absolute;
-    top: 20px;
+    top: calc(20px + env(safe-area-inset-top));
     left: 20px;
 }
 
 .current-sucursal {
     position: absolute;
-    top: 60px;
+    top: calc(20px + env(safe-area-inset-top));
     right: 20px;
     font-size: 1em;
     color: white;
@@ -715,6 +715,7 @@ tr:hover {
 
     .header {
         padding: 15px;
+        padding-top: calc(15px + env(safe-area-inset-top));
     }
 
     .header h1 {
@@ -759,6 +760,12 @@ tr:hover {
     .btn-small {
         padding: 6px 12px;
         font-size: 13px;
+    }
+
+    #changeSucursalBtn,
+    #themeToggle,
+    .current-sucursal {
+        top: calc(15px + env(safe-area-inset-top));
     }
 
     /* Presentación alternativa de tablas en móviles */
