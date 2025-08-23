@@ -135,14 +135,14 @@ export async function renderResumen(filteredDates, records) {
         totalDiff += sums.diff;
         return `
             <tr>
-                <td>${formatDate(day)}</td>
-                <td class="text-right">${formatCurrency(sums.apertura)} €</td>
-                <td class="text-right">${formatCurrency(sums.ingresos)} €</td>
-                <td class="text-right">${formatCurrency(sums.entradas)} €</td>
-                <td class="text-right">${formatCurrency(sums.salidas)} €</td>
-                <td class="text-right">${formatCurrency(sums.total)} €</td>
-                <td class="text-right">${formatCurrency(sums.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(sums.diff) < 0.01 ? 'var(--color-exito)' : (sums.diff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(sums.diff)} €</td>
+                <td data-label="Fecha">${formatDate(day)}</td>
+                <td data-label="Apertura" class="text-right">${formatCurrency(sums.apertura)} €</td>
+                <td data-label="Ingresos" class="text-right">${formatCurrency(sums.ingresos)} €</td>
+                <td data-label="Entradas" class="text-right">${formatCurrency(sums.entradas)} €</td>
+                <td data-label="Salidas" class="text-right">${formatCurrency(sums.salidas)} €</td>
+                <td data-label="Total" class="text-right">${formatCurrency(sums.total)} €</td>
+                <td data-label="Cierre" class="text-right">${formatCurrency(sums.cierre)} €</td>
+                <td data-label="Dif." class="text-right" style="color: ${Math.abs(sums.diff) < 0.01 ? 'var(--color-exito)' : (sums.diff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(sums.diff)} €</td>
             </tr>
         `;
     }).join('');
@@ -154,14 +154,14 @@ export async function renderResumen(filteredDates, records) {
     if (tfoot) {
         tfoot.innerHTML = `
             <tr>
-                <td>Total</td>
-                <td class="text-right">${formatCurrency(totalApertura)} €</td>
-                <td class="text-right">${formatCurrency(totalIngresos)} €</td>
-                <td class="text-right">${formatCurrency(totalEntradas)} €</td>
-                <td class="text-right">${formatCurrency(totalSalidas)} €</td>
-                <td class="text-right">${formatCurrency(totalTotal)} €</td>
-                <td class="text-right">${formatCurrency(totalCierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(totalDiff) < 0.01 ? 'var(--color-exito)' : (totalDiff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(totalDiff)} €</td>
+                <td data-label="Fecha">Total</td>
+                <td data-label="Apertura" class="text-right">${formatCurrency(totalApertura)} €</td>
+                <td data-label="Ingresos" class="text-right">${formatCurrency(totalIngresos)} €</td>
+                <td data-label="Entradas" class="text-right">${formatCurrency(totalEntradas)} €</td>
+                <td data-label="Salidas" class="text-right">${formatCurrency(totalSalidas)} €</td>
+                <td data-label="Total" class="text-right">${formatCurrency(totalTotal)} €</td>
+                <td data-label="Cierre" class="text-right">${formatCurrency(totalCierre)} €</td>
+                <td data-label="Dif." class="text-right" style="color: ${Math.abs(totalDiff) < 0.01 ? 'var(--color-exito)' : (totalDiff < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(totalDiff)} €</td>
             </tr>`;
     }
 }
@@ -214,20 +214,20 @@ export async function renderHistorial(filteredDates) {
         const safeId = String(r.id).replace(/[^a-z0-9]/gi, '_');
         return `
             <tr>
-                <td>${formatDate(r.fecha)}${r.turno ? ` (Turno ${r.turno})` : ''}</td>
-                <td>${r.hora}</td>
-                <td>${r.sucursal}</td>
-                <td class="text-right">${formatCurrency(r.apertura)} €</td>
-                <td class="text-right">${formatCurrency(r.ingresos)} €</td>
-                <td class="text-right">${formatCurrency(r.tarjetaExora)} €</td>
-                <td class="text-right">${formatCurrency(r.tarjetaDatafono)} €</td>
-                <td class="text-right" style="color: ${Math.abs(diffTarjeta) < 0.01 ? 'var(--color-exito)' : (diffTarjeta < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(diffTarjeta)} €</td>
-                <td class="text-right">${formatCurrency(r.entradas)} €</td>
-                <td class="text-right">${formatCurrency(r.salidas)} €</td>
-                <td class="text-right">${formatCurrency(r.total)} €</td>
-                <td class="text-right">${formatCurrency(r.cierre)} €</td>
-                <td class="text-right" style="color: ${Math.abs(r.dif) < 0.01 ? 'var(--color-exito)' : (r.dif < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(r.dif)} €</td>
-                <td class="text-center">
+                <td data-label="Fecha">${formatDate(r.fecha)}${r.turno ? ` (Turno ${r.turno})` : ''}</td>
+                <td data-label="Hora">${r.hora}</td>
+                <td data-label="Sucursal">${r.sucursal}</td>
+                <td data-label="Apertura" class="text-right">${formatCurrency(r.apertura)} €</td>
+                <td data-label="Ingresos" class="text-right">${formatCurrency(r.ingresos)} €</td>
+                <td data-label="Tarjeta Exora" class="text-right">${formatCurrency(r.tarjetaExora)} €</td>
+                <td data-label="Tarjeta Datáfono" class="text-right">${formatCurrency(r.tarjetaDatafono)} €</td>
+                <td data-label="Dif. Tarjeta" class="text-right" style="color: ${Math.abs(diffTarjeta) < 0.01 ? 'var(--color-exito)' : (diffTarjeta < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(diffTarjeta)} €</td>
+                <td data-label="Entradas" class="text-right">${formatCurrency(r.entradas)} €</td>
+                <td data-label="Salidas" class="text-right">${formatCurrency(r.salidas)} €</td>
+                <td data-label="Total" class="text-right">${formatCurrency(r.total)} €</td>
+                <td data-label="Cierre" class="text-right">${formatCurrency(r.cierre)} €</td>
+                <td data-label="Dif." class="text-right" style="color: ${Math.abs(r.dif) < 0.01 ? 'var(--color-exito)' : (r.dif < 0 ? 'var(--color-peligro)' : 'var(--color-primario)')}">${formatCurrency(r.dif)} €</td>
+                <td data-label="Acciones" class="text-center">
                     <div class="actions-dropdown">
                         <button class="btn btn-secondary btn-small" onclick="toggleActionsMenu('actions-${safeId}')">⋮</button>
                         <div id="actions-${safeId}" class="dropdown-menu">

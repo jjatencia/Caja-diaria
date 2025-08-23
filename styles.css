@@ -736,4 +736,50 @@ tr:hover {
         padding: 6px 12px;
         font-size: 13px;
     }
+
+    /* Presentación alternativa de tablas en móviles */
+    .table-container table,
+    .table-container thead,
+    .table-container tbody,
+    .table-container th,
+    .table-container td,
+    .table-container tr {
+        display: block;
+    }
+
+    .table-container thead {
+        display: none;
+    }
+
+    .table-container tr {
+        margin-bottom: 15px;
+        border: 1px solid var(--color-borde);
+        border-radius: 8px;
+        padding: 10px;
+        background: white;
+    }
+
+    .table-container td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border: none;
+        border-bottom: 1px solid var(--color-borde);
+    }
+
+    .table-container td:last-child {
+        border-bottom: none;
+    }
+
+    .table-container td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-gris);
+        padding-right: 10px;
+        text-align: left;
+    }
+
+    .table-container td.text-center {
+        justify-content: center;
+    }
 }
