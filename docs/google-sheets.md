@@ -2,6 +2,10 @@
 
 Este módulo permite sincronizar los cierres de caja con la hoja de cálculo de Google Sheets.
 
+Los registros nuevos se insertan en la primera fila disponible de cada hoja,
+desplazando hacia abajo los datos existentes tanto en **LBJ** como en
+**Tesorería**.
+
 ## Configuración
 
 1. **Credenciales**: guardar el JSON de la cuenta de servicio en un archivo local y establecer la variable de entorno `GSHEET_CREDENTIALS` con la ruta al archivo.
