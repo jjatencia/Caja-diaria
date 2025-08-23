@@ -952,10 +952,10 @@ function runTests() {
             name: 'Test 1: Cálculo básico sin movimientos',
             test: () => {
                 const result = computeTotals(100, 50, [], 120);
-                return result.entradas === 0 && 
-                       result.salidas === 0 && 
-                       result.total === 150 && 
-                       result.diff === 30;
+                return result.entradas === 0 &&
+                       result.salidas === 0 &&
+                       result.total === 150 &&
+                       result.diff === -30;
             }
         },
         {

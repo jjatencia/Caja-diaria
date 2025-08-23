@@ -22,7 +22,9 @@ export function computeTotals(apertura, ingresos, movimientos, cierre) {
     }
 
     const total = aperturaNum + ingresosNum + entradas - salidas;
-    const diff = total - cierreNum;
+    // diff > 0 indica que hay más dinero en caja del esperado (sobra)
+    // diff < 0 indica que falta dinero respecto al esperado
+    const diff = cierreNum - total;
 
     return {
         entradas,
