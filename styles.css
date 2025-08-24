@@ -868,3 +868,9 @@ body.dark .dropdown-menu button:hover {
 .hidden { display: none !important; }
 body.numpad-open { padding-bottom: 260px; }
 html, body, button, .numpad button { touch-action: manipulation; }
+.numpad button {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}

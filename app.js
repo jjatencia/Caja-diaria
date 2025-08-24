@@ -1408,22 +1408,38 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
       </div>`;
     document.body.appendChild(pad);
 
-    pad.addEventListener('click', (e)=>{
-      const b = e.target.closest('button'); if(!b || !activeInput) return;
+    const pointerEvt = window.PointerEvent ? 'pointerdown' : 'touchstart';
+    pad.addEventListener(pointerEvt, (e) => {
+      const b = e.target.closest('button');
+      if (!b || !activeInput) return;
+      // Evitar retrasos y dobles disparos
+      e.preventDefault();
+      e.stopPropagation();
+
       const kind = b.getAttribute('data-k');
       const mode = activeInput.dataset.numpad || 'decimal';
       let v = activeInput.value || '';
-      const set = (nv)=> { activeInput.value = nv; };
-      switch(kind){
-        case 'ok':   hidePad(); activeInput.dispatchEvent(new Event('change',{bubbles:true})); break;
-        case 'back': set(v.slice(0, -1)); break;
-        case 'clear':set(''); break;
-        case 'sep':  if (mode !== 'int' && !v.includes(',') && !v.includes('.')) set(v + ','); break;
-        case 'minus': if (mode === 'int' || mode === 'decimal') set(v.startsWith('-') ? v.slice(1) : ('-' + v)); break;
-        default: { // dígitos 0-9
-          set(isZeroish(v) ? kind : (v + kind));
+      const set = (nv) => { activeInput.value = nv; };
+
+      switch (kind) {
+        case 'ok':
+          hidePad();
+          activeInput.dispatchEvent(new Event('change', { bubbles: true }));
           break;
-        }
+        case 'back':
+          set(v.slice(0, -1));
+          break;
+        case 'clear':
+          set('');
+          break;
+        case 'sep':
+          if (mode !== 'int' && !v.includes(',') && !v.includes('.')) set(v + ',');
+          break;
+        case 'minus':
+          if (mode === 'int' || mode === 'decimal') set(v.startsWith('-') ? v.slice(1) : ('-' + v));
+          break;
+        default: // dígitos 0-9
+          set(isZeroish(v) ? kind : (v + kind));
       }
     });
   }
@@ -1433,7 +1449,7 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
     activeInput = input;
     document.body.classList.add('numpad-open');
     pad.classList.remove('hidden');
-    if (isZeroish(input.value)) input.value = '';
+    if (typeof isZeroish === 'function' && isZeroish(input.value)) input.value = '';
   }
   function hidePad(){
     activeInput = null;
@@ -1471,8 +1487,15 @@ if (typeof parseMoney !== 'function') {
 document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => {
+  // No bloquear dentro del keypad para permitir toques rápidos
+  if (e.target.closest && e.target.closest('.numpad')) {
+    lastTouchEnd = Date.now();
+    return;
+  }
   const now = Date.now();
-  if (now - lastTouchEnd <= 300) { e.preventDefault(); } // doble-tap
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault(); // bloquea doble-tap zoom fuera del keypad
+  }
   lastTouchEnd = now;
 }, { passive: false });
 document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
