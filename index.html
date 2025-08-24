@@ -150,13 +150,6 @@
                     <div id="diferenciaDisplay" class="diferencia" role="status" aria-live="polite"></div>
 
                     <div id="diferenciaTarjetaDisplay" class="diferencia" role="status" aria-live="polite"></div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-success" onclick="saveDay()">💾 Guardar día</button>
-                        <button type="button" class="btn btn-primary" onclick="newDay()">🆕 Nuevo día</button>
-                        <button type="button" class="btn btn-danger" onclick="deleteCurrentDay()">🗑️ Borrar día</button>
-                        <button type="button" class="btn" onclick="runTests()">🔧 Tests</button>
-                    </div>
                 </form>
             </div>
 
@@ -245,6 +238,12 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="action-bar">
+        <button type="button" class="btn btn-success" onclick="saveDay()">Guardar</button>
+        <button type="button" class="btn btn-primary" onclick="newDay()">Nuevo</button>
+        <button type="button" class="btn btn-danger" onclick="deleteCurrentDay()">Borrar</button>
     </div>
 
     <script type="module" src="app.js"></script>

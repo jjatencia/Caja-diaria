@@ -43,7 +43,7 @@ body {
     color: #333;
     background-color: var(--color-claro);
     overflow-x: hidden;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
 }
 
 .visually-hidden {
@@ -265,6 +265,20 @@ input[type="date"]:valid::-webkit-datetime-edit {
     gap: 10px;
     flex-wrap: wrap;
     margin-top: 20px;
+}
+
+.action-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    z-index: 1000;
 }
 
 .movimientos-container {
@@ -811,7 +825,7 @@ tr:hover {
 .numpad .del { background: #c33; }
 .numpad .wide { grid-column: span 2; }
 .hidden { display: none !important; }
-body.numpad-open { padding-bottom: 260px; }
+body.numpad-open { padding-bottom: calc(340px + env(safe-area-inset-bottom)); }
 html, body, button, .numpad button { touch-action: manipulation; }
 .numpad button {
   touch-action: manipulation;
