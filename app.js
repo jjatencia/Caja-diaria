@@ -323,7 +323,20 @@ async function saveDay() {
         showAlert('Por favor, completa la fecha y sucursal', 'danger');
         return;
     }
-    
+
+    const isEmptyDay =
+        apertura === 0 &&
+        ingresos === 0 &&
+        ingresosTarjetaExora === 0 &&
+        ingresosTarjetaDatafono === 0 &&
+        cierre === 0 &&
+        currentMovimientos.length === 0;
+
+    if (isEmptyDay) {
+        showAlert('No hay datos para guardar', 'warning');
+        return;
+    }
+
     let sheetId;
     if (currentEditKey) {
         const existing = loadDay(currentEditKey);
