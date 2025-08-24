@@ -42,22 +42,22 @@
         </div>
     </div>
     <div class="container">
-        <div class="header">
+        <div class="header hero">
             <div class="header-actions">
-                <button id="themeToggle" class="btn btn-secondary btn-small">Modo oscuro</button>
-                <button id="changeSucursalBtn" class="btn btn-secondary btn-small" onclick="changeSucursal()">Cambiar sucursal</button>
+                <button id="themeToggle" class="btn" aria-label="Cambiar tema">🌙</button>
+                <button id="changeSucursalBtn" class="btn btn-primary" onclick="changeSucursal()">Cambiar sucursal</button>
             </div>
         </div>
 
         <div class="tests-panel" id="testsPanel">
             <h4>🔧 Tests de Sistema</h4>
             <div id="testResults" role="status" aria-live="polite"></div>
-            <button class="btn btn-small btn-secondary" onclick="hideTests()" tabindex="0">Cerrar</button>
+            <button class="btn" onclick="hideTests()" tabindex="0">Cerrar</button>
         </div>
 
         <div class="main-content">
             <!-- Panel Izquierdo: Formulario del Día -->
-            <div class="panel">
+            <div class="panel card">
                 <h2>📝 Registro del Día</h2>
                 
                 <form id="cajaForm">
@@ -126,7 +126,7 @@
                                 <div class="currency">
                                     <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0">
                                 </div>
-                                <button type="button" class="btn btn-primary btn-small" onclick="addMovimiento()" tabindex="0">+</button>
+                                <button type="button" class="btn btn-primary" onclick="addMovimiento()" tabindex="0">+</button>
                             </div>
                         </div>
                     </fieldset>
@@ -155,13 +155,13 @@
                         <button type="button" class="btn btn-success" onclick="saveDay()">💾 Guardar día</button>
                         <button type="button" class="btn btn-primary" onclick="newDay()">🆕 Nuevo día</button>
                         <button type="button" class="btn btn-danger" onclick="deleteCurrentDay()">🗑️ Borrar día</button>
-                        <button type="button" class="btn btn-secondary" onclick="runTests()">🔧 Tests</button>
+                        <button type="button" class="btn" onclick="runTests()">🔧 Tests</button>
                     </div>
                 </form>
             </div>
 
             <!-- Panel Derecho: Historial y Exportación -->
-            <div class="panel historial-panel">
+            <div class="panel card historial-panel">
                 <h2>📋 Historial y Exportación</h2>
                 
                 <!-- Filtros -->
@@ -170,9 +170,9 @@
                     
                     <!-- Botones de acceso directo -->
                     <div class="filter-quick-buttons">
-                        <button class="btn btn-secondary btn-small" onclick="filterToday()" tabindex="0">📅 Hoy</button>
-                        <button class="btn btn-secondary btn-small" onclick="filterThisWeek()" tabindex="0">📆 Esta semana</button>
-                        <button class="btn btn-secondary btn-small" onclick="filterThisMonth()" tabindex="0">🗓️ Este mes</button>
+                        <button id="chipToday" class="chip" onclick="filterToday()" tabindex="0">Hoy</button>
+                        <button id="chipWeek" class="chip" onclick="filterThisWeek()" tabindex="0">Esta semana</button>
+                        <button id="chipMonth" class="chip" onclick="filterThisMonth()" tabindex="0">Este mes</button>
                     </div>
                     
                     <div class="inline-inputs">
@@ -187,13 +187,13 @@
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="applyDateFilter()" tabindex="0">Aplicar filtro</button>
-                        <button class="btn btn-secondary" onclick="clearDateFilter()" tabindex="0">Limpiar filtro</button>
+                        <button class="btn" onclick="clearDateFilter()" tabindex="0">Limpiar filtro</button>
                     </div>
                 </div>
 
                 <!-- Tabla de Historial -->
                 <div class="table-container">
-                    <table>
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -221,11 +221,11 @@
                 <div class="summary-section">
                     <h3>📊 Resumen de Facturación</h3>
                     <div class="actions-row" style="margin-bottom: 10px;">
-                        <button class="btn btn-secondary btn-small" onclick="emailResumen()">Enviar por email</button>
-                        <button class="btn btn-secondary btn-small" onclick="downloadResumenCSV()">Descargar CSV</button>
+                        <button class="btn" onclick="emailResumen()">Enviar por email</button>
+                        <button class="btn" onclick="downloadResumenCSV()">Descargar CSV</button>
                     </div>
                     <div class="table-container">
-                        <table>
+                        <table class="table">
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
