@@ -1423,6 +1423,7 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
     activeInput = input;
     document.body.classList.add('numpad-open');
     pad.classList.remove('hidden');
+    if (typeof parseNum === 'function' && parseNum(input.value) === 0) input.value = '';
   }
   function hidePad(){
     activeInput = null;
