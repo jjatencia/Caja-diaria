@@ -1389,6 +1389,13 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
   let activeInput = null;
   let pad = null;
 
+  function isZeroish(v) {
+    if (typeof v !== 'string') v = String(v ?? '');
+    v = v.trim();
+    return v === '' || v === '0' || v === '0,' || v === '0.' ||
+           v === '0,0' || v === '0.0' || v === '0,00' || v === '0.00';
+  }
+
   function buildPad(){
     pad = document.createElement('div');
     pad.className = 'numpad hidden';
@@ -1413,7 +1420,10 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
         case 'clear':set(''); break;
         case 'sep':  if (mode !== 'int' && !v.includes(',') && !v.includes('.')) set(v + ','); break;
         case 'minus': if (mode === 'int' || mode === 'decimal') set(v.startsWith('-') ? v.slice(1) : ('-' + v)); break;
-        default:     set(v + kind);
+        default: { // dígitos 0-9
+          set(isZeroish(v) ? kind : (v + kind));
+          break;
+        }
       }
     });
   }
@@ -1423,7 +1433,7 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
     activeInput = input;
     document.body.classList.add('numpad-open');
     pad.classList.remove('hidden');
-    if (typeof parseNum === 'function' && parseNum(input.value) === 0) input.value = '';
+    if (isZeroish(input.value)) input.value = '';
   }
   function hidePad(){
     activeInput = null;
@@ -1456,3 +1466,15 @@ if (typeof parseMoney !== 'function') {
     const n = Number(v); return Number.isFinite(n) ? n : 0;
   }
 }
+
+// Bloquear doble-tap zoom y pinch en iOS/PWA
+document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) { e.preventDefault(); } // doble-tap
+  lastTouchEnd = now;
+}, { passive: false });
+document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });

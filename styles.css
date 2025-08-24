@@ -867,3 +867,4 @@ body.dark .dropdown-menu button:hover {
 .numpad .wide { grid-column: span 2; }
 .hidden { display: none !important; }
 body.numpad-open { padding-bottom: 260px; }
+html, body, button, .numpad button { touch-action: manipulation; }
