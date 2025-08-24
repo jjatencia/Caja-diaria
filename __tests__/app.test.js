@@ -166,21 +166,34 @@ describe('saveDay', () => {
             ingresosTarjetaExora: { value: '0' },
             ingresosTarjetaDatafono: { value: '0' },
             cierre: { value: '0' },
-            responsableCierre: { value: '' }
+            responsableCierre: { value: '' },
+            cajaForm: { reset: jest.fn() },
+            diferenciaDisplay: { className: '', innerHTML: '' },
+            currentSucursal: { textContent: '' }
         };
         global.document = {
             getElementById: (id) => elements[id],
             addEventListener: jest.fn()
         };
+        window.newDay();
+        showAlert.mockClear();
     });
 
     test('saveDay almacena hora de guardado', async () => {
         store['sucursal'] = 'Central';
+        elements.ingresos.value = '10';
         await window.saveDay();
         const index = JSON.parse(store['caja:index']);
         const key = index[0];
         const saved = JSON.parse(store[`caja:${key}`]);
         expect(saved.horaGuardado).toBeDefined();
+    });
+
+    test('saveDay no guarda cuando todos los valores son cero y no hay movimientos', async () => {
+        store['sucursal'] = 'Central';
+        await window.saveDay();
+        expect(store['caja:index']).toBeUndefined();
+        expect(showAlert).toHaveBeenCalledWith('No hay datos para guardar', 'warning');
     });
 });
 
