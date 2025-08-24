@@ -80,24 +80,6 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: inherit;
-}
-
-.header .btn-secondary {
-    background-color: rgba(0, 0, 0, 0.6);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.header .btn-secondary:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
 @media (max-width: 600px) {
     .header {
         min-height: 120px;
@@ -818,43 +800,6 @@ tr:hover {
         justify-content: center;
     }
 }
-/* Dark mode styles */
-body.dark {
-    --color-claro: #1a1a1a;
-    --color-borde: #333;
-    --color-gris: #adb5bd;
-    --color-gris-oscuro: #ced4da;
-    color: #f1f1f1;
-    background-color: #1a1a1a;
-}
-
-body.dark .header {
-    color: #fff;
-}
-
-body.dark .header::before {
-    background: rgba(0, 0, 0, 0.6);
-}
-
-body.dark .panel {
-    background-color: #2c2c2c;
-    color: #f1f1f1;
-}
-
-body.dark .table-container tr {
-    background: #2c2c2c;
-}
-
-body.dark .table-container td,
-body.dark .table-container th {
-    color: #f1f1f1;
-    border-color: #3a3a3a;
-}
-
-body.dark .dropdown-menu button:hover {
-    background: #333;
-}
-
 /* === Keypad numérico para iPad === */
 .numpad {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 9999;
@@ -874,3 +819,109 @@ html, body, button, .numpad button { touch-action: manipulation; }
   -webkit-user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* === Dark theme tokens & components === */
+:root[data-theme='dark'] {
+  --bg: #0B0F14;
+  --surface: #12171E;
+  --surface-2: #161C24;
+  --border: #242B36;
+  --muted: #9AA3AF;
+  --text: #E6E9EF;
+  --text-dim: #C7CED6;
+  --primary: #7CA8FF;
+  --primary-600: #4D82FF;
+  --success: #2ECC71;
+  --warning: #F4C76C;
+  --danger:  #FF6B6B;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.5);
+  --shadow-md: 0 6px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+
+html[data-theme='dark'], html[data-theme='dark'] body {
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 -apple-system, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html[data-theme='dark'] .section,
+html[data-theme='dark'] .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme='dark'] .hero { position: relative; }
+html[data-theme='dark'] .hero::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.55));
+  pointer-events: none;
+}
+
+html[data-theme='dark'] .header { color: var(--text); }
+
+html[data-theme='dark'] .btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  height: 40px; padding: 0 14px;
+  border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text);
+  transition: transform .08s ease, background .15s ease, border-color .15s ease;
+}
+html[data-theme='dark'] .btn:hover { background: #1B232E; border-color: #313B48; }
+html[data-theme='dark'] .btn:active { transform: translateY(1px) scale(.99); }
+html[data-theme='dark'] .btn-primary { background: var(--primary-600); border-color: var(--primary-600); color: #0B0F14; }
+html[data-theme='dark'] .btn-primary:hover { background: var(--primary); border-color: var(--primary); }
+html[data-theme='dark'] .btn-success { background: var(--success); border-color: var(--success); color: #0B0F14; }
+html[data-theme='dark'] .btn-warning { background: var(--warning); border-color: var(--warning); color: #0B0F14; }
+html[data-theme='dark'] .btn-danger { background: var(--danger); border-color: var(--danger); color: #0B0F14; }
+
+html[data-theme='dark'] .input,
+html[data-theme='dark'] input[type="text"], html[data-theme='dark'] input[type="search"], html[data-theme='dark'] input[type="number"],
+html[data-theme='dark'] input[type="tel"], html[data-theme='dark'] input[type="password"], html[data-theme='dark'] select, html[data-theme='dark'] textarea {
+  background: #12171E; color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px; height: 44px; padding: 10px 12px;
+  box-shadow: inset 0 1px rgba(255,255,255,.02);
+}
+html[data-theme='dark'] .input::placeholder, html[data-theme='dark'] input::placeholder, html[data-theme='dark'] textarea::placeholder { color: #808A96; }
+html[data-theme='dark'] .input:focus, html[data-theme='dark'] input:focus, html[data-theme='dark'] select:focus, html[data-theme='dark'] textarea:focus {
+  outline: none; border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(124,168,255,.25);
+}
+html[data-theme='dark'] .input[readonly], html[data-theme='dark'] input[readonly] { opacity: .9; }
+
+html[data-theme='dark'] .chip {
+  background: #171D26; color: var(--text-dim);
+  border: 1px solid var(--border);
+  border-radius: 999px; height: 32px; padding: 0 12px;
+  display: inline-flex; align-items: center; gap: .4rem;
+}
+html[data-theme='dark'] .chip.active { background: #1E2632; color: var(--text); border-color: #334155; }
+
+html[data-theme='dark'] .table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  background: var(--surface);
+}
+html[data-theme='dark'] .table thead th {
+  background: #1A2230; color: var(--text-dim);
+  font-weight: 600; height: 40px; padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+html[data-theme='dark'] .table tbody td { padding: 12px; border-bottom: 1px solid #1C2431; }
+html[data-theme='dark'] .table tbody tr:hover { background: #151C26; }
+html[data-theme='dark'] .table tfoot td { border-top: 1px solid var(--border); }
+
+html[data-theme='dark'] h1,
+html[data-theme='dark'] h2,
+html[data-theme='dark'] h3,
+html[data-theme='dark'] h4,
+html[data-theme='dark'] h5,
+html[data-theme='dark'] h6 { font-weight: 600; letter-spacing: .2px; }
+
+html[data-theme='dark'] .card + .card { margin-top: 24px; }
+html[data-theme='dark'] .card h2,
+html[data-theme='dark'] .card h3,
+html[data-theme='dark'] .card h4 { margin-bottom: 12px; }

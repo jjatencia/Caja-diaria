@@ -38,43 +38,13 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-function setTheme(theme) {
-    document.body.classList.toggle("dark", theme === "dark");
-    const btn = document.getElementById("themeToggle");
-    if (btn) btn.textContent = theme === "dark" ? "Modo claro" : "Modo oscuro";
-}
-
-async function autoTheme() {
-    try {
-        const res = await fetch("https://api.sunrise-sunset.org/json?lat=40.4168&lng=-3.7038&formatted=0");
-        const data = await res.json();
-        const sunset = new Date(new Date(data.results.sunset).toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
-        const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Madrid" }));
-        setTheme(now > sunset ? "dark" : "light");
-    } catch (err) {
-        setTheme("light");
-    }
-}
-
-function initTheme() {
-    const stored = localStorage.getItem("theme");
-    if (stored) {
-        setTheme(stored);
-    } else {
-        autoTheme();
-    }
-    const toggle = document.getElementById("themeToggle");
-    if (toggle) {
-        toggle.addEventListener("click", () => {
-            const newTheme = document.body.classList.contains("dark") ? "light" : "dark";
-            setTheme(newTheme);
-            localStorage.setItem("theme", newTheme);
-        });
-    }
-}
-
-if (typeof document !== "undefined") {
-    document.addEventListener("DOMContentLoaded", initTheme);
+if (typeof document !== 'undefined' && typeof localStorage !== 'undefined') {
+  const btn = document.getElementById('themeToggle');
+  const PREF = 'theme';
+  const apply = (t) => { if (document.documentElement) document.documentElement.dataset.theme = t; };
+  const next  = () => (localStorage.getItem(PREF) === 'light' ? 'dark' : 'light');
+  apply(localStorage.getItem(PREF) || 'dark');
+  if (btn) btn.onclick = () => { const n = next(); localStorage.setItem(PREF, n); apply(n); };
 }
 
 // Variables globales
@@ -87,6 +57,12 @@ const empleadosPorSucursal = {
     "Lliçà d'Amunt": ["Juanjo", "Jordi", "Ian Paul", "Miquel"],
     "Parets del Vallès": ["Juanjo", "Quim", "Genís", "Alex"]
 };
+
+function setActiveChip(id) {
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.classList.toggle('active', chip.id === id);
+    });
+}
 
 function updateResponsables() {
     const sucursal = localStorage.getItem('sucursal');
@@ -593,6 +569,7 @@ function filterToday(silent = false) {
     document.getElementById('fechaDesde').value = todayStr;
     document.getElementById('fechaHasta').value = todayStr;
     applyDateFilter(silent);
+    setActiveChip('chipToday');
 }
 
 function filterThisWeek() {
@@ -619,6 +596,7 @@ function filterThisWeek() {
     document.getElementById('fechaDesde').value = mondayStr;
     document.getElementById('fechaHasta').value = sundayStr;
     applyDateFilter();
+    setActiveChip('chipWeek');
 }
 
 function filterThisMonth() {
@@ -642,11 +620,13 @@ function filterThisMonth() {
     document.getElementById('fechaDesde').value = firstDayStr;
     document.getElementById('fechaHasta').value = lastDayStr;
     applyDateFilter();
+    setActiveChip('chipMonth');
 }
 
 function applyDateFilter(silent = false) {
     const desde = document.getElementById('fechaDesde').value;
     const hasta = document.getElementById('fechaHasta').value;
+    setActiveChip('');
 
     if (!desde || !hasta) {
         showAlert('Por favor, selecciona ambas fechas', 'danger');
@@ -671,6 +651,7 @@ function clearDateFilter() {
     document.getElementById('fechaHasta').value = '';
     renderHistorial(filteredDates);
     showAlert('Filtro de fechas eliminado', 'info');
+    setActiveChip('');
 }
 
 // Funciones de exportación
