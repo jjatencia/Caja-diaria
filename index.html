@@ -71,9 +71,8 @@
                     <div class="inline-inputs">
                         <div class="form-group">
                             <label for="apertura">Apertura de caja</label>
-                            <div class="input-group">
-                                <input id="apertura" data-numpad="decimal" class="input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                                <span class="suffix">€</span>
+                            <div class="currency">
+                                <input id="apertura" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
                             </div>
                         </div>
                         
@@ -87,26 +86,23 @@
 
                     <div class="form-group">
                         <label for="ingresos">Ingresos en efectivo (Exora)</label>
-                        <div class="input-group">
-                            <input id="ingresos" data-numpad="decimal" class="input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                            <span class="suffix">€</span>
+                        <div class="currency">
+                            <input id="ingresos" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
                         </div>
                     </div>
 
                     <div class="inline-inputs">
                         <div class="form-group">
                             <label for="ingresosTarjetaExora">Ingresos en tarjeta (Exora)</label>
-                            <div class="input-group">
-                                <input id="ingresosTarjetaExora" data-numpad="decimal" class="input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                                <span class="suffix">€</span>
+                            <div class="currency">
+                                <input id="ingresosTarjetaExora" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label for="ingresosTarjetaDatafono">Ingresos en tarjeta (Datáfono)</label>
-                            <div class="input-group">
-                                <input id="ingresosTarjetaDatafono" data-numpad="decimal" class="input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                                <span class="suffix">€</span>
+                            <div class="currency">
+                                <input id="ingresosTarjetaDatafono" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
                             </div>
                         </div>
                     </div>
@@ -138,9 +134,8 @@
                     <div class="inline-inputs">
                         <div class="form-group">
                             <label for="cierre">Cierre de caja</label>
-                            <div class="input-group">
-                                <input id="cierre" data-numpad="decimal" class="input" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                                <span class="suffix">€</span>
+                            <div class="currency">
+                                <input id="cierre" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
                             </div>
                         </div>
                         
@@ -152,11 +147,14 @@
                         </div>
                     </div>
 
-                    <div id="diferenciaDisplay" class="alert" role="status" aria-live="polite"></div>
+                    <div id="diferenciaDisplay" class="diferencia" role="status" aria-live="polite"></div>
 
-                    <div id="diferenciaTarjetaDisplay" class="alert" role="status" aria-live="polite"></div>
+                    <div id="diferenciaTarjetaDisplay" class="diferencia" role="status" aria-live="polite"></div>
 
                     <div class="btn-group">
+                        <button type="button" class="btn btn-success" onclick="saveDay()">💾 Guardar día</button>
+                        <button type="button" class="btn btn-primary" onclick="newDay()">🆕 Nuevo día</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteCurrentDay()">🗑️ Borrar día</button>
                         <button type="button" class="btn" onclick="runTests()">🔧 Tests</button>
                     </div>
                 </form>
@@ -171,10 +169,10 @@
                     <h3>🔍 Filtrar por fechas</h3>
                     
                     <!-- Botones de acceso directo -->
-                    <div class="segmented">
-                        <button id="chipToday" class="active" onclick="filterToday()" tabindex="0">Hoy</button>
-                        <button id="chipWeek" onclick="filterThisWeek()" tabindex="0">Esta semana</button>
-                        <button id="chipMonth" onclick="filterThisMonth()" tabindex="0">Este mes</button>
+                    <div class="filter-quick-buttons">
+                        <button id="chipToday" class="chip" onclick="filterToday()" tabindex="0">Hoy</button>
+                        <button id="chipWeek" class="chip" onclick="filterThisWeek()" tabindex="0">Esta semana</button>
+                        <button id="chipMonth" class="chip" onclick="filterThisMonth()" tabindex="0">Este mes</button>
                     </div>
                     
                     <div class="inline-inputs">
@@ -247,12 +245,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="toolbar">
-        <button id="btnBorrar" type="button" class="btn btn-outline-danger" onclick="deleteCurrentDay()">Borrar día</button>
-        <button id="btnNuevo" type="button" class="btn" onclick="newDay()">Nuevo día</button>
-        <button id="btnGuardar" type="button" class="btn btn-primary" onclick="saveDay()">Guardar día</button>
     </div>
 
     <script type="module" src="app.js"></script>
