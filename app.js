@@ -167,14 +167,14 @@ function recalc() {
     if (diferenciaDiv) {
         const diffFormatted = formatCurrency(totals.diff);
         if (Math.abs(totals.diff) < 0.01) {
-            diferenciaDiv.className = 'alert alert-success';
-            diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € — ¡Cuadra!`;
+            diferenciaDiv.className = 'diferencia cero';
+            diferenciaDiv.innerHTML = `✅ Diferencia Efectivo: ${diffFormatted} € - ¡Cuadra!`;
         } else if (totals.diff > 0) {
-            diferenciaDiv.className = 'alert alert-danger';
-            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € — Sobra dinero`;
+            diferenciaDiv.className = 'diferencia positivo';
+            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - Sobra dinero`;
         } else {
-            diferenciaDiv.className = 'alert alert-danger';
-            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € — Falta dinero`;
+            diferenciaDiv.className = 'diferencia negativo';
+            diferenciaDiv.innerHTML = `⚠️ Diferencia Efectivo: ${diffFormatted} € - Falta dinero`;
         }
     }
 
@@ -229,14 +229,14 @@ function recalc() {
         const diffTarjetaFormatted = formatCurrency(diferenciaTarjeta);
 
         if (Math.abs(diferenciaTarjeta) < 0.01) {
-            diferenciaTarjetaDiv.className = 'alert alert-success';
-            diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € — ¡Cuadra!`;
+            diferenciaTarjetaDiv.className = 'diferencia cuadra';
+            diferenciaTarjetaDiv.innerHTML = `✅ Diferencia Tarjeta: ${diffTarjetaFormatted} € - ¡Cuadra!`;
         } else if (diferenciaTarjeta > 0) {
-            diferenciaTarjetaDiv.className = 'alert alert-danger';
-            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € — Sobra dinero`;
+            diferenciaTarjetaDiv.className = 'diferencia positivo';
+            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - Sobra dinero`;
         } else {
-            diferenciaTarjetaDiv.className = 'alert alert-danger';
-            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € — Falta Dinero`;
+            diferenciaTarjetaDiv.className = 'diferencia negativo';
+            diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - Falta Dinero`;
         }
     }
     saveDraft();
