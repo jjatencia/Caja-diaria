@@ -1495,3 +1495,36 @@ document.addEventListener('touchend', (e) => {
 document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
 document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
 document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+
+// Barra de acciones fija (dock). Mueve los botones existentes y renombra.
+(function dockActionBar(){
+  if (typeof document === 'undefined' || typeof document.createElement !== 'function') return;
+  const ids = ['btnBorrar','btnNuevo','btnGuardar'];
+  const els = ids.map(id => document.getElementById(id));
+  if (els.some(el => !el)) return; // falta alguno, no hacemos nada
+
+  // Crear contenedor
+  const bar = document.createElement('div');
+  bar.className = 'toolbar';
+  document.body.appendChild(bar);
+
+  // Orden visual: Borrar | Limpiar | Guardar
+  const map = [
+    { id:'btnBorrar',  text:'Borrar',  classes:['btn','btn-outline-danger'] },
+    { id:'btnNuevo',   text:'Limpiar', classes:['btn'] },
+    { id:'btnGuardar', text:'Guardar', classes:['btn','btn-primary'] },
+  ];
+
+  map.forEach(({id, text, classes}) => {
+    const el = document.getElementById(id);
+    // Asegurar clases visuales
+    classes.forEach(c => el.classList.add(c));
+    // Renombrar texto y aria-label (sin romper íconos internos si los hubiera)
+    el.textContent = text;
+    el.setAttribute('aria-label', text);
+    // Mover (no clonar) para conservar listeners existentes
+    bar.appendChild(el);
+  });
+
+  document.body.classList.add('has-toolbar');
+})();
