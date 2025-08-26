@@ -5,6 +5,7 @@ import { appState } from "./modules/state.js";
 import { empleadosPorSucursal, updateResponsables, applySucursal } from "./modules/employees.js";
 import { setActiveChip, filterToday, filterThisWeek, filterThisMonth, applyDateFilter, clearDateFilter } from "./modules/filters.js";
 import { addMovimiento, removeMovimiento } from "./modules/movimientos.js";
+import { apiRequest, isStaticHosting } from "./modules/api-fallback.js";
 
 function updateViewportHeight() {
     const vh = window.innerHeight * 0.01;
@@ -141,8 +142,8 @@ function recalc() {
         }
     }
 
-    // Si falta dinero, intenta enviar una alerta solo si hay API_KEY
-    if (totals.diff < 0 && API_KEY) {
+    // Si falta dinero, intenta enviar una alerta solo si hay API_KEY y no es hosting estático
+    if (totals.diff < 0 && API_KEY && !isStaticHosting()) {
         const alertData = {
             sucursal: localStorage.getItem('sucursal'),
             fecha: document.getElementById('fecha').value,
@@ -151,7 +152,8 @@ function recalc() {
                 .map(m => `${m.tipo} - ${m.quien}: ${formatCurrency(m.importe)} €`)
                 .join('\n')
         };
-        fetch('/api/send-alert', {
+        
+        apiRequest('/api/send-alert', {
             method: 'POST',
             body: JSON.stringify(alertData),
             headers: {
@@ -159,11 +161,11 @@ function recalc() {
                 'Authorization': API_KEY
             }
         })
-            .then(response => {
-                if (response.ok) {
-                    showAlert(`Alerta enviada (${response.status})`, 'success');
+            .then(result => {
+                if (result && result.success) {
+                    showAlert('Alerta enviada', 'success');
                 } else {
-                    showAlert(`No se pudo enviar la alerta (${response.status})`, 'danger');
+                    showAlert('No se pudo enviar la alerta', 'danger');
                 }
             })
             .catch(() => {
@@ -349,8 +351,8 @@ async function saveDay() {
 
         localStorage.removeItem('caja:draft');
 
-        if (API_KEY) {
-            const response = await fetch('/api/save-day', {
+        if (API_KEY && !isStaticHosting()) {
+            const result = await apiRequest('/api/save-day', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -362,15 +364,19 @@ async function saveDay() {
                 })
             });
 
-            const result = await response.json();
-
-            if (result.success) {
+            if (result && result.success) {
                 showAlert('Día guardado correctamente', 'success');
+            } else if (result && result.mode === 'local') {
+                showAlert('Día guardado localmente', 'info');
             } else {
                 showAlert('Error al guardar el día en el servidor', 'danger');
             }
         } else {
-            showAlert('Día guardado localmente (sin API key)', 'info');
+            if (isStaticHosting()) {
+                showAlert('Día guardado localmente (modo offline)', 'info');
+            } else {
+                showAlert('Día guardado localmente (sin API key)', 'info');
+            }
         }
 
         renderHistorial(appState.getFilteredDates());

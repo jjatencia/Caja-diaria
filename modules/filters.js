@@ -18,22 +18,53 @@ export function filterToday() {
 
 export function filterThisWeek() {
     const today = new Date();
-    const monday = new Date(today.setDate(today.getDate() - today.getDay() + 1));
-    const sunday = new Date(today.setDate(today.getDate() - today.getDay() + 7));
     
-    document.getElementById('fechaDesde').value = monday.toISOString().split('T')[0];
-    document.getElementById('fechaHasta').value = sunday.toISOString().split('T')[0];
+    // Calcular inicio de semana (lunes) sin mutar la fecha original
+    const dayOfWeek = today.getDay(); // 0 = domingo, 1 = lunes, etc.
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Si es domingo, retroceder 6 días
+    
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    
+    // Calcular fin de semana (domingo)
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+    
+    // Convertir a string sin problemas de zona horaria
+    const mondayStr = new Date(monday.getTime() - monday.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+    const sundayStr = new Date(sunday.getTime() - sunday.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+    
+    document.getElementById('fechaDesde').value = mondayStr;
+    document.getElementById('fechaHasta').value = sundayStr;
     setActiveChip('chipWeek');
     applyDateFilter();
 }
 
 export function filterThisMonth() {
     const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-11
     
-    document.getElementById('fechaDesde').value = firstDay.toISOString().split('T')[0];
-    document.getElementById('fechaHasta').value = lastDay.toISOString().split('T')[0];
+    // Primer día del mes
+    const firstDay = new Date(year, month, 1);
+    
+    // Último día del mes
+    const lastDay = new Date(year, month + 1, 0);
+    
+    // Convertir a string sin problemas de zona horaria
+    const firstDayStr = new Date(firstDay.getTime() - firstDay.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+    const lastDayStr = new Date(lastDay.getTime() - lastDay.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split('T')[0];
+    
+    document.getElementById('fechaDesde').value = firstDayStr;
+    document.getElementById('fechaHasta').value = lastDayStr;
     setActiveChip('chipMonth');
     applyDateFilter();
 }

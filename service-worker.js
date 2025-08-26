@@ -12,6 +12,7 @@ const PRECACHE_URLS = [
   './modules/employees.js',
   './modules/filters.js',
   './modules/movimientos.js',
+  './modules/api-fallback.js',
   './utils/index.js',
   './utils/parseNum.js',
   './utils/formatCurrency.js',

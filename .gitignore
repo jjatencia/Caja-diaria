@@ -1,6 +1,0 @@
-node_modules/
-google-credentials.json
-*.service-account.json
-.env
-.env.local
-.env.production
