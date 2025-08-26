@@ -1,5 +1,6 @@
 import { formatCurrency, formatDate, computeTotals, parseNum } from './utils/index.js';
 import { getDayIndex, loadDay } from './storage.js';
+import { apiRequest, isStaticHosting } from './modules/api-fallback.js';
 
 function loadLocalRecords(filteredDates) {
     let dates = getDayIndex();
@@ -76,10 +77,16 @@ export async function renderResumen(filteredDates, records) {
                     params.push(`sucursal=${encodeURIComponent(sucursal)}`);
                 }
                 if (params.length) url += `?${params.join('&')}`;
-                const res = await fetch(url, { cache: 'no-store' });
-                if (res.ok) {
-                    const json = await res.json();
-                    records = json.records || [];
+                
+                const result = await apiRequest(url);
+                if (result && result.records) {
+                    records = result.records;
+                } else if (isStaticHosting()) {
+                    // En hosting estático, usar solo localStorage
+                    records = loadLocalRecords(filteredDates);
+                    if (records.length === 0) {
+                        showAlert('Funcionando en modo offline - solo datos locales disponibles', 'info');
+                    }
                 }
             } catch (err) {
                 console.error('No se pudo obtener desde Sheets', err);

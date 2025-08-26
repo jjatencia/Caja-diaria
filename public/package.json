@@ -12,7 +12,9 @@
     "build:public": "mkdir -p public && cp -r *.html *.js *.css *.json *.png modules utils api config public/ 2>/dev/null || true",
     "serve": "python3 -m http.server 8000",
     "deploy:vercel": "vercel",
-    "deploy:netlify": "netlify deploy --prod"
+    "deploy:netlify": "netlify deploy --prod",
+    "deploy:gh-pages": "./scripts/deploy-gh-pages.sh",
+    "check-deploy": "node scripts/check-deploy.js"
   },
   "dependencies": {
     "pg": "^8.11.3",
