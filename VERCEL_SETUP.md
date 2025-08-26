@@ -2,15 +2,17 @@
 
 ## ✅ Estado del Deploy
 
-### **Problema Resuelto:**
+### **Problemas Resueltos:**
 - ❌ Error: `Cannot find module '/vercel/path0/scripts/build.js'`
-- ✅ **Solucionado:** Build simplificado para vanilla JS
+- ❌ Error: `Function Runtimes must have a valid version`
+- ✅ **Solucionado:** Configuración completamente auto-detectada
 
-### **Configuración Actualizada:**
-- ✅ `vercel.json` optimizado para aplicación vanilla JS
-- ✅ Script de build simplificado
-- ✅ APIs configuradas como funciones serverless
-- ✅ Archivos estáticos servidos directamente
+### **Configuración Final:**
+- ✅ Sin `vercel.json` - auto-detección completa
+- ✅ Script de build simplificado (no-op)
+- ✅ APIs auto-detectadas en directorio `/api`
+- ✅ Archivos estáticos servidos desde root
+- ✅ Node.js 18.x especificado en engines
 
 ## 🔧 Variables de Entorno Requeridas en Vercel
 
@@ -129,23 +131,24 @@ npm run deploy:vercel
 ## 📊 Configuración Actual
 
 ```json
-// vercel.json - Configuración actual
+// Sin vercel.json - Auto-detección completa
+// Vercel automáticamente:
+// - Detecta funciones API en /api/*.js
+// - Sirve archivos estáticos desde root
+// - Usa Node.js 18.x (especificado en package.json)
+// - Maneja ES modules correctamente
+```
+
+```json
+// package.json - Configuración relevante
 {
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "@vercel/node"
-    }
+  "type": "module",
+  "engines": {
+    "node": "18.x"
   },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
+  "scripts": {
+    "build": "node scripts/build.js"
+  }
 }
 ```
 
