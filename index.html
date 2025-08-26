@@ -21,44 +21,193 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="styles.css?v=3-exora">
-    <!-- Estilos inline para forzar cambios inmediatos -->
+    <link rel="stylesheet" href="styles.css?v=4-ULTRA-EXORA">
+    <!-- ===== ESTILOS EXORA FORZADOS ===== -->
     <style>
-        :root {
-            --exora-primary: #555BF6 !important;
-            --exora-secondary: #FD778B !important;
-            --color-primario: #555BF6 !important;
+        /* RESETEO TOTAL Y COLORES EXORA */
+        * {
+            transition: all 0.3s ease !important;
         }
+        
+        body {
+            background: linear-gradient(135deg, #FAFBFC 0%, #F0F4FF 100%) !important;
+            font-family: 'Poppins', sans-serif !important;
+        }
+        
+        /* HEADER EXORA SÚPER VISIBLE */
         .header {
-            background: linear-gradient(135deg, 
-                rgba(85, 91, 246, 0.95) 0%, 
-                rgba(253, 119, 139, 0.85) 50%, 
-                rgba(183, 241, 244, 0.9) 100%) !important;
-            border-radius: 0 0 24px 24px !important;
-            min-height: 120px !important;
+            background: linear-gradient(135deg, #555BF6 0%, #FD778B 50%, #B7F1F4 100%) !important;
+            border-radius: 0 0 30px 30px !important;
+            min-height: 140px !important;
+            padding: 30px 20px !important;
+            margin-bottom: 40px !important;
+            box-shadow: 0 8px 32px rgba(85, 91, 246, 0.3) !important;
+            position: relative !important;
+            overflow: hidden !important;
         }
+        
+        .header::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.1) 75%) !important;
+            background-size: 20px 20px !important;
+            animation: slide 2s linear infinite !important;
+        }
+        
+        @keyframes slide {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 20px; }
+        }
+        
         .header-brand {
             display: flex !important;
             align-items: center !important;
-            gap: 16px !important;
-            font-size: 24px !important;
+            gap: 20px !important;
+            font-size: 28px !important;
             font-weight: 700 !important;
             color: white !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3) !important;
+            z-index: 10 !important;
+            position: relative !important;
         }
+        
         .header-brand::before {
-            content: '💰' !important;
-            font-size: 32px !important;
+            content: '💰✨' !important;
+            font-size: 40px !important;
+            animation: bounce 2s infinite !important;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #555BF6 0%, #D2E9FF 100%) !important;
-            border-radius: 14px !important;
-            padding: 14px 28px !important;
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
         }
-        .panel {
+        
+        .header-brand span {
+            background: linear-gradient(45deg, #FFFFFF, #FCFFA8) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+        }
+        
+        /* BOTONES EXORA SÚPER VISIBLES */
+        .btn {
             border-radius: 20px !important;
-            box-shadow: 0 4px 16px rgba(2, 20, 92, 0.12) !important;
+            padding: 16px 32px !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05) !important;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #555BF6 0%, #FD778B 100%) !important;
+            color: white !important;
+            box-shadow: 0 8px 25px rgba(85, 91, 246, 0.4) !important;
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 15px 40px rgba(85, 91, 246, 0.6) !important;
+            background: linear-gradient(135deg, #FD778B 0%, #FCFFA8 100%) !important;
+        }
+        
+        /* PANELS EXORA */
+        .panel {
+            background: white !important;
+            border-radius: 25px !important;
+            padding: 40px !important;
+            margin: 30px 0 !important;
+            box-shadow: 0 10px 30px rgba(85, 91, 246, 0.15) !important;
+            border: 3px solid transparent !important;
+            background-clip: padding-box !important;
+            position: relative !important;
+        }
+        
+        .panel::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            background: linear-gradient(135deg, #555BF6, #FD778B, #B7F1F4) !important;
+            border-radius: 25px !important;
+            padding: 3px !important;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+            -webkit-mask-composite: exclude !important;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0) !important;
+            mask-composite: exclude !important;
+        }
+        
+        .panel h2 {
+            color: #555BF6 !important;
+            font-size: 2em !important;
+            margin-bottom: 30px !important;
+            text-align: center !important;
+            position: relative !important;
+        }
+        
+        .panel h2::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: -10px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 100px !important;
+            height: 4px !important;
+            background: linear-gradient(90deg, #555BF6, #FD778B) !important;
+            border-radius: 2px !important;
+        }
+        
+        /* MENSAJE TEMPORAL SÚPER VISIBLE */
+        .exora-notification {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            background: linear-gradient(135deg, #555BF6, #FD778B) !important;
+            color: white !important;
+            padding: 30px 50px !important;
+            border-radius: 20px !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            z-index: 9999 !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+            animation: pulse 2s infinite !important;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+            100% { transform: translate(-50%, -50%) scale(1); }
         }
     </style>
+    
+    <!-- Notificación temporal visible -->
+    <div class="exora-notification" id="exoraNotification">
+        🎨 ¡DISEÑO EXORA APLICADO! ✨
+    </div>
+    
+    <script>
+        // Ocultar notificación después de 5 segundos
+        setTimeout(() => {
+            const notification = document.getElementById('exoraNotification');
+            if (notification) {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 500);
+            }
+        }, 5000);
+    </script>
 
 </head>
 <body>
