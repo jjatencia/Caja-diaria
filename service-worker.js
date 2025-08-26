@@ -1,11 +1,23 @@
-const CACHE_NAME = 'pwa-cache-v3';
+const CACHE_NAME = 'pwa-cache-v4';
 const PRECACHE_URLS = [
   './',
   './index.html',
   './styles.css?v=2',
   './app.js',
+  './ui.js',
+  './storage.js',
   './manifest.json',
-  './icon-180.png'
+  './icon-180.png',
+  './modules/state.js',
+  './modules/employees.js',
+  './modules/filters.js',
+  './modules/movimientos.js',
+  './utils/index.js',
+  './utils/parseNum.js',
+  './utils/formatCurrency.js',
+  './utils/formatDate.js',
+  './utils/getTodayString.js',
+  './utils/computeTotals.js'
 ];
 
 const API_KEY = globalThis.API_KEY || '';

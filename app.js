@@ -1,6 +1,10 @@
 import { parseNum, formatCurrency, formatDate, getTodayString, computeTotals } from "./utils/index.js";
 import { getDayIndex, loadDay, saveDayData, deleteDay, saveToLocalStorage, getFromLocalStorage } from "./storage.js";
 import { renderMovimientos, renderHistorial, showAlert, displayTestResults, hideTests } from "./ui.js";
+import { appState } from "./modules/state.js";
+import { empleadosPorSucursal, updateResponsables, applySucursal } from "./modules/employees.js";
+import { setActiveChip, filterToday, filterThisWeek, filterThisMonth, applyDateFilter, clearDateFilter } from "./modules/filters.js";
+import { addMovimiento, removeMovimiento } from "./modules/movimientos.js";
 
 function updateViewportHeight() {
     const vh = window.innerHeight * 0.01;
@@ -47,51 +51,10 @@ if (typeof document !== 'undefined' && typeof localStorage !== 'undefined') {
   if (btn) btn.onclick = () => { const n = next(); localStorage.setItem(PREF, n); apply(n); };
 }
 
-// Variables globales
-let currentMovimientos = [];
-let filteredDates = null;
-let currentEditKey = null;
-const API_KEY = globalThis.API_KEY || '';
+// Use centralized state management
+const API_KEY = appState.getApiKey();
 
-const empleadosPorSucursal = {
-    "Lliçà d'Amunt": ["Juanjo", "Jordi", "Ian Paul", "Miquel"],
-    "Parets del Vallès": ["Juanjo", "Quim", "Genís", "Alex"]
-};
-
-function setActiveChip(id) {
-    document.querySelectorAll('.chip').forEach(chip => {
-        chip.classList.toggle('active', chip.id === id);
-    });
-}
-
-function updateResponsables() {
-    const sucursal = localStorage.getItem('sucursal');
-    const nombres = empleadosPorSucursal[sucursal] || [];
-    const placeholders = {
-        responsableApertura: 'Seleccionar responsable',
-        responsableCierre: 'Seleccionar responsable',
-        quienMovimiento: 'Quién realizó'
-    };
-    ['responsableApertura', 'responsableCierre', 'quienMovimiento'].forEach(id => {
-        const select = document.getElementById(id);
-        if (!select) return;
-        const current = select.value;
-        select.innerHTML = `<option value="">${placeholders[id]}</option>` +
-            nombres.map(nombre => `<option value="${nombre}">${nombre}</option>`).join('');
-        if (nombres.includes(current)) {
-            select.value = current;
-        }
-    });
-}
-
-function applySucursal() {
-    const saved = localStorage.getItem('sucursal');
-    const display = document.getElementById('currentSucursal');
-    if (display) {
-        display.textContent = saved || '';
-    }
-    updateResponsables();
-}
+// Functions moved to modules - imported above
 
 function handleSucursalSave(e) {
     e.preventDefault();
@@ -141,7 +104,7 @@ function saveDraft() {
         ingresos: parseNum(document.getElementById('ingresos').value),
         ingresosTarjetaExora: parseNum(document.getElementById('ingresosTarjetaExora').value),
         ingresosTarjetaDatafono: parseNum(document.getElementById('ingresosTarjetaDatafono').value),
-        movimientos: [...currentMovimientos],
+        movimientos: [...appState.getMovimientos()],
         cierre: parseNum(document.getElementById('cierre').value),
         responsableCierre: document.getElementById('responsableCierre').value.trim()
     };
@@ -161,7 +124,7 @@ function recalc() {
     const ingresos = document.getElementById('ingresos').value;
     const cierre = document.getElementById('cierre').value;
     
-    const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
+    const totals = computeTotals(apertura, ingresos, appState.getMovimientos(), cierre);
 
     const diferenciaDiv = document.getElementById('diferenciaDisplay');
     if (diferenciaDiv) {
@@ -184,7 +147,7 @@ function recalc() {
             sucursal: localStorage.getItem('sucursal'),
             fecha: document.getElementById('fecha').value,
             diferencia: totals.diff,
-            detalle: currentMovimientos
+            detalle: appState.getMovimientos()
                 .map(m => `${m.tipo} - ${m.quien}: ${formatCurrency(m.importe)} €`)
                 .join('\n')
         };
@@ -243,50 +206,17 @@ function recalc() {
 }
 
 
-function addMovimiento() {
-    const tipo = document.getElementById('tipoMovimiento').value;
-    const quien = document.getElementById('quienMovimiento').value.trim();
-    const importe = document.getElementById('importeMovimiento').value;
-    
-    if (!importe || parseNum(importe) === 0) {
-        showAlert('Por favor, introduce un importe válido', 'danger');
-        return;
-    }
-    
-    if (parseNum(importe) < 0) {
-        showAlert('El importe no puede ser negativo', 'danger');
-        return;
-    }
-    
-    currentMovimientos.push({
-        tipo,
-        quien: quien || 'No especificado',
-        importe: parseNum(importe)
-    });
-    
-    // Limpiar formulario de movimiento
-    document.getElementById('quienMovimiento').value = '';
-    document.getElementById('importeMovimiento').value = '';
-    
-    renderMovimientos(currentMovimientos);
-    recalc();
-}
-
-function removeMovimiento(index) {
-    currentMovimientos.splice(index, 1);
-    renderMovimientos(currentMovimientos);
-    recalc();
-}
+// addMovimiento and removeMovimiento functions moved to modules/movimientos.js
 
 function clearForm() {
     document.getElementById('cajaForm').reset();
     document.getElementById('fecha').value = getTodayString();
-    currentMovimientos = [];
-    renderMovimientos(currentMovimientos);
+    appState.clearMovimientos();
+    renderMovimientos(appState.getMovimientos());
     applySucursal();
     recalc();
     localStorage.removeItem('caja:draft');
-    currentEditKey = null;
+    appState.setCurrentEditKey(null);
 }
 
 function loadFormData(data) {
@@ -303,8 +233,8 @@ function loadFormData(data) {
     document.getElementById('cierre').value = formatCurrency(data.cierre);
     document.getElementById('responsableCierre').value = data.responsableCierre;
 
-    currentMovimientos = data.movimientos || [];
-    renderMovimientos(currentMovimientos);
+    appState.setMovimientos(data.movimientos || []);
+    renderMovimientos(appState.getMovimientos());
     recalc();
 }
 
@@ -330,7 +260,7 @@ async function saveDay() {
         ingresosTarjetaExora === 0 &&
         ingresosTarjetaDatafono === 0 &&
         cierre === 0 &&
-        currentMovimientos.length === 0;
+        appState.getMovimientos().length === 0;
 
     if (isEmptyDay) {
         showAlert('No hay datos para guardar', 'warning');
@@ -338,8 +268,8 @@ async function saveDay() {
     }
 
     let sheetId;
-    if (currentEditKey) {
-        const existing = loadDay(currentEditKey);
+    if (appState.getCurrentEditKey()) {
+        const existing = loadDay(appState.getCurrentEditKey());
         sheetId = existing?.sheetId;
     }
 
@@ -351,7 +281,7 @@ async function saveDay() {
         ingresos,
         ingresosTarjetaExora,
         ingresosTarjetaDatafono,
-        movimientos: [...currentMovimientos],
+        movimientos: [...appState.getMovimientos()],
         cierre,
         responsableCierre,
         horaGuardado: new Date().toISOString(),
@@ -359,10 +289,10 @@ async function saveDay() {
     };
 
     try {
-        currentEditKey = saveDayData(fecha, dayData, currentEditKey);
+        appState.setCurrentEditKey(saveDayData(fecha, dayData, appState.getCurrentEditKey()));
 
         // Enviar registro al backend para guardarlo/actualizarlo en Google Sheets
-        const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
+        const totals = computeTotals(apertura, ingresos, appState.getMovimientos(), cierre);
         const payload = {
             // Mantener la fecha en formato ISO (YYYY-MM-DD) evita
             // que Google Sheets interprete el valor como una fórmula
@@ -399,14 +329,14 @@ async function saveDay() {
             if (!sheetId && data.id) {
                 sheetId = data.id;
                 dayData.sheetId = sheetId;
-                saveDayData(fecha, dayData, currentEditKey);
+                saveDayData(fecha, dayData, appState.getCurrentEditKey());
             }
             if (sheetId) {
                 try {
                     await fetch('/api/append-tesoreria', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ cierreId: sheetId, fecha, movimientos: currentMovimientos })
+                        body: JSON.stringify({ cierreId: sheetId, fecha, movimientos: appState.getMovimientos() })
                     });
                 } catch (err) {
                     console.error('No se pudo guardar movimientos en Tesorería', err);
@@ -428,7 +358,7 @@ async function saveDay() {
                 },
                 body: JSON.stringify({
                     cajaDiaria: { ...dayData, movimientos: undefined },
-                    movimientos: currentMovimientos
+                    movimientos: appState.getMovimientos()
                 })
             });
 
@@ -443,7 +373,7 @@ async function saveDay() {
             showAlert('Día guardado localmente (sin API key)', 'info');
         }
 
-        renderHistorial(filteredDates);
+        renderHistorial(appState.getFilteredDates());
     } catch (error) {
         console.error('Error al guardar el día', error);
         showAlert('No se pudo guardar el día. Revisa la consola para más detalles', 'danger');
@@ -456,16 +386,16 @@ function newDay() {
 }
 
 async function deleteCurrentDay() {
-    if (!currentEditKey) {
+    if (!appState.getCurrentEditKey()) {
         showAlert('No hay un día cargado para borrar', 'danger');
         return;
     }
 
-    if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(currentEditKey)}?`)) {
-        await deleteDay(currentEditKey);
+    if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(appState.getCurrentEditKey())}?`)) {
+        await deleteDay(appState.getCurrentEditKey());
         clearForm();
-        await renderHistorial(filteredDates);
-        showAlert(`Día ${formatDate(currentEditKey)} borrado correctamente`, 'success');
+        await renderHistorial(appState.getFilteredDates());
+        showAlert(`Día ${formatDate(appState.getCurrentEditKey())} borrado correctamente`, 'success');
     }
 }
 
@@ -483,7 +413,7 @@ async function deleteDayFromHistorial(id, fecha) {
     if (confirm(`¿Estás seguro de que quieres borrar el día ${formatDate(fecha)}?`)) {
         if (key) {
             await deleteDay(key);
-            if (currentEditKey === key) {
+            if (appState.getCurrentEditKey() === key) {
                 clearForm();
             }
         } else {
@@ -500,7 +430,7 @@ async function deleteDayFromHistorial(id, fecha) {
 
         // Esperar un momento para que la eliminación se refleje en Google Sheets
         await new Promise(resolve => setTimeout(resolve, 1000));
-        await renderHistorial(filteredDates);
+        await renderHistorial(appState.getFilteredDates());
         showAlert(`Día ${formatDate(fecha)} borrado correctamente`, 'success');
     }
 }
@@ -563,7 +493,7 @@ async function editDay(id) {
         }
 
         loadFormData(data);
-        currentEditKey = key;
+        appState.setCurrentEditKey(key);
         showAlert(`Día ${formatDate(key)} cargado para edición`, 'info');
         // Hacer scroll hacia arriba para ver el formulario
         document.querySelector('.header').scrollIntoView({ behavior: 'smooth' });
@@ -573,99 +503,7 @@ async function editDay(id) {
 }
 
 
-// Funciones de filtrado
-function filterToday(silent = false) {
-    const today = new Date();
-    const todayStr = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-    document.getElementById('fechaDesde').value = todayStr;
-    document.getElementById('fechaHasta').value = todayStr;
-    applyDateFilter(silent);
-    setActiveChip('chipToday');
-}
-
-function filterThisWeek() {
-    const today = new Date();
-
-    // Calcular inicio de semana (lunes)
-    const dayOfWeek = today.getDay(); // 0 = domingo, 1 = lunes, etc.
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Si es domingo, retroceder 6 días
-
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
-
-    // Calcular fin de semana (domingo)
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-
-    const mondayStr = new Date(monday.getTime() - monday.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-    const sundayStr = new Date(sunday.getTime() - sunday.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-
-    document.getElementById('fechaDesde').value = mondayStr;
-    document.getElementById('fechaHasta').value = sundayStr;
-    applyDateFilter();
-    setActiveChip('chipWeek');
-}
-
-function filterThisMonth() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth(); // 0-11
-
-    // Primer día del mes
-    const firstDay = new Date(year, month, 1);
-
-    // Último día del mes
-    const lastDay = new Date(year, month + 1, 0);
-
-    const firstDayStr = new Date(firstDay.getTime() - firstDay.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-    const lastDayStr = new Date(lastDay.getTime() - lastDay.getTimezoneOffset() * 60000)
-        .toISOString()
-        .split('T')[0];
-
-    document.getElementById('fechaDesde').value = firstDayStr;
-    document.getElementById('fechaHasta').value = lastDayStr;
-    applyDateFilter();
-    setActiveChip('chipMonth');
-}
-
-function applyDateFilter(silent = false) {
-    const desde = document.getElementById('fechaDesde').value;
-    const hasta = document.getElementById('fechaHasta').value;
-    setActiveChip('');
-
-    if (!desde || !hasta) {
-        showAlert('Por favor, selecciona ambas fechas', 'danger');
-        return;
-    }
-
-    if (desde > hasta) {
-        showAlert('La fecha "Desde" no puede ser mayor que "Hasta"', 'danger');
-        return;
-    }
-
-    filteredDates = { desde, hasta };
-    renderHistorial(filteredDates);
-    if (!silent) {
-        showAlert(`Filtro aplicado: ${formatDate(desde)} - ${formatDate(hasta)}`, 'info');
-    }
-}
-
-function clearDateFilter() {
-    filteredDates = null;
-    document.getElementById('fechaDesde').value = '';
-    document.getElementById('fechaHasta').value = '';
-    renderHistorial(filteredDates);
-    showAlert('Filtro de fechas eliminado', 'info');
-    setActiveChip('');
-}
+// Filter functions moved to modules/filters.js
 
 // Funciones de exportación
 function generateCSVContent(data, headers) {
@@ -838,7 +676,7 @@ function computeResumenData(filter) {
 }
 
 function downloadResumenCSV() {
-    const { rows, totals } = computeResumenData(filteredDates);
+    const { rows, totals } = computeResumenData(appState.getFilteredDates());
     if (!rows.length) {
         showAlert('No hay datos para exportar', 'danger');
         return;
@@ -858,22 +696,22 @@ function downloadResumenCSV() {
     data.push(['Total', totals.apertura, totals.ingresos, totals.entradas, totals.salidas, totals.total, totals.cierre, totals.diff]);
 
     const content = generateCSVContent(data, headers);
-    const filename = filteredDates
-        ? `resumen_${filteredDates.desde}_${filteredDates.hasta}.csv`
+    const filename = appState.getFilteredDates()
+        ? `resumen_${appState.getFilteredDates().desde}_${appState.getFilteredDates().hasta}.csv`
         : 'resumen_completo.csv';
     downloadFile(content, filename, 'text/csv;charset=utf-8');
     showAlert(`Archivo ${filename} descargado`, 'success');
 }
 
 function emailResumen() {
-    const { rows, totals } = computeResumenData(filteredDates);
+    const { rows, totals } = computeResumenData(appState.getFilteredDates());
     if (!rows.length) {
         showAlert('No hay datos para enviar', 'danger');
         return;
     }
 
-    const rango = filteredDates
-        ? `${formatDate(filteredDates.desde)} - ${formatDate(filteredDates.hasta)}`
+    const rango = appState.getFilteredDates()
+        ? `${formatDate(appState.getFilteredDates().desde)} - ${formatDate(appState.getFilteredDates().hasta)}`
         : 'Todos los registros';
 
     let body = `Hola Juanjo,\n\nRESUMEN DE FACTURACIÓN\n${rango}\n\n`;
@@ -900,8 +738,8 @@ function sendEmail(emailTo, emailSubject, emailBody) {
         tempLink.click();
         document.body.removeChild(tempLink);
         
-        if (filteredDates) {
-            showAlert(`Email consolidado preparado para el período ${formatDate(filteredDates.desde)} - ${formatDate(filteredDates.hasta)}`, 'success');
+        if (appState.getFilteredDates()) {
+            showAlert(`Email consolidado preparado para el período ${formatDate(appState.getFilteredDates().desde)} - ${formatDate(appState.getFilteredDates().hasta)}`, 'success');
         } else {
             showAlert(`Email preparado para enviar a ${emailTo}`, 'success');
         }
@@ -1066,7 +904,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (matches.length === 1) {
             const existingData = loadDay(matches[0]);
             loadFormData(existingData);
-            currentEditKey = matches[0];
+            appState.setCurrentEditKey(matches[0]);
             showAlert('Día cargado desde el historial', 'info');
         } else if (matches.length > 1) {
             const currentDate = this.value;
@@ -1112,36 +950,40 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Inicializar UI
     loadDraft();
-    renderMovimientos(currentMovimientos);
+    renderMovimientos(appState.getMovimientos());
     filterToday(true);
     recalc();
     
     console.log('📊 Sistema de Caja LBJ inicializado correctamente');
 });
-// Expose functions to global scope
-window.hideTests = hideTests;
-window.addMovimiento = addMovimiento;
-window.saveDay = saveDay;
+
+// Make functions globally available for HTML onclick handlers
 window.newDay = newDay;
+window.saveDay = saveDay;
 window.deleteCurrentDay = deleteCurrentDay;
-window.runTests = runTests;
+window.handleSucursalSave = handleSucursalSave;
+window.changeSucursal = changeSucursal;
+window.displayTestResults = displayTestResults;
+window.hideTests = hideTests;
 window.filterToday = filterToday;
 window.filterThisWeek = filterThisWeek;
 window.filterThisMonth = filterThisMonth;
 window.applyDateFilter = applyDateFilter;
 window.clearDateFilter = clearDateFilter;
+window.emailResumen = emailResumen;
+window.downloadResumenCSV = downloadResumenCSV;
+// window.editRecord = editRecord; // Function not found, removed
+window.addMovimiento = addMovimiento;
 window.removeMovimiento = removeMovimiento;
+window.runTests = runTests;
 window.editDay = editDay;
 window.deleteDayFromHistorial = deleteDayFromHistorial;
 window.loadDraft = loadDraft;
-window.changeSucursal = changeSucursal;
-window.handleSucursalSave = handleSucursalSave;
 window.downloadDayCSV = downloadDayCSV;
 window.emailDay = emailDay;
-window.downloadResumenCSV = downloadResumenCSV;
-window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
+window.recalc = recalc;
 
 // API integration utilities (legacy)
 function legacySafeNum(v) {
@@ -1373,7 +1215,9 @@ if (typeof buildPayloadFromForm !== 'function') {
 }
 
 // Ejecuta el cableado (sin romper wireUI existentes)
-try { wireNumericKeyboards(); } catch(e) { console.warn('wireNumericKeyboards()', e); }
+if (typeof document !== 'undefined') {
+    try { wireNumericKeyboards(); } catch(e) { console.warn('wireNumericKeyboards()', e); }
+}
 
 // === Keypad numérico para iPad (mini-calculadora) ===
 const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);

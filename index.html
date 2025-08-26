@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Caja LBJ">
-    <meta name="theme-color" content="#5865f2">
+    <meta name="theme-color" content="#b08d57">
     
     <!-- Icon for iPad home screen -->
     <link rel="apple-touch-icon" sizes="180x180" href="./icon-180.png">
@@ -246,6 +246,11 @@
         <button type="button" class="btn btn-danger" onclick="deleteCurrentDay()">Borrar</button>
     </div>
 
+    <!-- Initialize global API_KEY before loading app -->
+    <script>
+        // Initialize API_KEY globally for PWA functionality
+        globalThis.API_KEY = ''; // Set this in production via environment or config
+    </script>
     <script type="module" src="app.js"></script>
 
 </body>
