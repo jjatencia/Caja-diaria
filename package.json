@@ -13,6 +13,7 @@
     "serve": "python3 -m http.server 8000",
     "deploy:vercel": "vercel",
     "deploy:netlify": "netlify deploy --prod",
+    "deploy:gh-pages": "./scripts/deploy-gh-pages.sh",
     "check-deploy": "node scripts/check-deploy.js"
   },
   "dependencies": {
