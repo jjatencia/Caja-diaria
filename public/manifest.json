@@ -1,0 +1,17 @@
+{
+  "name": "Gestión de Caja LBJ",
+  "short_name": "Caja LBJ",
+  "description": "Sistema de gestión de caja LBJ para sucursales",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fdf7f2",
+  "theme_color": "#b08d57",
+  "icons": [
+    {
+      "src": "./icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "scope": "./"
+}
