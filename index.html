@@ -21,7 +21,44 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=3-exora">
+    <!-- Estilos inline para forzar cambios inmediatos -->
+    <style>
+        :root {
+            --exora-primary: #555BF6 !important;
+            --exora-secondary: #FD778B !important;
+            --color-primario: #555BF6 !important;
+        }
+        .header {
+            background: linear-gradient(135deg, 
+                rgba(85, 91, 246, 0.95) 0%, 
+                rgba(253, 119, 139, 0.85) 50%, 
+                rgba(183, 241, 244, 0.9) 100%) !important;
+            border-radius: 0 0 24px 24px !important;
+            min-height: 120px !important;
+        }
+        .header-brand {
+            display: flex !important;
+            align-items: center !important;
+            gap: 16px !important;
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            color: white !important;
+        }
+        .header-brand::before {
+            content: '💰' !important;
+            font-size: 32px !important;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #555BF6 0%, #D2E9FF 100%) !important;
+            border-radius: 14px !important;
+            padding: 14px 28px !important;
+        }
+        .panel {
+            border-radius: 20px !important;
+            box-shadow: 0 4px 16px rgba(2, 20, 92, 0.12) !important;
+        }
+    </style>
 
 </head>
 <body>
