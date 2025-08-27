@@ -21,44 +21,273 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="styles.css?v=1756321520&exora=true">
-    <!-- Estilos críticos inline para garantizar aplicación -->
+    <!-- TODOS LOS ESTILOS INLINE - BYPASS TOTAL -->
     <style>
-        .header { 
-            background: #555BF6 !important; 
-            color: white !important; 
-            position: relative !important;
+        /* === RESET Y BASE === */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            font-size: 16px !important;
+            font-weight: 400 !important;
+            line-height: 1.6 !important;
+            color: #02145C !important;
+            background: #FAFBFC !important;
+            overflow-x: hidden !important;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+            transition: all 0.3s ease !important;
         }
-        .header::after {
-            content: '✓ EXORA DESIGN LOADED' !important;
-            position: absolute !important;
+        
+        /* === INDICADOR VISUAL OBVIO === */
+        body::before {
+            content: '✅ EXORA DESIGN CARGADO CORRECTAMENTE' !important;
+            position: fixed !important;
             top: 10px !important;
             right: 10px !important;
+            background: #555BF6 !important;
+            color: white !important;
+            padding: 12px 16px !important;
+            border-radius: 8px !important;
+            z-index: 99999 !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            box-shadow: 0 4px 12px rgba(85, 91, 246, 0.3) !important;
+        }
+        
+        /* === CONTAINER === */
+        .container {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+        }
+        
+        /* === HEADER EXORA === */
+        .header {
+            position: relative !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 20px !important;
+            margin: 0 0 24px !important;
+            padding: 20px !important;
+            padding-top: calc(20px + env(safe-area-inset-top)) !important;
+            min-height: 100px !important;
+            background: #555BF6 !important;
+            color: white !important;
+            border-radius: 0 0 16px 16px !important;
+            box-shadow: 0 4px 16px rgba(85, 91, 246, 0.2) !important;
+        }
+        
+        .header-brand {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            font-size: 22px !important;
+            font-weight: 600 !important;
+            color: white !important;
+        }
+        
+        .header-brand::before {
+            content: '💰' !important;
+            font-size: 24px !important;
+        }
+        
+        .header-actions {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        
+        /* === BOTONES EXORA === */
+        .btn {
+            padding: 14px 20px !important;
+            border: 2px solid transparent !important;
+            border-radius: 12px !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            min-height: 52px !important;
+            text-decoration: none !important;
+            display: inline-block !important;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
+        
+        .btn-primary {
+            background: #555BF6 !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(85, 91, 246, 0.2) !important;
+        }
+        
+        .btn-primary:hover {
+            background: #4248E8 !important;
+            box-shadow: 0 4px 16px rgba(85, 91, 246, 0.3) !important;
+        }
+        
+        .btn-secondary {
             background: #FD778B !important;
             color: white !important;
-            padding: 4px 8px !important;
-            font-size: 12px !important;
-            border-radius: 4px !important;
-            z-index: 1000 !important;
         }
-        .btn-primary { background: #555BF6 !important; color: white !important; }
-        .panel h2 { color: #555BF6 !important; }
-        body::before {
-            content: '🚨 CACHE BYPASS TEST - Si ves esto, el deploy funciona' !important;
-            position: fixed !important;
-            top: 50% !important;
-            left: 50% !important;
-            transform: translate(-50%, -50%) !important;
-            background: red !important;
+        
+        .btn-secondary:hover {
+            background: #FC5A74 !important;
+        }
+        
+        /* === PANELS === */
+        .panel {
+            background: white !important;
+            border-radius: 16px !important;
+            padding: 32px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08) !important;
+            border: 1px solid #F3F4F6 !important;
+            margin-bottom: 24px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .panel:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        .panel h2 {
+            color: #555BF6 !important;
+            margin-bottom: 24px !important;
+            font-size: 1.5em !important;
+            font-weight: 700 !important;
+            position: relative !important;
+            padding-bottom: 12px !important;
+        }
+        
+        .panel h2::after {
+            content: '' !important;
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 60px !important;
+            height: 3px !important;
+            background: #555BF6 !important;
+            border-radius: 2px !important;
+        }
+        
+        /* === FORMULARIOS === */
+        label {
+            display: block !important;
+            margin-bottom: 8px !important;
+            font-weight: 600 !important;
+            color: #02145C !important;
+            font-size: 0.95em !important;
+        }
+        
+        input, select, textarea {
+            width: 100% !important;
+            padding: 14px 18px !important;
+            border: 2px solid #E5E7EB !important;
+            border-radius: 12px !important;
+            font-size: 16px !important;
+            font-weight: 400 !important;
+            background: white !important;
+            color: #02145C !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none !important;
+            border-color: #555BF6 !important;
+            box-shadow: 0 0 0 3px rgba(85, 91, 246, 0.1) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* === CHIPS/FILTROS === */
+        .chip {
+            padding: 10px 20px !important;
+            border: 2px solid #E5E7EB !important;
+            border-radius: 25px !important;
+            background: white !important;
+            color: #6B7280 !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            display: inline-block !important;
+            margin: 4px !important;
+        }
+        
+        .chip:hover {
+            border-color: #FD778B !important;
+            background: #FD778B !important;
             color: white !important;
-            padding: 20px 30px !important;
-            border-radius: 10px !important;
-            z-index: 99999 !important;
-            font-size: 18px !important;
-            font-weight: bold !important;
-            box-shadow: 0 0 50px rgba(255,0,0,0.5) !important;
+            transform: translateY(-2px) !important;
         }
-        body { background: yellow !important; }
+        
+        .chip.active {
+            background: #555BF6 !important;
+            border-color: #555BF6 !important;
+            color: white !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        /* === TABLAS === */
+        .table-container {
+            overflow-x: auto !important;
+            margin: 24px 0 !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+            border: 1px solid #F3F4F6 !important;
+        }
+        
+        table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            background: white !important;
+        }
+        
+        th {
+            background: #555BF6 !important;
+            color: white !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            padding: 16px 12px !important;
+            text-align: left !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 10 !important;
+        }
+        
+        td {
+            padding: 16px 12px !important;
+            text-align: left !important;
+            border-bottom: 1px solid #F3F4F6 !important;
+            font-size: 14px !important;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #F9FAFB !important;
+        }
+        
+        tbody tr:hover {
+            background: #F0F4FF !important;
+        }
+        
+        /* === RESPONSIVE === */
+        @media (max-width: 600px) {
+            .header {
+                min-height: 80px !important;
+                padding: 16px !important;
+            }
+            
+            .panel {
+                padding: 20px !important;
+            }
+            
+            .container {
+                padding: 16px !important;
+            }
+        }
     </style>
 
 </head>
