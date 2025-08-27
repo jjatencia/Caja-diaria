@@ -1,6 +1,8 @@
 {
   "version": 2,
   "public": true,
+  "buildCommand": "npm run build",
+  "outputDirectory": "./",
   "functions": {
     "api/*.js": {
       "runtime": "nodejs18.x"
