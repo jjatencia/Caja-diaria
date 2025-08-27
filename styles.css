@@ -202,7 +202,7 @@ body {
     padding: 20px;
     padding-top: calc(20px + env(safe-area-inset-top));
     min-height: 100px;
-    background: #555BF6;
+    background: #FF0000;
     color: white;
     border-radius: 0 0 16px 16px;
     box-shadow: var(--shadow-medium);
