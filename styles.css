@@ -202,8 +202,8 @@ body {
     padding: 20px;
     padding-top: calc(20px + env(safe-area-inset-top));
     min-height: 100px;
-    background: var(--color-primario);
-    color: var(--color-texto-inverse);
+    background: #555BF6;
+    color: white;
     border-radius: 0 0 16px 16px;
     box-shadow: var(--shadow-medium);
 }
@@ -322,7 +322,7 @@ body {
 }
 
 .panel h2 {
-    color: var(--color-primario);
+    color: #555BF6;
     margin-bottom: 24px;
     font-size: 1.75em;
     font-weight: 700;
@@ -337,7 +337,7 @@ body {
     left: 0;
     width: 60px;
     height: 3px;
-    background: var(--color-primario);
+    background: #555BF6;
     border-radius: 2px;
 }
 
@@ -375,8 +375,8 @@ select {
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: var(--color-primario);
-    box-shadow: var(--shadow-primary);
+    border-color: #555BF6;
+    box-shadow: 0 0 0 3px rgba(85, 91, 246, 0.1);
     transform: translateY(-1px);
 }
 
@@ -443,13 +443,13 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-primary {
-    background: var(--color-primario);
-    color: var(--color-texto-inverse);
+    background: #555BF6;
+    color: white;
     box-shadow: var(--shadow-soft);
 }
 
 .btn-primary:hover {
-    background: var(--color-primario-dark);
+    background: #4248E8;
     box-shadow: var(--shadow-medium);
     transform: translateY(-2px);
 }
@@ -731,8 +731,8 @@ th, td {
 }
 
 th {
-    background: var(--color-primario);
-    color: var(--color-texto-inverse);
+    background: #555BF6;
+    color: white;
     font-weight: 600;
     font-size: 14px;
     position: sticky;
@@ -796,17 +796,17 @@ tbody tr:hover {
 }
 
 .chip:hover {
-    border-color: var(--color-primario-light);
-    background: var(--color-primario-soft);
-    color: var(--color-primario);
+    border-color: #FD778B;
+    background: #FD778B;
+    color: white;
     transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
 }
 
 .chip.active {
-    background: var(--color-primario);
-    border-color: var(--color-primario);
-    color: var(--color-texto-inverse);
+    background: #555BF6;
+    border-color: #555BF6;
+    color: white;
     box-shadow: var(--shadow-soft);
     transform: translateY(-2px);
 }
