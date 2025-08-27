@@ -5,29 +5,30 @@
 }
 
 :root {
-    --color-primario: #5865f2;
-    --color-primario-oscuro: #3d4ae0;
-    --color-secundario: #7789ff;
+    --color-primario: #555bf6;
+    --color-primario-oscuro: #02145c;
+    --color-secundario: #fd778b;
+    --color-secundario-oscuro: #e46677;
     --color-gris: #6c757d;
     --color-gris-oscuro: #5a6268;
     --color-exito: #50c878;
     --color-exito-oscuro: #3ea060;
     --color-peligro: #e63946;
     --color-peligro-oscuro: #c2212d;
-    --color-claro: #f8faff;
-    --color-borde: #e1e5e9;
-    --color-info-bg: #dbeaf4;
+    --color-claro: #d2e9ff;
+    --color-borde: #b7f1f4;
+    --color-info-bg: #b7f1f4;
     --color-exito-bg: #e6f4ea;
     --color-exito-text: #1f6135;
     --color-exito-border: #b8dfc1;
     --color-peligro-bg: #fbeaea;
     --color-peligro-text: #7b1f24;
     --color-peligro-border: #f2b6bc;
-    --color-warning-bg: #fff3cd;
-    --color-warning-border: #ffeaa7;
-    --color-info-text: #0b4b56;
-    --color-info-border: #b0d8e3;
-    --color-primario-rgb: 88, 101, 242;
+    --color-warning-bg: #fcffa8;
+    --color-warning-border: #e0e284;
+    --color-info-text: #02145c;
+    --color-info-border: #8fd0d7;
+    --color-primario-rgb: 85, 91, 246;
     --vh: 1vh;
 }
 
@@ -44,6 +45,16 @@ body {
     background-color: var(--color-claro);
     overflow-x: hidden;
     padding-bottom: calc(80px + env(safe-area-inset-bottom));
+}
+
+a {
+    color: var(--color-secundario);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-secundario-oscuro);
+    text-decoration: underline;
 }
 
 .visually-hidden {
@@ -74,7 +85,8 @@ body {
     padding: 10px;
     padding-top: calc(10px + env(safe-area-inset-top));
     min-height: 100px;
-    background: url('./IMG_1568.jpg') center/cover no-repeat;
+    background: linear-gradient(90deg, var(--color-primario) 60%, var(--color-secundario)),
+                url('./IMG_1568.jpg') center/cover no-repeat;
     color: white;
     border-radius: 0 0 12px 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -218,12 +230,12 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-secondary {
-    background: var(--color-gris);
+    background: var(--color-secundario);
     color: white;
 }
 
 .btn-secondary:hover {
-    background: var(--color-gris-oscuro);
+    background: var(--color-secundario-oscuro);
 }
 
 .btn-success {
