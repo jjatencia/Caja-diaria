@@ -4,8 +4,8 @@
   "description": "Sistema de gestión de caja LBJ para sucursales",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#FAFBFC",
-  "theme_color": "#555BF6",
+  "background_color": "#fdf7f2",
+  "theme_color": "#b08d57",
   "icons": [
     {
       "src": "./icon-180.png",

@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Sistema de gestión de caja LBJ para sucursales - PWA",
   "type": "module",
-  "engines": {
-    "node": "22.x"
-  },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "dev": "python3 -m http.server 8000",
