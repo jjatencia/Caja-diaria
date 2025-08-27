@@ -1043,6 +1043,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
         const element = document.getElementById(id);
         element.addEventListener('input', recalc);
+        element.addEventListener('change', recalc);
         element.addEventListener('blur', function() {
             this.value = formatCurrency(this.value);
         });
@@ -1413,11 +1414,19 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
       const kind = b.getAttribute('data-k');
       const mode = activeInput.dataset.numpad || 'decimal';
       let v = activeInput.value || '';
-      const set = (nv) => { activeInput.value = nv; };
+      const set = (nv) => {
+        const prev = activeInput.value;
+        activeInput.value = nv;
+        if (prev !== nv) {
+          // Notificar cambio inmediato para recalcular
+          activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      };
 
       switch (kind) {
         case 'ok':
           hidePad();
+          // Forzar formateo y recálculo al confirmar
           activeInput.dispatchEvent(new Event('change', { bubbles: true }));
           break;
         case 'back':
