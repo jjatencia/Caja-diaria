@@ -1042,6 +1042,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners para recálculo automático
     ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
         const element = document.getElementById(id);
+        if (!element) {
+            return;
+        }
         element.addEventListener('input', recalc);
         element.addEventListener('blur', function() {
             this.value = formatCurrency(this.value);
@@ -1055,6 +1058,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     ['responsableApertura', 'responsableCierre'].forEach(id => {
         const element = document.getElementById(id);
+        if (!element) {
+            return;
+        }
         element.addEventListener('input', saveDraft);
     });
     
