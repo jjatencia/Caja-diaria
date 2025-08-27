@@ -21,7 +21,42 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="styles.css?v=exora-colors">
+    <link rel="stylesheet" href="styles.css?v=1756321520&exora=true">
+    <!-- Estilos críticos inline para garantizar aplicación -->
+    <style>
+        .header { 
+            background: #555BF6 !important; 
+            color: white !important; 
+            position: relative !important;
+        }
+        .header::after {
+            content: '✓ EXORA DESIGN LOADED' !important;
+            position: absolute !important;
+            top: 10px !important;
+            right: 10px !important;
+            background: #FD778B !important;
+            color: white !important;
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+            border-radius: 4px !important;
+            z-index: 1000 !important;
+        }
+        .btn-primary { background: #555BF6 !important; color: white !important; }
+        .panel h2 { color: #555BF6 !important; }
+        body::before {
+            content: '🎨 EXORA COLORS ACTIVE' !important;
+            position: fixed !important;
+            bottom: 10px !important;
+            left: 10px !important;
+            background: #555BF6 !important;
+            color: white !important;
+            padding: 8px 12px !important;
+            border-radius: 6px !important;
+            z-index: 9999 !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+    </style>
 
 </head>
 <body>
