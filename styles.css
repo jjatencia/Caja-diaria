@@ -7,16 +7,25 @@
 :root {
     --color-primario: #555bf6;
     --color-primario-oscuro: #02145c;
+    --color-primario-light: #8b90ff;
     --color-secundario: #fd778b;
     --color-secundario-oscuro: #e46677;
+    --color-secundario-light: #ffb3c1;
     --color-gris: #6c757d;
     --color-gris-oscuro: #5a6268;
+    --color-gris-soft: #f4f6fb;
     --color-exito: #50c878;
     --color-exito-oscuro: #3ea060;
     --color-peligro: #e63946;
     --color-peligro-oscuro: #c2212d;
     --color-claro: #d2e9ff;
     --color-borde: #b7f1f4;
+    --color-borde-light: #d2e9ff;
+    --color-background: #fcffa8;
+    --color-surface: #ffffff;
+    --color-texto: #02145c;
+    --color-texto-secondary: #5a6268;
+    --color-texto-inverse: #ffffff;
     --color-info-bg: #b7f1f4;
     --color-exito-bg: #e6f4ea;
     --color-exito-text: #1f6135;
@@ -29,6 +38,14 @@
     --color-info-text: #02145c;
     --color-info-border: #8fd0d7;
     --color-primario-rgb: 85, 91, 246;
+    --body-gradient: linear-gradient(180deg, #fcffa8 0%, #d2e9ff 60%, #b7f1f4 100%);
+    --shadow-primary: 0 4px 20px rgba(85, 91, 246, 0.25);
+    --shadow-secondary: 0 4px 20px rgba(253, 119, 139, 0.25);
+    --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.2);
+    --shadow-strong: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+    --color-primario-soft: #eef0ff;
 
     --vh: 1vh;
 }
@@ -111,7 +128,7 @@ body {
     font-weight: 400;
     line-height: 1.6;
     color: var(--color-texto);
-    background: var(--color-background);
+    background: var(--body-gradient, var(--color-background));
     overflow-x: hidden;
     padding-bottom: calc(80px + env(safe-area-inset-bottom));
     transition: all 0.3s ease;
@@ -175,6 +192,10 @@ a:hover {
 .header-brand::before {
     content: '💰';
     font-size: 24px;
+}
+
+.brand-accent {
+    color: var(--color-secundario);
 }
 
 @media (max-width: 600px) {
@@ -277,7 +298,7 @@ a:hover {
 }
 
 .panel h2 {
-    color: #555BF6;
+    color: var(--color-primario);
     margin-bottom: 24px;
     font-size: 1.75em;
     font-weight: 700;
@@ -292,7 +313,7 @@ a:hover {
     left: 0;
     width: 60px;
     height: 3px;
-    background: #555BF6;
+    background: var(--color-primario);
     border-radius: 2px;
 }
 
@@ -330,8 +351,8 @@ select {
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #555BF6;
-    box-shadow: 0 0 0 3px rgba(85, 91, 246, 0.1);
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(var(--color-primario-rgb), 0.1);
     transform: translateY(-1px);
 }
 
@@ -398,13 +419,13 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-primary {
-    background: #555BF6;
-    color: white;
+    background: var(--color-primario);
+    color: var(--color-texto-inverse);
     box-shadow: var(--shadow-soft);
 }
 
 .btn-primary:hover {
-    background: #4248E8;
+    background: var(--color-primario-oscuro);
     box-shadow: var(--shadow-medium);
     transform: translateY(-2px);
 }
@@ -425,7 +446,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-success:hover {
-    background: var(--color-exito-dark);
+    background: var(--color-exito-oscuro);
 }
 
 .btn-danger {
@@ -434,7 +455,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-danger:hover {
-    background: var(--color-peligro-dark);
+    background: var(--color-peligro-oscuro);
 }
 
 .btn-outline {
@@ -687,8 +708,8 @@ th, td {
 }
 
 th {
-    background: #555BF6;
-    color: white;
+    background: var(--color-primario);
+    color: var(--color-texto-inverse);
     font-weight: 600;
     font-size: 14px;
     position: sticky;
@@ -752,17 +773,17 @@ tbody tr:hover {
 }
 
 .chip:hover {
-    border-color: #FD778B;
-    background: #FD778B;
-    color: white;
+    border-color: var(--color-secundario);
+    background: var(--color-secundario);
+    color: var(--color-texto-inverse);
     transform: translateY(-2px);
     box-shadow: var(--shadow-medium);
 }
 
 .chip.active {
-    background: #555BF6;
-    border-color: #555BF6;
-    color: white;
+    background: var(--color-primario);
+    border-color: var(--color-primario);
+    color: var(--color-texto-inverse);
     box-shadow: var(--shadow-soft);
     transform: translateY(-2px);
 }
