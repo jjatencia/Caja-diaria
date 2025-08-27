@@ -4,7 +4,7 @@
   "description": "Sistema de gestión de caja LBJ para sucursales - PWA",
   "type": "module",
   "engines": {
-    "node": "18.x"
+    "node": "22.x"
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
