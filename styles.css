@@ -5,88 +5,31 @@
 }
 
 :root {
-    /* === EXORA BRAND COLORS === */
-    /* Colores principales de la marca */
-    --exora-primary: #555BF6;           /* Color principal de Exora */
-    --exora-secondary: #FD778B;         /* Color secundario de Exora */
-    
-    /* Colores complementarios de la marca */
-    --exora-yellow: #FCFFA8;            /* Amarillo complementario */
-    --exora-cyan: #B7F1F4;              /* Cian complementario */
-    --exora-blue-light: #D2E9FF;        /* Azul claro complementario */
-    --exora-navy: #02145C;              /* Azul marino complementario */
-    
-    /* === SISTEMA DE COLORES DERIVADOS === */
-    /* Variaciones del color primario */
-    --color-primario: #555BF6;
-    --color-primario-light: #7A7FF8;
-    --color-primario-dark: #3D42E6;
-    --color-primario-soft: #E8E9FE;
-    
-    /* Variaciones del color secundario */
-    --color-secundario: var(--exora-secondary);
-    --color-secundario-light: #FE9FAD;  /* Secondary + 20% lightness */
-    --color-secundario-dark: #FC4F69;   /* Secondary - 20% lightness */
-    --color-secundario-soft: #FEF1F3;   /* Secondary con 95% transparency */
-    
-    /* Grises y neutros derivados del navy */
-    --color-gris: #6B7280;              /* Gris neutro */
-    --color-gris-light: #9CA3AF;        /* Gris claro */
-    --color-gris-dark: #374151;         /* Gris oscuro */
-    --color-gris-soft: #F9FAFB;         /* Gris muy claro */
-    
-    /* Estados y feedback */
-    --color-exito: #10B981;             /* Verde éxito */
-    --color-exito-light: #34D399;       
-    --color-exito-dark: #047857;        
-    --color-exito-bg: #D1FAE5;          
-    --color-exito-text: #065F46;        
-    --color-exito-border: #A7F3D0;      
-    
-    --color-peligro: #EF4444;           /* Rojo error */
-    --color-peligro-light: #F87171;     
-    --color-peligro-dark: #DC2626;      
-    --color-peligro-bg: #FEE2E2;        
-    --color-peligro-text: #991B1B;      
-    --color-peligro-border: #FECACA;    
-    
-    --color-warning: #F59E0B;           /* Naranja warning */
-    --color-warning-light: #FBBF24;     
-    --color-warning-dark: #D97706;      
-    --color-warning-bg: #FEF3C7;        
-    --color-warning-text: #92400E;      
-    --color-warning-border: #FDE68A;    
-    
-    --color-info: var(--exora-cyan);    /* Info usa el cian de Exora */
-    --color-info-bg: #F0FDFE;           
-    --color-info-text: #0E7490;         
-    --color-info-border: #67E8F9;       
-    
-    /* Fondos y bordes */
-    --color-claro: #FFFFFF;             /* Fondo principal */
-    --color-background: #FAFBFC;        /* Fondo alternativo */
-    --color-surface: #FFFFFF;           /* Superficie de cards */
-    --color-borde: #E5E7EB;             /* Bordes neutros */
-    --color-borde-light: #F3F4F6;       /* Bordes suaves */
-    
-    /* Texto */
-    --color-texto: var(--exora-navy);   /* Texto principal usa navy */
-    --color-texto-secondary: #6B7280;   /* Texto secundario */
-    --color-texto-light: #9CA3AF;       /* Texto claro */
-    --color-texto-inverse: #FFFFFF;     /* Texto sobre colores oscuros */
-    
-    /* Sombras con colores de marca */
-    --shadow-primary: 0 4px 20px rgba(85, 91, 246, 0.15);
-    --shadow-secondary: 0 4px 20px rgba(253, 119, 139, 0.15);
-    --shadow-soft: 0 2px 8px rgba(2, 20, 92, 0.08);
-    --shadow-medium: 0 4px 16px rgba(2, 20, 92, 0.12);
-    --shadow-strong: 0 8px 32px rgba(2, 20, 92, 0.16);
-    
-    /* Sin gradientes - solo colores sólidos profesionales */
-    
-    /* Variables técnicas */
+    --color-primario: #555bf6;
+    --color-primario-oscuro: #02145c;
+    --color-secundario: #fd778b;
+    --color-secundario-oscuro: #e46677;
+    --color-gris: #6c757d;
+    --color-gris-oscuro: #5a6268;
+    --color-exito: #50c878;
+    --color-exito-oscuro: #3ea060;
+    --color-peligro: #e63946;
+    --color-peligro-oscuro: #c2212d;
+    --color-claro: #d2e9ff;
+    --color-borde: #b7f1f4;
+    --color-info-bg: #b7f1f4;
+    --color-exito-bg: #e6f4ea;
+    --color-exito-text: #1f6135;
+    --color-exito-border: #b8dfc1;
+    --color-peligro-bg: #fbeaea;
+    --color-peligro-text: #7b1f24;
+    --color-peligro-border: #f2b6bc;
+    --color-warning-bg: #fcffa8;
+    --color-warning-border: #e0e284;
+    --color-info-text: #02145c;
+    --color-info-border: #8fd0d7;
     --color-primario-rgb: 85, 91, 246;
-    --color-secundario-rgb: 253, 119, 139;
+
     --vh: 1vh;
 }
 
@@ -174,6 +117,16 @@ body {
     transition: all 0.3s ease;
 }
 
+a {
+    color: var(--color-secundario);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--color-secundario-oscuro);
+    text-decoration: underline;
+}
+
 .visually-hidden {
     position: absolute;
     width: 1px;
@@ -202,7 +155,9 @@ body {
     padding: 20px;
     padding-top: calc(20px + env(safe-area-inset-top));
     min-height: 100px;
-    background: #FF0000;
+    background: linear-gradient(90deg, var(--color-primario) 60%, var(--color-secundario)),
+                url('./IMG_1568.jpg') center/cover no-repeat;
+
     color: white;
     border-radius: 0 0 16px 16px;
     box-shadow: var(--shadow-medium);
@@ -455,12 +410,13 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .btn-secondary {
-    background: var(--color-gris);
-    color: var(--color-texto-inverse);
+    background: var(--color-secundario);
+    color: white;
 }
 
 .btn-secondary:hover {
-    background: var(--color-gris-dark);
+    background: var(--color-secundario-oscuro);
+
 }
 
 .btn-success {
