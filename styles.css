@@ -18,10 +18,10 @@
     
     /* === SISTEMA DE COLORES DERIVADOS === */
     /* Variaciones del color primario */
-    --color-primario: var(--exora-primary);
-    --color-primario-light: #7A7FF8;    /* Primary + 20% lightness */
-    --color-primario-dark: #3D42E6;     /* Primary - 20% lightness */
-    --color-primario-soft: #E8E9FE;     /* Primary con 95% transparency */
+    --color-primario: #555BF6;
+    --color-primario-light: #7A7FF8;
+    --color-primario-dark: #3D42E6;
+    --color-primario-soft: #E8E9FE;
     
     /* Variaciones del color secundario */
     --color-secundario: var(--exora-secondary);
