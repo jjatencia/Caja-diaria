@@ -3,16 +3,13 @@
   "version": "1.0.0",
   "description": "Sistema de gestión de caja LBJ para sucursales - PWA",
   "type": "module",
-  "engines": {
-    "node": "22.x"
-  },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "dev": "next dev",
-    "start": "next start",
+    "dev": "python3 -m http.server 8000",
+    "start": "node server.js",
     "test:watch": "npm test -- --watch",
-    "build": "next build",
-    "build:public": "next build && next export -o public && cp -r app.js styles.css *.json *.png modules utils api config public/ 2>/dev/null || true",
+    "build": "node scripts/build.js",
+    "build:public": "mkdir -p public && cp -r *.html *.js *.css *.json *.png modules utils api config public/ 2>/dev/null || true",
     "serve": "python3 -m http.server 8000",
     "deploy:vercel": "vercel",
     "deploy:netlify": "netlify deploy --prod",
@@ -22,25 +19,12 @@
   "dependencies": {
     "pg": "^8.11.3",
     "nodemailer": "^6.9.4",
-    "googleapis": "^139.0.0",
-    "next": "^14.2.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.0",
-    "tailwind-merge": "^2.3.0"
+    "googleapis": "^139.0.0"
   },
   "keywords": ["pwa", "cash-management", "google-sheets", "barbershop"],
   "author": "LBJ Team",
   "license": "ISC",
   "devDependencies": {
-    "jest": "^29.7.0",
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.21",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5.4.0",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@types/node": "^20.11.30"
+    "jest": "^29.7.0"
   }
 }

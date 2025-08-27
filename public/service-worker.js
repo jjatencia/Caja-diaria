@@ -1,8 +1,8 @@
-const CACHE_NAME = 'pwa-cache-v5-exora';
+const CACHE_NAME = 'pwa-cache-v4';
 const PRECACHE_URLS = [
   './',
   './index.html',
-  './styles.css?v=1756321520&exora=true',
+  './styles.css?v=2',
   './app.js',
   './ui.js',
   './storage.js',
@@ -54,20 +54,14 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(req)
       .then((networkResponse) => {
-        // Respuestas "opaques" o con error no se cachean
+        // Respuestas “opaques” o con error no se cachean
         if (!networkResponse || !networkResponse.ok || networkResponse.type === 'opaqueredirect') {
           return networkResponse;
         }
-        
-        // No cachear archivos CSS con query parameters (cache busting)
-        const isCssWithQuery = url.pathname.endsWith('.css') && url.search;
-        if (!isCssWithQuery) {
-          const respClone = networkResponse.clone();
-          event.waitUntil(
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, respClone))
-          );
-        }
-        
+        const respClone = networkResponse.clone();
+        event.waitUntil(
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, respClone))
+        );
         return networkResponse;
       })
       .catch(() => caches.match(req))

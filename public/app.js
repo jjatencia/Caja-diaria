@@ -19,20 +19,7 @@ if (typeof window !== 'undefined' && window.addEventListener) {
     }
     updateViewportHeight();
 }
-// SERVICE WORKER DESACTIVADO - BYPASS TOTAL DE CACHE
-console.log('🚫 Service Worker desactivado para evitar problemas de cache');
-
-// Limpiar Service Worker existente
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => {
-            registration.unregister();
-            console.log('SW desregistrado:', registration.scope);
-        });
-    });
-}
-
-if (false && 'serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js', { updateViaCache: 'none' }).then(registration => {
         registration.addEventListener('updatefound', () => {
             console.log('[SW] Update found');
