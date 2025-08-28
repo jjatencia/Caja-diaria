@@ -604,17 +604,17 @@ input[type="date"]:valid::-webkit-datetime-edit {
 /* Currency input container */
 .currency {
     position: relative;
-    display: flex;
-    align-items: center;
+    display: block;
 }
 
 .currency input {
     width: 100%;
-    padding: 10px 35px 10px 12px;
+    padding: 10px 40px 10px 12px;
     font-size: 16px;
     border: 1px solid var(--color-borde);
     border-radius: 4px;
     background-color: white;
+    box-sizing: border-box;
 }
 
 .currency input:focus {
@@ -624,10 +624,14 @@ input[type="date"]:valid::-webkit-datetime-edit {
 
 .currency-symbol {
     position: absolute;
-    right: 12px;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
     font-size: 16px;
-    color: var(--color-gris);
+    font-weight: 500;
+    color: var(--color-texto);
     pointer-events: none;
+    line-height: 1;
 }
 
 
@@ -640,24 +644,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 /* Currency input styling */
-.currency {
-    position: relative;
-}
 
-.currency input {
-    width: 100%;
-    padding-right: 30px;
-}
-
-.currency::after {
-    content: '€';
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-gris);
-    pointer-events: none;
-    font-weight: 600;
 }
 
 /* ==========================================================================
@@ -1433,23 +1420,7 @@ tr:hover {
     }
 }
 
-.currency {
-    position: relative;
-}
 
-.currency::after {
-    content: "€";
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-gris);
-    pointer-events: none;
-}
-
-.currency input {
-    padding-right: 30px;
-}
 
 .alert {
     padding: 15px;
