@@ -128,24 +128,39 @@
                             </div>
 
                             <div class="movimiento-form-container">
+                                <h3 class="movimiento-form-title">Movimiento de caja</h3>
                                 <div class="movimiento-form-grid">
-                                    <div class="form-group">
+                                    <div class="form-group movimiento-tipo">
                                         <label for="tipoMovimiento">Tipo</label>
-                                        <select id="tipoMovimiento" tabindex="0">
+                                        <div class="tipo-buttons">
+                                            <button type="button" class="tipo-btn tipo-entrada" data-tipo="entrada" onclick="setTipoMovimiento('entrada')">
+                                                <span class="tipo-icon">➕</span>
+                                                <span class="tipo-text">Entrada</span>
+                                            </button>
+                                            <button type="button" class="tipo-btn tipo-salida" data-tipo="salida" onclick="setTipoMovimiento('salida')">
+                                                <span class="tipo-icon">➖</span>
+                                                <span class="tipo-text">Salida</span>
+                                            </button>
+                                        </div>
+                                        <select id="tipoMovimiento" tabindex="0" style="display: none;">
                                             <option value="entrada">➕ Entrada</option>
                                             <option value="salida">➖ Salida</option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group movimiento-responsable">
                                         <label for="quienMovimiento">Responsable</label>
-                                        <select id="quienMovimiento" tabindex="0">
+                                        <select id="quienMovimiento" tabindex="0" class="responsable-select">
                                             <option value="">Seleccionar responsable</option>
                                         </select>
                                     </div>
-                                    <div class="form-group">
-                                        <label for="importeMovimiento">Importe <span class="hint">(Enter para agregar)</span></label>
-                                        <div class="currency">
-                                            <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0">
+                                    <div class="form-group movimiento-importe">
+                                        <label for="importeMovimiento">Importe</label>
+                                        <div class="importe-input-group">
+                                            <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0" class="importe-input">
+                                            <span class="currency-symbol">€</span>
+                                            <button type="button" class="add-movimiento-btn" onclick="tryAddMovimiento()" title="Agregar movimiento">
+                                                <span class="add-icon">✓</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>

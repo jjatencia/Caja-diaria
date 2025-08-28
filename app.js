@@ -1195,6 +1195,9 @@ document.addEventListener('DOMContentLoaded', function() {
     filterToday(true);
     recalc();
     
+    // Establecer el tipo de movimiento por defecto (entrada)
+    setTipoMovimiento('entrada');
+    
     console.log('📊 Sistema de Caja LBJ inicializado correctamente');
 });
 // Expose functions to global scope
@@ -1223,6 +1226,25 @@ window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
 window.updateDashboard = updateDashboard;
 window.tryAddMovimiento = tryAddMovimiento;
+
+// Nueva función para manejar los botones de tipo de movimiento
+function setTipoMovimiento(tipo) {
+    // Actualizar el select oculto
+    document.getElementById('tipoMovimiento').value = tipo;
+    
+    // Actualizar el estado visual de los botones
+    document.querySelectorAll('.tipo-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Marcar el botón seleccionado como activo
+    const selectedBtn = document.querySelector(`.tipo-btn[data-tipo="${tipo}"]`);
+    if (selectedBtn) {
+        selectedBtn.classList.add('active');
+    }
+}
+
+window.setTipoMovimiento = setTipoMovimiento;
 
 // API integration utilities (legacy)
 function legacySafeNum(v) {
