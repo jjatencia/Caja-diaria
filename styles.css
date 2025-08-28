@@ -311,13 +311,14 @@ input[type="date"]:valid::-webkit-datetime-edit {
 }
 
 .movimiento-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr) 120px 56px;
+    gap: 10px;
     padding: 15px;
     background: var(--color-info-bg);
     border-radius: 8px;
     margin-top: 15px;
+    align-items: end;
 }
 
 .movimiento-form input[type="text"], .movimiento-form select {
@@ -349,8 +350,8 @@ input[type="date"]:valid::-webkit-datetime-edit {
     /* REDISEÑO COMPLETO DE MOVIMIENTOS PARA HORIZONTAL */
     .movimiento-form {
         display: grid;
-        grid-template-columns: 120px minmax(0, 2fr) minmax(0, 1fr) 80px;
-        gap: 15px;
+        grid-template-columns: 110px minmax(0, 1fr) 120px 56px;
+        gap: 10px;
         align-items: end;
         padding: 15px;
         background: var(--color-info-bg);
@@ -585,9 +586,10 @@ tr:hover {
 
     .movimiento-form {
         display: grid;
-        grid-template-columns: 70px minmax(0, 1fr) 70px 40px;
+        grid-template-columns: 80px minmax(0, 1fr) 90px 44px;
         gap: 8px;
         font-size: 12px;
+        align-items: end;
     }
 
     .movimiento-form select,
@@ -746,9 +748,10 @@ tr:hover {
     }
 
     .movimiento-form {
-        grid-template-columns: 60px minmax(0, 1fr) 60px 40px;
+        grid-template-columns: 70px minmax(0, 1fr) 80px 44px;
         gap: 6px;
         font-size: 12px;
+        align-items: end;
     }
 
     .movimiento-form select,
