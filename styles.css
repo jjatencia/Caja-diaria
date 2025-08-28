@@ -566,6 +566,8 @@ input[type="date"]:valid::-webkit-datetime-edit {
     background: white;
     border-radius: 8px;
     border: 2px dashed var(--color-borde);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .movimiento-inputs {
@@ -573,6 +575,12 @@ input[type="date"]:valid::-webkit-datetime-edit {
     grid-template-columns: 140px 1fr 140px 120px;
     gap: 12px;
     align-items: center;
+    width: 100%;
+}
+
+.movimiento-inputs .currency {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .tipo-movimiento {
@@ -660,6 +668,31 @@ input[type="date"]:valid::-webkit-datetime-edit {
 
 .summary-card.movimientos .summary-icon {
     background: var(--color-warning-bg);
+}
+
+/* Estados dinámicos del dashboard */
+.summary-card.positive .summary-value {
+    color: var(--color-exito);
+}
+
+.summary-card.negative .summary-value {
+    color: var(--color-peligro);
+}
+
+.summary-card.neutral .summary-value {
+    color: var(--color-exito);
+}
+
+.summary-card.positive .summary-icon {
+    background: var(--color-exito-bg);
+}
+
+.summary-card.negative .summary-icon {
+    background: var(--color-peligro-bg);
+}
+
+.summary-card.neutral .summary-icon {
+    background: var(--color-exito-bg);
 }
 
 /* ==========================================================================

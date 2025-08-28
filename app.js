@@ -239,7 +239,59 @@ function recalc() {
             diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - Falta Dinero`;
         }
     }
+    
+    // Actualizar dashboard
+    updateDashboard();
     saveDraft();
+}
+
+function updateDashboard() {
+    const apertura = parseNum(document.getElementById('apertura').value);
+    const ingresos = parseNum(document.getElementById('ingresos').value);
+    const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
+    const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
+    const cierre = parseNum(document.getElementById('cierre').value);
+    
+    // Calcular totales
+    const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
+    
+    // Total ingresos = efectivo + tarjetas de Exora
+    const totalIngresos = ingresos + ingresosTarjetaExora;
+    
+    // Diferencia = (apertura + ingresos + entradas - salidas) - cierre
+    const diferencia = totals.diff;
+    
+    // Número de movimientos
+    const numMovimientos = currentMovimientos.length;
+    
+    // Actualizar elementos del dashboard
+    const totalIngresosEl = document.getElementById('totalIngresosHoy');
+    const diferenciaEl = document.getElementById('diferenciaHoy');
+    const movimientosEl = document.getElementById('totalMovimientos');
+    
+    if (totalIngresosEl) {
+        totalIngresosEl.textContent = formatCurrency(totalIngresos) + ' €';
+    }
+    
+    if (diferenciaEl) {
+        diferenciaEl.textContent = formatCurrency(diferencia) + ' €';
+        // Cambiar color según la diferencia
+        const card = diferenciaEl.closest('.summary-card');
+        if (card) {
+            card.classList.remove('positive', 'negative', 'neutral');
+            if (Math.abs(diferencia) < 0.01) {
+                card.classList.add('neutral');
+            } else if (diferencia > 0) {
+                card.classList.add('positive');
+            } else {
+                card.classList.add('negative');
+            }
+        }
+    }
+    
+    if (movimientosEl) {
+        movimientosEl.textContent = numMovimientos;
+    }
 }
 
 
@@ -1142,6 +1194,7 @@ window.downloadResumenCSV = downloadResumenCSV;
 window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
+window.updateDashboard = updateDashboard;
 
 // API integration utilities (legacy)
 function legacySafeNum(v) {
