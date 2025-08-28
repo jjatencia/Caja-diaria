@@ -307,6 +307,15 @@ function updateDashboard() {
 }
 
 
+function tryAddMovimiento() {
+    const importe = document.getElementById('importeMovimiento').value;
+    
+    // Solo agregar si hay un importe válido y mayor que 0
+    if (importe && parseNum(importe) > 0) {
+        addMovimiento();
+    }
+}
+
 function addMovimiento() {
     const tipo = document.getElementById('tipoMovimiento').value;
     const quien = document.getElementById('quienMovimiento').value.trim();
@@ -1148,7 +1157,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener para Enter en el formulario de movimientos
     document.getElementById('importeMovimiento').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            addMovimiento();
+            e.preventDefault();
+            tryAddMovimiento();
+        }
+    });
+
+    // Event listener para blur (perder foco) en el importe de movimientos
+    document.getElementById('importeMovimiento').addEventListener('blur', function() {
+        // Formatear primero si hay valor
+        if (this.value) {
+            this.value = formatCurrency(this.value);
+            // Luego intentar agregar el movimiento si hay un importe válido
+            setTimeout(() => tryAddMovimiento(), 100); // Pequeño delay para asegurar que se formateó
         }
     });
 
@@ -1159,12 +1179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Formatear campos de moneda al perder el foco
-    document.getElementById('importeMovimiento').addEventListener('blur', function() {
-        if (this.value) {
-            this.value = formatCurrency(this.value);
-        }
-    });
+
     
     // Delegación de eventos para botones del historial
     document.getElementById('historialTable').addEventListener('click', function(e) {
@@ -1207,6 +1222,7 @@ window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
 window.updateDashboard = updateDashboard;
+window.tryAddMovimiento = tryAddMovimiento;
 
 // API integration utilities (legacy)
 function legacySafeNum(v) {
