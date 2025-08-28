@@ -1110,6 +1110,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Tabs Historial/Resumen
+    const tabHistorialBtn = document.getElementById('tabHistorial');
+    const tabResumenBtn = document.getElementById('tabResumen');
+    const historialTab = document.getElementById('historialTab');
+    const resumenTab = document.getElementById('resumenTab');
+    if (tabHistorialBtn && tabResumenBtn && historialTab && resumenTab) {
+        const activate = (target) => {
+            const isHistorial = target === 'historial';
+            tabHistorialBtn.classList.toggle('active', isHistorial);
+            tabResumenBtn.classList.toggle('active', !isHistorial);
+            historialTab.classList.toggle('hidden', !isHistorial);
+            resumenTab.classList.toggle('hidden', isHistorial);
+        };
+        tabHistorialBtn.addEventListener('click', () => activate('historial'));
+        tabResumenBtn.addEventListener('click', () => activate('resumen'));
+        activate('historial');
+    }
+
     // Inicializar UI
     loadDraft();
     renderMovimientos(currentMovimientos);

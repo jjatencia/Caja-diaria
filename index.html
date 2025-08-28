@@ -44,6 +44,10 @@
     <div class="container">
         <div class="header hero">
             <div class="header-actions">
+                <div class="sucursal-badge" aria-label="Sucursal actual">
+                    <span>📍</span>
+                    <span id="currentSucursal"></span>
+                </div>
                 <button id="themeToggle" class="btn" aria-label="Cambiar tema">🌙</button>
                 <button id="changeSucursalBtn" class="btn btn-primary" onclick="changeSucursal()">Cambiar sucursal</button>
             </div>
@@ -107,6 +111,8 @@
                         </div>
                     </div>
 
+                    <div id="diferenciaTarjetaDisplay" class="diferencia" role="status" aria-live="polite"></div>
+
                     <fieldset class="form-group">
                         <legend>Gestión de tesorería - Movimientos</legend>
                         <div class="movimientos-container">
@@ -148,92 +154,99 @@
                     </div>
 
                     <div id="diferenciaDisplay" class="diferencia" role="status" aria-live="polite"></div>
-
-                    <div id="diferenciaTarjetaDisplay" class="diferencia" role="status" aria-live="polite"></div>
                 </form>
             </div>
 
             <!-- Panel Derecho: Historial y Exportación -->
             <div class="panel card historial-panel">
                 <h2>📋 Historial y Exportación</h2>
-                
-                <!-- Filtros -->
-                <div class="filter-section">
-                    <h3>🔍 Filtrar por fechas</h3>
-                    
-                    <!-- Botones de acceso directo -->
-                    <div class="filter-quick-buttons">
-                        <button id="chipToday" class="chip" onclick="filterToday()" tabindex="0">Hoy</button>
-                        <button id="chipWeek" class="chip" onclick="filterThisWeek()" tabindex="0">Esta semana</button>
-                        <button id="chipMonth" class="chip" onclick="filterThisMonth()" tabindex="0">Este mes</button>
-                    </div>
-                    
-                    <div class="inline-inputs">
-                        <div class="form-group">
-                            <label for="fechaDesde">Desde</label>
-                            <input type="date" id="fechaDesde">
-                        </div>
-                        <div class="form-group">
-                            <label for="fechaHasta">Hasta</label>
-                            <input type="date" id="fechaHasta">
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="applyDateFilter()" tabindex="0">Aplicar filtro</button>
-                        <button class="btn" onclick="clearDateFilter()" tabindex="0">Limpiar filtro</button>
-                    </div>
+
+                <div class="tabs">
+                    <button id="tabHistorial" type="button" class="tab-button active">Historial</button>
+                    <button id="tabResumen" type="button" class="tab-button">Resumen</button>
                 </div>
 
-                <!-- Tabla de Historial -->
-                <div class="table-container">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Sucursal</th>
-                                <th class="text-right">Apertura</th>
-                                <th class="text-right">Ingresos</th>
-                                <th class="text-right">Tarjeta Exora</th>
-                                <th class="text-right">Tarjeta Datáfono</th>
-                                <th class="text-right">Dif. Tarjeta</th>
-                                <th class="text-right">Entradas</th>
-                                <th class="text-right">Salidas</th>
-                                <th class="text-right">Total</th>
-                                <th class="text-right">Cierre</th>
-                                <th class="text-right">Dif.</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historialTable">
-                        </tbody>
-                    </table>
-                </div>
+                <div id="historialTab" class="tab-panel">
+                    <!-- Filtros -->
+                    <div class="filter-section">
+                        <h3>🔍 Filtrar por fechas</h3>
 
-                <!-- Resumen de Facturación -->
-                <div class="summary-section">
-                    <h3>📊 Resumen de Facturación</h3>
-                    <div class="actions-row" style="margin-bottom: 10px;">
-                        <button class="btn" onclick="emailResumen()">Enviar por email</button>
-                        <button class="btn" onclick="downloadResumenCSV()">Descargar CSV</button>
+                        <!-- Botones de acceso directo -->
+                        <div class="filter-quick-buttons">
+                            <button id="chipToday" class="chip" onclick="filterToday()" tabindex="0">Hoy</button>
+                            <button id="chipWeek" class="chip" onclick="filterThisWeek()" tabindex="0">Esta semana</button>
+                            <button id="chipMonth" class="chip" onclick="filterThisMonth()" tabindex="0">Este mes</button>
+                        </div>
+
+                        <div class="inline-inputs">
+                            <div class="form-group">
+                                <label for="fechaDesde">Desde</label>
+                                <input type="date" id="fechaDesde">
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaHasta">Hasta</label>
+                                <input type="date" id="fechaHasta">
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" onclick="applyDateFilter()" tabindex="0">Aplicar filtro</button>
+                            <button class="btn" onclick="clearDateFilter()" tabindex="0">Limpiar filtro</button>
+                        </div>
                     </div>
+
+                    <!-- Tabla de Historial -->
                     <div class="table-container">
                         <table class="table">
                             <thead>
                                 <tr>
                                     <th>Fecha</th>
+                                    <th>Hora</th>
+                                    <th>Sucursal</th>
                                     <th class="text-right">Apertura</th>
                                     <th class="text-right">Ingresos</th>
+                                    <th class="text-right">Tarjeta Exora</th>
+                                    <th class="text-right">Tarjeta Datáfono</th>
+                                    <th class="text-right">Dif. Tarjeta</th>
                                     <th class="text-right">Entradas</th>
                                     <th class="text-right">Salidas</th>
                                     <th class="text-right">Total</th>
                                     <th class="text-right">Cierre</th>
                                     <th class="text-right">Dif.</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="resumenTable"></tbody>
-                            <tfoot id="resumenTotals"></tfoot>
+                            <tbody id="historialTable">
+                            </tbody>
                         </table>
+                    </div>
+                </div>
+
+                <div id="resumenTab" class="tab-panel hidden">
+                    <!-- Resumen de Facturación -->
+                    <div class="summary-section">
+                        <h3>📊 Resumen de Facturación</h3>
+                        <div class="actions-row" style="margin-bottom: 10px;">
+                            <button class="btn" onclick="emailResumen()">Enviar por email</button>
+                            <button class="btn" onclick="downloadResumenCSV()">Descargar CSV</button>
+                        </div>
+                        <div class="table-container">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th class="text-right">Apertura</th>
+                                        <th class="text-right">Ingresos</th>
+                                        <th class="text-right">Entradas</th>
+                                        <th class="text-right">Salidas</th>
+                                        <th class="text-right">Total</th>
+                                        <th class="text-right">Cierre</th>
+                                        <th class="text-right">Dif.</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resumenTable"></tbody>
+                                <tfoot id="resumenTotals"></tfoot>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
