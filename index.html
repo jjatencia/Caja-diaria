@@ -58,129 +58,186 @@
         <div class="main-content">
             <!-- Panel Izquierdo: Formulario del Día -->
             <div class="panel card">
-                <h2>📝 Registro del Día</h2>
+                <div class="form-header">
+                    <h2>📝 Registro del Día</h2>
+                    <div class="date-selector">
+                        <label for="fecha">Fecha</label>
+                        <input type="date" id="fecha" required>
+                    </div>
+                </div>
                 
                 <form id="cajaForm">
-                    <div class="inline-inputs">
-                        <div class="form-group">
-                            <label for="fecha">Fecha</label>
-                            <input type="date" id="fecha" required>
-                        </div>
-                    </div>
-
-                    <div class="inline-inputs">
-                        <div class="form-group">
-                            <label for="apertura">Apertura de caja</label>
-                            <div class="currency">
-                                <input id="apertura" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="responsableApertura">Responsable apertura</label>
-                            <select id="responsableApertura">
-                                <option value="">Seleccionar responsable</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="ingresos">Ingresos en efectivo (Exora)</label>
-                        <div class="currency">
-                            <input id="ingresos" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                        </div>
-                    </div>
-
-                    <div class="inline-inputs">
-                        <div class="form-group">
-                            <label for="ingresosTarjetaExora">Ingresos en tarjeta (Exora)</label>
-                            <div class="currency">
-                                <input id="ingresosTarjetaExora" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="ingresosTarjetaDatafono">Ingresos en tarjeta (Datáfono)</label>
-                            <div class="currency">
-                                <input id="ingresosTarjetaDatafono" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                            </div>
-                        </div>
-                    </div>
-
-                    <fieldset class="form-group">
-                        <legend>Gestión de tesorería - Movimientos</legend>
-                        <div class="movimientos-container">
-                            <div id="movimientosList"></div>
-
-                            <div class="movimiento-form">
-                                <label for="tipoMovimiento" class="visually-hidden">Tipo de movimiento</label>
-                                <select id="tipoMovimiento" tabindex="0">
-                                    <option value="entrada">Entrada</option>
-                                    <option value="salida">Salida</option>
-                                </select>
-                                <label for="quienMovimiento" class="visually-hidden">Quién realizó</label>
-                                <select id="quienMovimiento" tabindex="0">
-                                    <option value="">Quién realizó</option>
-                                </select>
-                                <label for="importeMovimiento" class="visually-hidden">Importe del movimiento</label>
-                                <div class="currency">
-                                    <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0">
+                    <!-- Sección de Apertura -->
+                    <div class="form-section apertura-section">
+                        <h3 class="section-title">🔓 Apertura de Caja</h3>
+                        <div class="section-content">
+                            <div class="inline-inputs">
+                                <div class="form-group highlight-input">
+                                    <label for="apertura">Monto inicial</label>
+                                    <div class="currency">
+                                        <input id="apertura" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
+                                    </div>
                                 </div>
-                                <button type="button" class="btn btn-primary" onclick="addMovimiento()" tabindex="0">+</button>
+                                
+                                <div class="form-group">
+                                    <label for="responsableApertura">Responsable</label>
+                                    <select id="responsableApertura">
+                                        <option value="">Seleccionar responsable</option>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                    </fieldset>
-
-                    <div class="inline-inputs">
-                        <div class="form-group">
-                            <label for="cierre">Cierre de caja</label>
-                            <div class="currency">
-                                <input id="cierre" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="responsableCierre">Responsable cierre</label>
-                            <select id="responsableCierre">
-                                <option value="">Seleccionar responsable</option>
-                            </select>
                         </div>
                     </div>
 
-                    <div id="diferenciaDisplay" class="diferencia" role="status" aria-live="polite"></div>
+                    <!-- Sección de Ingresos -->
+                    <div class="form-section ingresos-section">
+                        <h3 class="section-title">💰 Ingresos del Día</h3>
+                        <div class="section-content">
+                            <div class="form-group highlight-input">
+                                <label for="ingresos">💵 Efectivo (Exora)</label>
+                                <div class="currency large-input">
+                                    <input id="ingresos" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
+                                </div>
+                            </div>
 
-                    <div id="diferenciaTarjetaDisplay" class="diferencia" role="status" aria-live="polite"></div>
+                            <div class="tarjetas-row">
+                                <div class="form-group">
+                                    <label for="ingresosTarjetaExora">💳 Tarjeta (Exora)</label>
+                                    <div class="currency">
+                                        <input id="ingresosTarjetaExora" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ingresosTarjetaDatafono">💳 Tarjeta (Datáfono)</label>
+                                    <div class="currency">
+                                        <input id="ingresosTarjetaDatafono" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Sección de Movimientos -->
+                    <div class="form-section movimientos-section">
+                        <h3 class="section-title">📊 Movimientos de Caja</h3>
+                        <div class="section-content">
+                            <div class="movimientos-list-container">
+                                <div id="movimientosList"></div>
+                            </div>
+
+                            <div class="movimiento-form-container">
+                                <div class="movimiento-form-grid">
+                                    <div class="form-group">
+                                        <label for="tipoMovimiento">Tipo</label>
+                                        <select id="tipoMovimiento" tabindex="0">
+                                            <option value="entrada">➕ Entrada</option>
+                                            <option value="salida">➖ Salida</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quienMovimiento">Responsable</label>
+                                        <select id="quienMovimiento" tabindex="0">
+                                            <option value="">Seleccionar responsable</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="importeMovimiento">Importe <span class="hint">(Enter para agregar)</span></label>
+                                        <div class="currency">
+                                            <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Cierre -->
+                    <div class="form-section cierre-section">
+                        <h3 class="section-title">🔐 Cierre de Caja</h3>
+                        <div class="section-content">
+                            <div class="inline-inputs">
+                                <div class="form-group highlight-input">
+                                    <label for="cierre">Monto final</label>
+                                    <div class="currency">
+                                        <input id="cierre" data-numpad="decimal" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="responsableCierre">Responsable</label>
+                                    <select id="responsableCierre">
+                                        <option value="">Seleccionar responsable</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
                 </form>
             </div>
 
-            <!-- Panel Derecho: Historial y Exportación -->
+            <!-- Panel Derecho: Dashboard y Historial -->
             <div class="panel card historial-panel">
-                <h2>📋 Historial y Exportación</h2>
-                
-                <!-- Filtros -->
-                <div class="filter-section">
-                    <h3>🔍 Filtrar por fechas</h3>
-                    
-                    <!-- Botones de acceso directo -->
-                    <div class="filter-quick-buttons">
-                        <button id="chipToday" class="chip" onclick="filterToday()" tabindex="0">Hoy</button>
-                        <button id="chipWeek" class="chip" onclick="filterThisWeek()" tabindex="0">Esta semana</button>
-                        <button id="chipMonth" class="chip" onclick="filterThisMonth()" tabindex="0">Este mes</button>
-                    </div>
-                    
-                    <div class="inline-inputs">
-                        <div class="form-group">
-                            <label for="fechaDesde">Desde</label>
-                            <input type="date" id="fechaDesde">
+                <!-- Dashboard de Resumen -->
+                <div class="dashboard-section">
+                    <h2>📊 Resumen del Turno</h2>
+                    <div class="summary-cards">
+                        <div class="summary-card total-ingresos">
+                            <div class="summary-icon">💰</div>
+                            <div class="summary-content">
+                                <div class="summary-label">Total Ingresos</div>
+                                <div class="summary-value" id="totalIngresosHoy">0,00 €</div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="fechaHasta">Hasta</label>
-                            <input type="date" id="fechaHasta">
+                        <div class="summary-card diferencia-efectivo">
+                            <div class="summary-icon">💵</div>
+                            <div class="summary-content">
+                                <div class="summary-label">Diferencia Efectivo</div>
+                                <div class="summary-value" id="diferenciaEfectivoHoy">0,00 €</div>
+                            </div>
+                        </div>
+                        <div class="summary-card diferencia-tarjeta">
+                            <div class="summary-icon">💳</div>
+                            <div class="summary-content">
+                                <div class="summary-label">Diferencia Tarjeta</div>
+                                <div class="summary-value" id="diferenciaTarjetaHoy">0,00 €</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="btn-group">
-                        <button class="btn btn-primary" onclick="applyDateFilter()" tabindex="0">Aplicar filtro</button>
-                        <button class="btn" onclick="clearDateFilter()" tabindex="0">Limpiar filtro</button>
+                </div>
+
+                <div class="historial-section">
+                    <h2>📋 Historial y Exportación</h2>
+                    
+                    <!-- Filtros Mejorados -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <h3>🔍 Filtros</h3>
+                            <div class="filter-quick-buttons">
+                                <button id="chipToday" class="chip active" onclick="filterToday()" tabindex="0">Hoy</button>
+                                <button id="chipWeek" class="chip" onclick="filterThisWeek()" tabindex="0">Semana</button>
+                                <button id="chipMonth" class="chip" onclick="filterThisMonth()" tabindex="0">Mes</button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-custom">
+                            <div class="inline-inputs">
+                                <div class="form-group">
+                                    <label for="fechaDesde">Desde</label>
+                                    <input type="date" id="fechaDesde">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fechaHasta">Hasta</label>
+                                    <input type="date" id="fechaHasta">
+                                </div>
+                            </div>
+                            <div class="btn-group">
+                                <button class="btn btn-primary" onclick="applyDateFilter()" tabindex="0">Aplicar</button>
+                                <button class="btn btn-secondary" onclick="clearDateFilter()" tabindex="0">Limpiar</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -241,9 +298,22 @@
     </div>
 
     <div class="action-bar">
-        <button type="button" class="btn btn-success" onclick="saveDay()">Guardar</button>
-        <button type="button" class="btn btn-primary" onclick="newDay()">Nuevo</button>
-        <button type="button" class="btn btn-danger" onclick="deleteCurrentDay()">Borrar</button>
+        <div class="action-group main-actions">
+            <button type="button" class="btn btn-success btn-save" onclick="saveDay()">
+                <span class="btn-icon">💾</span>
+                <span class="btn-text">Guardar</span>
+            </button>
+            <button type="button" class="btn btn-primary btn-new" onclick="newDay()">
+                <span class="btn-icon">✨</span>
+                <span class="btn-text">Nuevo</span>
+            </button>
+        </div>
+        <div class="action-group secondary-actions">
+            <button type="button" class="btn btn-danger btn-delete" onclick="deleteCurrentDay()">
+                <span class="btn-icon">🗑️</span>
+                <span class="btn-text">Borrar</span>
+            </button>
+        </div>
     </div>
 
     <script type="module" src="app.js"></script>

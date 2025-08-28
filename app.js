@@ -239,9 +239,82 @@ function recalc() {
             diferenciaTarjetaDiv.innerHTML = `⚠️ Diferencia Tarjeta: ${diffTarjetaFormatted} € - Falta Dinero`;
         }
     }
+    
+    // Actualizar dashboard
+    updateDashboard();
     saveDraft();
 }
 
+function updateDashboard() {
+    const apertura = parseNum(document.getElementById('apertura').value);
+    const ingresos = parseNum(document.getElementById('ingresos').value);
+    const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
+    const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
+    const cierre = parseNum(document.getElementById('cierre').value);
+    
+    // Calcular totales
+    const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
+    
+    // Total ingresos = efectivo + tarjetas de Exora
+    const totalIngresos = ingresos + ingresosTarjetaExora;
+    
+    // Diferencia efectivo = (apertura + ingresos + entradas - salidas) - cierre
+    const diferenciaEfectivo = totals.diff;
+    
+    // Diferencia tarjeta = Datáfono - Exora
+    const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
+    
+    // Actualizar elementos del dashboard
+    const totalIngresosEl = document.getElementById('totalIngresosHoy');
+    const diferenciaEfectivoEl = document.getElementById('diferenciaEfectivoHoy');
+    const diferenciaTarjetaEl = document.getElementById('diferenciaTarjetaHoy');
+    
+    if (totalIngresosEl) {
+        totalIngresosEl.textContent = formatCurrency(totalIngresos) + ' €';
+    }
+    
+    if (diferenciaEfectivoEl) {
+        diferenciaEfectivoEl.textContent = formatCurrency(diferenciaEfectivo) + ' €';
+        // Cambiar color según la diferencia
+        const card = diferenciaEfectivoEl.closest('.summary-card');
+        if (card) {
+            card.classList.remove('positive', 'negative', 'neutral');
+            if (Math.abs(diferenciaEfectivo) < 0.01) {
+                card.classList.add('neutral');
+            } else if (diferenciaEfectivo > 0) {
+                card.classList.add('positive');
+            } else {
+                card.classList.add('negative');
+            }
+        }
+    }
+    
+    if (diferenciaTarjetaEl) {
+        diferenciaTarjetaEl.textContent = formatCurrency(diferenciaTarjeta) + ' €';
+        // Cambiar color según la diferencia
+        const card = diferenciaTarjetaEl.closest('.summary-card');
+        if (card) {
+            card.classList.remove('positive', 'negative', 'neutral');
+            if (Math.abs(diferenciaTarjeta) < 0.01) {
+                card.classList.add('neutral');
+            } else if (diferenciaTarjeta > 0) {
+                card.classList.add('positive');
+            } else {
+                card.classList.add('negative');
+            }
+        }
+    }
+}
+
+
+function tryAddMovimiento() {
+    const importe = document.getElementById('importeMovimiento').value;
+    
+    // Solo agregar si hay un importe válido y mayor que 0
+    if (importe && parseNum(importe) > 0) {
+        addMovimiento();
+    }
+}
 
 function addMovimiento() {
     const tipo = document.getElementById('tipoMovimiento').value;
@@ -1084,7 +1157,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listener para Enter en el formulario de movimientos
     document.getElementById('importeMovimiento').addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            addMovimiento();
+            e.preventDefault();
+            tryAddMovimiento();
+        }
+    });
+
+    // Event listener para blur (perder foco) en el importe de movimientos
+    document.getElementById('importeMovimiento').addEventListener('blur', function() {
+        // Formatear primero si hay valor
+        if (this.value) {
+            this.value = formatCurrency(this.value);
+            // Luego intentar agregar el movimiento si hay un importe válido
+            setTimeout(() => tryAddMovimiento(), 100); // Pequeño delay para asegurar que se formateó
         }
     });
 
@@ -1095,12 +1179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Formatear campos de moneda al perder el foco
-    document.getElementById('importeMovimiento').addEventListener('blur', function() {
-        if (this.value) {
-            this.value = formatCurrency(this.value);
-        }
-    });
+
     
     // Delegación de eventos para botones del historial
     document.getElementById('historialTable').addEventListener('click', function(e) {
@@ -1142,6 +1221,8 @@ window.downloadResumenCSV = downloadResumenCSV;
 window.emailResumen = emailResumen;
 window.toggleActionsMenu = toggleActionsMenu;
 window.closeAllActionsMenus = closeAllActionsMenus;
+window.updateDashboard = updateDashboard;
+window.tryAddMovimiento = tryAddMovimiento;
 
 // API integration utilities (legacy)
 function legacySafeNum(v) {
