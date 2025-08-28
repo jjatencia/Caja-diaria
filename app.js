@@ -258,30 +258,30 @@ function updateDashboard() {
     // Total ingresos = efectivo + tarjetas de Exora
     const totalIngresos = ingresos + ingresosTarjetaExora;
     
-    // Diferencia = (apertura + ingresos + entradas - salidas) - cierre
-    const diferencia = totals.diff;
+    // Diferencia efectivo = (apertura + ingresos + entradas - salidas) - cierre
+    const diferenciaEfectivo = totals.diff;
     
-    // Número de movimientos
-    const numMovimientos = currentMovimientos.length;
+    // Diferencia tarjeta = Datáfono - Exora
+    const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
     
     // Actualizar elementos del dashboard
     const totalIngresosEl = document.getElementById('totalIngresosHoy');
-    const diferenciaEl = document.getElementById('diferenciaHoy');
-    const movimientosEl = document.getElementById('totalMovimientos');
+    const diferenciaEfectivoEl = document.getElementById('diferenciaEfectivoHoy');
+    const diferenciaTarjetaEl = document.getElementById('diferenciaTarjetaHoy');
     
     if (totalIngresosEl) {
         totalIngresosEl.textContent = formatCurrency(totalIngresos) + ' €';
     }
     
-    if (diferenciaEl) {
-        diferenciaEl.textContent = formatCurrency(diferencia) + ' €';
+    if (diferenciaEfectivoEl) {
+        diferenciaEfectivoEl.textContent = formatCurrency(diferenciaEfectivo) + ' €';
         // Cambiar color según la diferencia
-        const card = diferenciaEl.closest('.summary-card');
+        const card = diferenciaEfectivoEl.closest('.summary-card');
         if (card) {
             card.classList.remove('positive', 'negative', 'neutral');
-            if (Math.abs(diferencia) < 0.01) {
+            if (Math.abs(diferenciaEfectivo) < 0.01) {
                 card.classList.add('neutral');
-            } else if (diferencia > 0) {
+            } else if (diferenciaEfectivo > 0) {
                 card.classList.add('positive');
             } else {
                 card.classList.add('negative');
@@ -289,8 +289,20 @@ function updateDashboard() {
         }
     }
     
-    if (movimientosEl) {
-        movimientosEl.textContent = numMovimientos;
+    if (diferenciaTarjetaEl) {
+        diferenciaTarjetaEl.textContent = formatCurrency(diferenciaTarjeta) + ' €';
+        // Cambiar color según la diferencia
+        const card = diferenciaTarjetaEl.closest('.summary-card');
+        if (card) {
+            card.classList.remove('positive', 'negative', 'neutral');
+            if (Math.abs(diferenciaTarjeta) < 0.01) {
+                card.classList.add('neutral');
+            } else if (diferenciaTarjeta > 0) {
+                card.classList.add('positive');
+            } else {
+                card.classList.add('negative');
+            }
+        }
     }
 }
 

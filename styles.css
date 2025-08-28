@@ -134,14 +134,12 @@ body {
         gap: 12px;
     }
 
-    .movimiento-inputs {
+    .movimiento-form-grid {
         grid-template-columns: 1fr;
-        gap: 12px;
+        gap: 15px;
     }
 
-    .movimiento-inputs select,
-    .movimiento-inputs .currency,
-    .movimiento-inputs button {
+    .movimiento-form-grid .form-group {
         width: 100%;
     }
 
@@ -560,38 +558,43 @@ input[type="date"]:valid::-webkit-datetime-edit {
    MOVIMIENTOS IMPROVEMENTS
    ========================================================================== */
 
-.movimiento-form-improved {
-    margin-top: 20px;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
+.movimientos-list-container {
+    margin-bottom: 20px;
+}
+
+.movimiento-form-container {
+    background: var(--color-claro);
     border: 2px dashed var(--color-borde);
-    width: 100%;
-    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 15px;
 }
 
-.movimiento-inputs {
+.movimiento-form-grid {
     display: grid;
-    grid-template-columns: 140px 1fr 140px 120px;
-    gap: 12px;
-    align-items: center;
-    width: 100%;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 15px;
+    align-items: end;
 }
 
-.movimiento-inputs .currency {
-    width: 100%;
-    box-sizing: border-box;
+.movimiento-form-grid .form-group {
+    margin-bottom: 0;
 }
 
-.tipo-movimiento {
+.movimiento-form-grid .form-group label {
+    margin-bottom: 5px;
+    font-size: 14px;
     font-weight: 600;
 }
 
-.add-movement {
+.button-container {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
+    flex-direction: column;
+}
+
+.btn-full {
+    width: 100%;
+    white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -662,11 +665,11 @@ input[type="date"]:valid::-webkit-datetime-edit {
     background: var(--color-exito-bg);
 }
 
-.summary-card.diferencia .summary-icon {
+.summary-card.diferencia-efectivo .summary-icon {
     background: var(--color-info-bg);
 }
 
-.summary-card.movimientos .summary-icon {
+.summary-card.diferencia-tarjeta .summary-icon {
     background: var(--color-warning-bg);
 }
 

@@ -124,23 +124,35 @@
                     <div class="form-section movimientos-section">
                         <h3 class="section-title">📊 Movimientos de Caja</h3>
                         <div class="section-content">
-                            <div class="movimientos-container">
+                            <div class="movimientos-list-container">
                                 <div id="movimientosList"></div>
+                            </div>
 
-                                <div class="movimiento-form-improved">
-                                    <div class="movimiento-inputs">
-                                        <select id="tipoMovimiento" class="tipo-movimiento" tabindex="0">
+                            <div class="movimiento-form-container">
+                                <div class="movimiento-form-grid">
+                                    <div class="form-group">
+                                        <label for="tipoMovimiento">Tipo</label>
+                                        <select id="tipoMovimiento" tabindex="0">
                                             <option value="entrada">➕ Entrada</option>
                                             <option value="salida">➖ Salida</option>
                                         </select>
-                                        <select id="quienMovimiento" class="quien-movimiento" tabindex="0">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quienMovimiento">Responsable</label>
+                                        <select id="quienMovimiento" tabindex="0">
                                             <option value="">Seleccionar responsable</option>
                                         </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="importeMovimiento">Importe</label>
                                         <div class="currency">
-                                            <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Importe" tabindex="0">
+                                            <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0">
                                         </div>
-                                        <button type="button" class="btn btn-primary add-movement" onclick="addMovimiento()" tabindex="0">
-                                            <span>Agregar</span>
+                                    </div>
+                                    <div class="form-group button-container">
+                                        <label>&nbsp;</label>
+                                        <button type="button" class="btn btn-primary btn-full" onclick="addMovimiento()" tabindex="0">
+                                            <span>Agregar Movimiento</span>
                                         </button>
                                     </div>
                                 </div>
@@ -178,7 +190,7 @@
             <div class="panel card historial-panel">
                 <!-- Dashboard de Resumen -->
                 <div class="dashboard-section">
-                    <h2>📊 Resumen del Día</h2>
+                    <h2>📊 Resumen del Turno</h2>
                     <div class="summary-cards">
                         <div class="summary-card total-ingresos">
                             <div class="summary-icon">💰</div>
@@ -187,18 +199,18 @@
                                 <div class="summary-value" id="totalIngresosHoy">0,00 €</div>
                             </div>
                         </div>
-                        <div class="summary-card diferencia">
-                            <div class="summary-icon">📊</div>
+                        <div class="summary-card diferencia-efectivo">
+                            <div class="summary-icon">💵</div>
                             <div class="summary-content">
-                                <div class="summary-label">Diferencia</div>
-                                <div class="summary-value" id="diferenciaHoy">0,00 €</div>
+                                <div class="summary-label">Diferencia Efectivo</div>
+                                <div class="summary-value" id="diferenciaEfectivoHoy">0,00 €</div>
                             </div>
                         </div>
-                        <div class="summary-card movimientos">
-                            <div class="summary-icon">🔄</div>
+                        <div class="summary-card diferencia-tarjeta">
+                            <div class="summary-icon">💳</div>
                             <div class="summary-content">
-                                <div class="summary-label">Movimientos</div>
-                                <div class="summary-value" id="totalMovimientos">0</div>
+                                <div class="summary-label">Diferencia Tarjeta</div>
+                                <div class="summary-value" id="diferenciaTarjetaHoy">0,00 €</div>
                             </div>
                         </div>
                     </div>
