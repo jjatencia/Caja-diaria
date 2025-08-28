@@ -1195,6 +1195,8 @@ document.addEventListener('DOMContentLoaded', function() {
     filterToday(true);
     recalc();
     
+
+    
     console.log('📊 Sistema de Caja LBJ inicializado correctamente');
 });
 // Expose functions to global scope

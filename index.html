@@ -128,12 +128,13 @@
                             </div>
 
                             <div class="movimiento-form-container">
+                                <h3 class="movimiento-form-title">Movimiento de caja</h3>
                                 <div class="movimiento-form-grid">
                                     <div class="form-group">
                                         <label for="tipoMovimiento">Tipo</label>
                                         <select id="tipoMovimiento" tabindex="0">
-                                            <option value="entrada">➕ Entrada</option>
-                                            <option value="salida">➖ Salida</option>
+                                            <option value="entrada">Entrada</option>
+                                            <option value="salida">Salida</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -143,9 +144,10 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="importeMovimiento">Importe <span class="hint">(Enter para agregar)</span></label>
+                                        <label for="importeMovimiento">Importe</label>
                                         <div class="currency">
                                             <input id="importeMovimiento" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="0,00" tabindex="0">
+                                            <span class="currency-symbol">€</span>
                                         </div>
                                     </div>
                                 </div>
