@@ -538,26 +538,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
     margin-top: 15px;
 }
 
-.diferencia-inline {
-    margin-top: 15px;
-    padding: 12px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-align: center;
-    background: var(--color-info-bg);
-    border: 1px solid var(--color-info-border);
-}
 
-.diferencia-main {
-    margin-top: 20px;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 18px;
-    text-align: center;
-    background: var(--color-info-bg);
-    border: 2px solid var(--color-info-border);
-}
 
 /* ==========================================================================
    MOVIMIENTOS IMPROVEMENTS
@@ -597,6 +578,27 @@ input[type="date"]:valid::-webkit-datetime-edit {
     color: var(--color-gris);
     font-weight: 400;
     font-style: italic;
+}
+
+/* Currency input styling */
+.currency {
+    position: relative;
+}
+
+.currency input {
+    width: 100%;
+    padding-right: 30px;
+}
+
+.currency::after {
+    content: '€';
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gris);
+    pointer-events: none;
+    font-weight: 600;
 }
 
 /* ==========================================================================
