@@ -87,6 +87,186 @@ body {
     }
 }
 
+/* ==========================================================================
+   RESPONSIVE IMPROVEMENTS
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .form-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .date-selector {
+        align-items: stretch;
+    }
+
+    .date-selector input {
+        width: 100%;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .summary-card {
+        padding: 15px;
+    }
+
+    .summary-icon {
+        font-size: 24px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .summary-value {
+        font-size: 18px;
+    }
+
+    .tarjetas-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .movimiento-inputs {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .movimiento-inputs select,
+    .movimiento-inputs .currency,
+    .movimiento-inputs button {
+        width: 100%;
+    }
+
+    .filter-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .filter-quick-buttons {
+        justify-content: space-between;
+    }
+
+    .chip {
+        flex: 1;
+        text-align: center;
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .action-bar {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .action-group {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .main-actions {
+        order: 1;
+    }
+
+    .secondary-actions {
+        order: 2;
+    }
+
+    .action-bar .btn {
+        min-width: 140px;
+        padding: 14px 20px;
+    }
+
+    /* Form sections responsive */
+    .form-section {
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        padding: 12px 15px;
+        font-size: 15px;
+    }
+
+    .section-content {
+        padding: 15px;
+    }
+
+    .inline-inputs {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .highlight-input .currency input {
+        font-size: 16px;
+    }
+
+    .large-input input {
+        font-size: 18px;
+        height: 50px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 10px;
+    }
+
+    .panel {
+        padding: 15px;
+    }
+
+    .form-header {
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+    }
+
+    .summary-card {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .summary-icon {
+        font-size: 20px;
+        width: 35px;
+        height: 35px;
+    }
+
+    .summary-value {
+        font-size: 16px;
+    }
+
+    .summary-label {
+        font-size: 11px;
+    }
+
+    .action-bar {
+        padding: 15px 10px;
+    }
+
+    .action-bar .btn {
+        min-width: 120px;
+        padding: 12px 16px;
+    }
+
+    .btn-text {
+        font-size: 14px;
+    }
+
+    .btn-icon {
+        font-size: 16px;
+    }
+}
+
 .header-actions {
     display: flex;
     align-items: center;
@@ -267,18 +447,567 @@ input[type="date"]:valid::-webkit-datetime-edit {
     margin-top: 20px;
 }
 
+/* ==========================================================================
+   FORM IMPROVEMENTS
+   ========================================================================== */
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--color-borde);
+}
+
+.form-header h2 {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.date-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.date-selector label {
+    font-size: 14px;
+    margin-bottom: 0;
+    color: var(--color-gris);
+}
+
+.date-selector input {
+    width: 160px;
+    height: 44px;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    border: 2px solid var(--color-borde);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--color-claro);
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    border-color: var(--color-primario);
+    box-shadow: 0 4px 12px rgba(var(--color-primario-rgb), 0.1);
+}
+
+.section-title {
+    background: var(--color-primario);
+    color: white;
+    margin: 0;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.section-content {
+    padding: 20px;
+    background: white;
+}
+
+.highlight-input .currency input {
+    border: 2px solid var(--color-primario);
+    background: rgba(var(--color-primario-rgb), 0.03);
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.large-input input {
+    font-size: 20px;
+    padding: 16px;
+    height: 56px;
+}
+
+.tarjetas-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.diferencia-inline {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    background: var(--color-info-bg);
+    border: 1px solid var(--color-info-border);
+}
+
+.diferencia-main {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 18px;
+    text-align: center;
+    background: var(--color-info-bg);
+    border: 2px solid var(--color-info-border);
+}
+
+/* ==========================================================================
+   MOVIMIENTOS IMPROVEMENTS
+   ========================================================================== */
+
+.movimiento-form-improved {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    border: 2px dashed var(--color-borde);
+}
+
+.movimiento-inputs {
+    display: grid;
+    grid-template-columns: 140px 1fr 140px 120px;
+    gap: 12px;
+    align-items: center;
+}
+
+.tipo-movimiento {
+    font-weight: 600;
+}
+
+.add-movement {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   DASHBOARD SECTION
+   ========================================================================== */
+
+.dashboard-section {
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 2px solid var(--color-borde);
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 2px solid var(--color-borde);
+    transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.summary-icon {
+    font-size: 28px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: var(--color-claro);
+}
+
+.summary-content {
+    flex: 1;
+}
+
+.summary-label {
+    font-size: 12px;
+    color: var(--color-gris);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.summary-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primario);
+}
+
+.summary-card.total-ingresos .summary-icon {
+    background: var(--color-exito-bg);
+}
+
+.summary-card.diferencia .summary-icon {
+    background: var(--color-info-bg);
+}
+
+.summary-card.movimientos .summary-icon {
+    background: var(--color-warning-bg);
+}
+
+/* ==========================================================================
+   FILTER IMPROVEMENTS
+   ========================================================================== */
+
+.historial-section {
+    margin-top: 30px;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.filter-header h3 {
+    margin: 0;
+    color: var(--color-primario);
+    font-size: 16px;
+}
+
+.filter-quick-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.chip {
+    padding: 8px 16px;
+    border: 2px solid var(--color-borde);
+    background: white;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chip:hover {
+    border-color: var(--color-primario);
+    background: rgba(var(--color-primario-rgb), 0.1);
+}
+
+.chip.active {
+    background: var(--color-primario);
+    color: white;
+    border-color: var(--color-primario);
+}
+
+.filter-custom {
+    margin-top: 15px;
+}
+
+/* ==========================================================================
+   ACTION BAR IMPROVEMENTS
+   ========================================================================== */
+
 .action-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 10px;
-    background: #fff;
-    border-top: 1px solid #ccc;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: white;
+    border-top: 2px solid var(--color-borde);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
     z-index: 1000;
+}
+
+.action-group {
+    display: flex;
+    gap: 12px;
+}
+
+.action-bar .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    min-width: 120px;
+    justify-content: center;
+}
+
+.btn-icon {
+    font-size: 18px;
+}
+
+.btn-text {
+    font-size: 16px;
+}
+
+.btn-save {
+    background: var(--color-exito);
+    box-shadow: 0 4px 15px rgba(80, 200, 120, 0.3);
+}
+
+.btn-save:hover {
+    background: var(--color-exito-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(80, 200, 120, 0.4);
+}
+
+.btn-new {
+    background: var(--color-primario);
+    box-shadow: 0 4px 15px rgba(var(--color-primario-rgb), 0.3);
+}
+
+.btn-new:hover {
+    background: var(--color-primario-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--color-primario-rgb), 0.4);
+}
+
+.btn-delete {
+    background: var(--color-peligro);
+    box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+}
+
+.btn-delete:hover {
+    background: var(--color-peligro-oscuro);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.4);
+}
+
+/* ==========================================================================
+   ACCESSIBILITY AND NAVIGATION IMPROVEMENTS
+   ========================================================================== */
+
+/* Focus styles for better accessibility */
+input:focus,
+select:focus,
+button:focus,
+.btn:focus {
+    outline: 3px solid rgba(var(--color-primario-rgb), 0.3);
+    outline-offset: 2px;
+}
+
+/* Progress indicators */
+.form-progress {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+    margin: -25px -25px 25px -25px;
+    padding: 15px 25px;
+    border-bottom: 2px solid var(--color-borde);
+}
+
+.progress-bar {
+    height: 4px;
+    background: var(--color-borde);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primario), var(--color-secundario));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: var(--color-gris);
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Enhanced form validation */
+.form-group.error input,
+.form-group.error select {
+    border-color: var(--color-peligro);
+    background: var(--color-peligro-bg);
+}
+
+.form-group.success input,
+.form-group.success select {
+    border-color: var(--color-exito);
+    background: var(--color-exito-bg);
+}
+
+.form-group.error label {
+    color: var(--color-peligro);
+}
+
+.form-group.success label {
+    color: var(--color-exito);
+}
+
+/* Enhanced tooltips */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Loading states */
+.loading {
+    position: relative;
+    color: transparent;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid var(--color-borde);
+    border-top: 2px solid var(--color-primario);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced animations */
+.form-section {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Enhanced hover states */
+.form-section:hover .section-title {
+    background: var(--color-primario-oscuro);
+}
+
+.summary-card:hover .summary-value {
+    transform: scale(1.05);
+    transition: transform 0.2s ease;
+}
+
+/* Better visual feedback */
+.currency input:focus {
+    background: rgba(var(--color-primario-rgb), 0.05);
+}
+
+.movimiento-form-improved:hover {
+    border-color: var(--color-primario);
+    background: rgba(var(--color-primario-rgb), 0.02);
+}
+
+/* Status indicators */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-indicator.success {
+    background: var(--color-exito);
+}
+
+.status-indicator.warning {
+    background: #ffa500;
+}
+
+.status-indicator.error {
+    background: var(--color-peligro);
+}
+
+/* Improved table responsiveness */
+@media (max-width: 768px) {
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .table th,
+    .table td {
+        min-width: 100px;
+        white-space: nowrap;
+    }
+}
+
+/* Enhanced button animations */
+.btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transition: width 0.6s, height 0.6s;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+}
+
+.btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn > * {
+    position: relative;
+    z-index: 1;
 }
 
 .movimientos-container {
