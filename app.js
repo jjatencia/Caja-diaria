@@ -157,9 +157,9 @@ function loadDraft() {
 
 // Funciones de UI
 function recalc() {
-    const apertura = document.getElementById('apertura').value;
-    const ingresos = document.getElementById('ingresos').value;
-    const cierre = document.getElementById('cierre').value;
+    const apertura = parseFloat(document.getElementById('apertura').value) || 0;
+    const ingresos = parseFloat(document.getElementById('ingresos').value) || 0;
+    const cierre = parseFloat(document.getElementById('cierre').value) || 0;
     
     const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
 
@@ -246,11 +246,11 @@ function recalc() {
 }
 
 function updateDashboard() {
-    const apertura = parseNum(document.getElementById('apertura').value);
-    const ingresos = parseNum(document.getElementById('ingresos').value);
-    const ingresosTarjetaExora = parseNum(document.getElementById('ingresosTarjetaExora').value);
-    const ingresosTarjetaDatafono = parseNum(document.getElementById('ingresosTarjetaDatafono').value);
-    const cierre = parseNum(document.getElementById('cierre').value);
+    const apertura = parseFloat(document.getElementById('apertura').value) || 0;
+    const ingresos = parseFloat(document.getElementById('ingresos').value) || 0;
+    const ingresosTarjetaExora = parseFloat(document.getElementById('ingresosTarjetaExora').value) || 0;
+    const ingresosTarjetaDatafono = parseFloat(document.getElementById('ingresosTarjetaDatafono').value) || 0;
+    const cierre = parseFloat(document.getElementById('cierre').value) || 0;
     
     // Calcular totales
     const totals = computeTotals(apertura, ingresos, currentMovimientos, cierre);
@@ -264,17 +264,28 @@ function updateDashboard() {
     // Diferencia tarjeta = Datáfono - Exora
     const diferenciaTarjeta = ingresosTarjetaDatafono - ingresosTarjetaExora;
     
-    // Actualizar elementos del dashboard
+    // Actualizar elementos del dashboard con animación suave
     const totalIngresosEl = document.getElementById('totalIngresosHoy');
     const diferenciaEfectivoEl = document.getElementById('diferenciaEfectivoHoy');
     const diferenciaTarjetaEl = document.getElementById('diferenciaTarjetaHoy');
     
     if (totalIngresosEl) {
-        totalIngresosEl.textContent = formatCurrency(totalIngresos) + ' €';
+        const newValue = formatCurrency(totalIngresos) + ' €';
+        if (totalIngresosEl.textContent !== newValue) {
+            totalIngresosEl.style.opacity = '0.7';
+            totalIngresosEl.textContent = newValue;
+            setTimeout(() => { totalIngresosEl.style.opacity = '1'; }, 100);
+        }
     }
     
     if (diferenciaEfectivoEl) {
-        diferenciaEfectivoEl.textContent = formatCurrency(diferenciaEfectivo) + ' €';
+        const newValue = formatCurrency(diferenciaEfectivo) + ' €';
+        if (diferenciaEfectivoEl.textContent !== newValue) {
+            diferenciaEfectivoEl.style.opacity = '0.7';
+            diferenciaEfectivoEl.textContent = newValue;
+            setTimeout(() => { diferenciaEfectivoEl.style.opacity = '1'; }, 100);
+        }
+        
         // Cambiar color según la diferencia
         const card = diferenciaEfectivoEl.closest('.summary-card');
         if (card) {
@@ -290,7 +301,13 @@ function updateDashboard() {
     }
     
     if (diferenciaTarjetaEl) {
-        diferenciaTarjetaEl.textContent = formatCurrency(diferenciaTarjeta) + ' €';
+        const newValue = formatCurrency(diferenciaTarjeta) + ' €';
+        if (diferenciaTarjetaEl.textContent !== newValue) {
+            diferenciaTarjetaEl.style.opacity = '0.7';
+            diferenciaTarjetaEl.textContent = newValue;
+            setTimeout(() => { diferenciaTarjetaEl.style.opacity = '1'; }, 100);
+        }
+        
         // Cambiar color según la diferencia
         const card = diferenciaTarjetaEl.closest('.summary-card');
         if (card) {
@@ -308,10 +325,10 @@ function updateDashboard() {
 
 
 function tryAddMovimiento() {
-    const importe = document.getElementById('importeMovimiento').value;
+    const importe = parseFloat(document.getElementById('importeMovimiento').value) || 0;
     
     // Solo agregar si hay un importe válido y mayor que 0
-    if (importe && parseNum(importe) > 0) {
+    if (importe > 0) {
         addMovimiento();
     }
 }
@@ -319,14 +336,14 @@ function tryAddMovimiento() {
 function addMovimiento() {
     const tipo = document.getElementById('tipoMovimiento').value;
     const quien = document.getElementById('quienMovimiento').value.trim();
-    const importe = document.getElementById('importeMovimiento').value;
+    const importe = parseFloat(document.getElementById('importeMovimiento').value) || 0;
     
-    if (!importe || parseNum(importe) === 0) {
+    if (importe === 0) {
         showAlert('Por favor, introduce un importe válido', 'danger');
         return;
     }
     
-    if (parseNum(importe) < 0) {
+    if (importe < 0) {
         showAlert('El importe no puede ser negativo', 'danger');
         return;
     }
@@ -334,7 +351,7 @@ function addMovimiento() {
     currentMovimientos.push({
         tipo,
         quien: quien || 'No especificado',
-        importe: parseNum(importe)
+        importe: importe
     });
     
     // Limpiar formulario de movimiento
@@ -368,13 +385,23 @@ function loadFormData(data) {
         localStorage.setItem('sucursal', data.sucursal);
         applySucursal();
     }
-    document.getElementById('apertura').value = formatCurrency(data.apertura);
+    // Para campos type="number", usar valores numéricos directos
+    document.getElementById('apertura').value = parseNum(data.apertura).toFixed(2);
     document.getElementById('responsableApertura').value = data.responsableApertura;
-    document.getElementById('ingresos').value = formatCurrency(data.ingresos);
-    document.getElementById('ingresosTarjetaExora').value = formatCurrency(data.ingresosTarjetaExora || 0);
-    document.getElementById('ingresosTarjetaDatafono').value = formatCurrency(data.ingresosTarjetaDatafono || 0);
-    document.getElementById('cierre').value = formatCurrency(data.cierre);
+    document.getElementById('ingresos').value = parseNum(data.ingresos).toFixed(2);
+    document.getElementById('ingresosTarjetaExora').value = parseNum(data.ingresosTarjetaExora || 0).toFixed(2);
+    document.getElementById('ingresosTarjetaDatafono').value = parseNum(data.ingresosTarjetaDatafono || 0).toFixed(2);
+    document.getElementById('cierre').value = parseNum(data.cierre).toFixed(2);
     document.getElementById('responsableCierre').value = data.responsableCierre;
+    
+    // Actualizar visualización de € para todos los campos cargados
+    ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
+        const element = document.getElementById(id);
+        const value = parseFloat(element.value);
+        if (!isNaN(value) && value > 0) {
+            updateCurrencyDisplay(element, value);
+        }
+    });
 
     currentMovimientos = data.movimientos || [];
     renderMovimientos(currentMovimientos);
@@ -1112,16 +1139,118 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSucursal();
     updateResponsables();
 
-    // Event listeners para recálculo automático
+    // Función para formatear input con símbolo € (adaptada para type="number")
+    function formatInputWithEuro(input) {
+        const value = input.value;
+        if (value && value.trim() !== '') {
+            const numValue = parseFloat(value);
+            if (!isNaN(numValue) && numValue > 0) {
+                // Para campos type="number", mantenemos el valor numérico
+                // pero mostramos el formato con € en un elemento visual adicional
+                input.value = numValue.toFixed(2);
+                updateCurrencyDisplay(input, numValue);
+            }
+        }
+    }
+
+    // Función para actualizar la visualización de moneda
+    function updateCurrencyDisplay(input, value) {
+        const container = input.closest('.currency');
+        if (container) {
+            let display = container.querySelector('.currency-display');
+            if (!display) {
+                display = document.createElement('span');
+                display.className = 'currency-display';
+                display.style.cssText = 'position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none; font-size: 14px;';
+                container.style.position = 'relative';
+                container.appendChild(display);
+            }
+            if (value > 0) {
+                display.textContent = '€';
+                display.style.display = 'block';
+            } else {
+                display.style.display = 'none';
+            }
+        }
+    }
+
+    // Función para limpiar formato cuando se enfoca
+    function cleanInputOnFocus(input) {
+        // Para type="number", simplemente limpiamos si es 0
+        if (parseFloat(input.value) === 0 || input.value === '0.00') {
+            input.value = '';
+        }
+        // Ocultar el símbolo € durante la edición
+        const container = input.closest('.currency');
+        if (container) {
+            const display = container.querySelector('.currency-display');
+            if (display) {
+                display.style.display = 'none';
+            }
+        }
+    }
+
+    // Event listeners para recálculo automático y formateo
     ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
         const element = document.getElementById(id);
-        element.addEventListener('input', recalc);
-        element.addEventListener('blur', function() {
-            this.value = formatCurrency(this.value);
+        let formatTimer = null;
+        
+        // Función para formateo automático con delay
+        function scheduleFormat() {
+            clearTimeout(formatTimer);
+            formatTimer = setTimeout(() => {
+                const currentValue = element.value;
+                if (currentValue && currentValue.trim() !== '') {
+                    const numValue = parseFloat(currentValue);
+                    if (!isNaN(numValue) && numValue > 0) {
+                        formatInputWithEuro(element);
+                        // Recalcular después del formateo automático
+                        setTimeout(() => recalc(), 10);
+                    }
+                }
+            }, 1200); // Formatear después de 1.2 segundos de inactividad
+        }
+        
+        // Recalcular en tiempo real con múltiples eventos para mejor compatibilidad
+        ['input', 'change', 'keyup', 'paste'].forEach(eventType => {
+            element.addEventListener(eventType, () => {
+                // Recalcular inmediatamente
+                setTimeout(() => {
+                    recalc();
+                }, 10);
+                
+                // Programar formateo automático
+                scheduleFormat();
+            });
         });
+        
+        // Formatear con € al perder el foco
+        element.addEventListener('blur', function() {
+            clearTimeout(formatTimer);
+            formatInputWithEuro(this);
+            // Recalcular después del formateo
+            setTimeout(() => recalc(), 10);
+        });
+        
+        // Limpiar formato al enfocar
         element.addEventListener('focus', function() {
-            if (parseNum(this.value) === 0) {
-                this.value = '';
+            clearTimeout(formatTimer);
+            cleanInputOnFocus(this);
+        });
+        
+        // Mostrar € inmediatamente cuando hay valor
+        element.addEventListener('input', function() {
+            const value = parseFloat(this.value);
+            if (!isNaN(value) && value > 0) {
+                updateCurrencyDisplay(this, value);
+            } else {
+                const container = this.closest('.currency');
+                if (container) {
+                    const display = container.querySelector('.currency-display');
+                    if (display) {
+                        display.style.display = 'none';
+                    }
+                }
             }
         });
     });
@@ -1162,20 +1291,72 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Event listeners para el campo de importe de movimientos
+    const importeMovimientoEl = document.getElementById('importeMovimiento');
+    let formatTimerMovimiento = null;
+    
+    // Función para formateo automático con delay para movimientos
+    function scheduleFormatMovimiento() {
+        clearTimeout(formatTimerMovimiento);
+        formatTimerMovimiento = setTimeout(() => {
+            const currentValue = importeMovimientoEl.value;
+            if (currentValue && currentValue.trim() !== '') {
+                const numValue = parseFloat(currentValue);
+                if (!isNaN(numValue) && numValue > 0) {
+                    formatInputWithEuro(importeMovimientoEl);
+                    // Recalcular después del formateo automático
+                    setTimeout(() => recalc(), 10);
+                }
+            }
+        }, 1200); // Formatear después de 1.2 segundos de inactividad
+    }
+    
+    // Recalcular en tiempo real con múltiples eventos para mejor compatibilidad
+    ['input', 'change', 'keyup', 'paste'].forEach(eventType => {
+        importeMovimientoEl.addEventListener(eventType, () => {
+            // Recalcular inmediatamente
+            setTimeout(() => {
+                recalc();
+            }, 10);
+            
+            // Programar formateo automático
+            scheduleFormatMovimiento();
+        });
+    });
+    
     // Event listener para blur (perder foco) en el importe de movimientos
-    document.getElementById('importeMovimiento').addEventListener('blur', function() {
+    importeMovimientoEl.addEventListener('blur', function() {
+        clearTimeout(formatTimerMovimiento);
         // Formatear primero si hay valor
         if (this.value) {
-            this.value = formatCurrency(this.value);
+            formatInputWithEuro(this);
             // Luego intentar agregar el movimiento si hay un importe válido
-            setTimeout(() => tryAddMovimiento(), 100); // Pequeño delay para asegurar que se formateó
+            setTimeout(() => {
+                tryAddMovimiento();
+                recalc(); // Recalcular después de agregar movimiento
+            }, 100); // Pequeño delay para asegurar que se formateó
         }
     });
 
-    // Limpiar importe si es 0 al enfocar
-    document.getElementById('importeMovimiento').addEventListener('focus', function() {
-        if (parseNum(this.value) === 0) {
-            this.value = '';
+    // Limpiar formato al enfocar
+    importeMovimientoEl.addEventListener('focus', function() {
+        clearTimeout(formatTimerMovimiento);
+        cleanInputOnFocus(this);
+    });
+    
+    // Mostrar € inmediatamente cuando hay valor en movimientos
+    importeMovimientoEl.addEventListener('input', function() {
+        const value = parseFloat(this.value);
+        if (!isNaN(value) && value > 0) {
+            updateCurrencyDisplay(this, value);
+        } else {
+            const container = this.closest('.currency');
+            if (container) {
+                const display = container.querySelector('.currency-display');
+                if (display) {
+                    display.style.display = 'none';
+                }
+            }
         }
     });
 
@@ -1194,6 +1375,53 @@ document.addEventListener('DOMContentLoaded', function() {
     renderMovimientos(currentMovimientos);
     filterToday(true);
     recalc();
+    
+    // Observador de mutaciones para detectar cambios en campos de importes
+    // Especialmente útil para diferentes tipos de teclados
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
+                const target = mutation.target;
+                if (target.type === 'number' && 
+                    ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre', 'importeMovimiento'].includes(target.id)) {
+                    setTimeout(() => recalc(), 20);
+                }
+            }
+        });
+    });
+    
+    // Observar cambios en todos los campos de importe
+    const monitoredFields = {};
+    ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre', 'importeMovimiento'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            observer.observe(element, { 
+                attributes: true, 
+                attributeFilter: ['value'],
+                subtree: false 
+            });
+            
+            // Inicializar valor para polling
+            monitoredFields[id] = element.value;
+        }
+    });
+    
+    // Polling adicional para detectar cambios que podrían no ser capturados por eventos
+    // Especialmente útil para teclados personalizados del iPad
+    setInterval(() => {
+        let hasChanges = false;
+        Object.keys(monitoredFields).forEach(id => {
+            const element = document.getElementById(id);
+            if (element && element.value !== monitoredFields[id]) {
+                monitoredFields[id] = element.value;
+                hasChanges = true;
+            }
+        });
+        
+        if (hasChanges) {
+            recalc();
+        }
+    }, 500); // Verificar cada 500ms
     
 
     
@@ -1403,17 +1631,18 @@ function parseMoney(v) {
 // Restringir caracteres mientras se escribe
 function wireNumericKeyboards(){
   // Solo dígitos
+  // Campos numéricos: usar teclado numérico nativo del sistema
   document.querySelectorAll('input[inputmode="numeric"]').forEach(el => {
+    // Los campos type="number" ya manejan la validación básica
+    // Solo necesitamos trigger recalc para campos específicos
     el.addEventListener('input', () => {
-      el.value = el.value.replace(/\D+/g, '');
-    });
-  });
-  // Decimales: dígitos + un separador (coma o punto)
-  document.querySelectorAll('input[inputmode="decimal"]').forEach(el => {
-    el.addEventListener('input', () => {
-      el.value = el.value
-        .replace(/[^0-9,\.]/g, '')
-        .replace(/([,\.]).*?\1/g, '$1'); // solo un separador
+      if (['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre', 'importeMovimiento'].includes(el.id)) {
+        setTimeout(() => {
+          if (typeof recalc === 'function') {
+            recalc();
+          }
+        }, 50);
+      }
     });
   });
 }
@@ -1534,12 +1763,12 @@ const isIPad = /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacI
     document.body.classList.remove('numpad-open');
   }
 
-  // Preparar inputs con data-numpad
-  document.querySelectorAll('input[data-numpad]').forEach(inp=>{
-    inp.setAttribute('readonly', 'readonly');   // evita teclado del sistema en iPad
-    inp.addEventListener('focus', ()=> showPad(inp));
-    inp.addEventListener('click', ()=> showPad(inp));
-  });
+  // Teclado personalizado desactivado - ahora usamos el teclado numérico del sistema
+  // document.querySelectorAll('input[data-numpad]').forEach(inp=>{
+  //   inp.setAttribute('readonly', 'readonly');   // evita teclado del sistema en iPad
+  //   inp.addEventListener('focus', ()=> showPad(inp));
+  //   inp.addEventListener('click', ()=> showPad(inp));
+  // });
 
   // Cerrar al tocar fuera
   document.addEventListener('click', (e)=>{

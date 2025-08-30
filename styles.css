@@ -622,15 +622,30 @@ input[type="date"]:valid::-webkit-datetime-edit {
     outline: none;
 }
 
+/* Símbolo € estático (para el campo de movimientos) */
 .currency-symbol {
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
     font-size: 16px;
-    font-weight: 500;
-    color: var(--color-texto);
+    color: #666;
     pointer-events: none;
+}
+
+/* Símbolo € dinámico (para otros campos) */
+.currency-display {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    pointer-events: none;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;
+    padding: 0 4px;
+    z-index: 1;
     line-height: 1;
 }
 
@@ -709,6 +724,7 @@ input[type="date"]:valid::-webkit-datetime-edit {
     font-size: 20px;
     font-weight: 700;
     color: var(--color-primario);
+    transition: opacity 0.2s ease;
 }
 
 .summary-card.total-ingresos .summary-icon {
