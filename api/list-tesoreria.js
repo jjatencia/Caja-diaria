@@ -40,7 +40,16 @@ export default async function handler(req, res) {
     const rows = response.data.values || [];
 
     const movimientos = rows
-      .filter(r => r[0] && String(r[0]).startsWith(`${id}-`))
+      .filter(r => {
+        if (!r[0]) return false;
+        const cell = String(r[0]);
+        if (cell.startsWith(`${id}-`)) return true;
+        if (/^\d+$/.test(id) && /^\d+$/.test(cell)) {
+          const diff = Number(id) - Number(cell);
+          if (diff >= 0 && diff < 100) return true;
+        }
+        return false;
+      })
       .map(r => ({
         tipo: (r[2] || '').toString().toLowerCase() === 'entrada' ? 'entrada' : 'salida',
         quien: r[3] || '',

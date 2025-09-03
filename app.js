@@ -398,7 +398,7 @@ function loadFormData(data) {
     ['apertura', 'ingresos', 'ingresosTarjetaExora', 'ingresosTarjetaDatafono', 'cierre'].forEach(id => {
         const element = document.getElementById(id);
         const value = parseFloat(element.value);
-        if (!isNaN(value) && value > 0) {
+        if (!isNaN(value) && value > 0 && typeof updateCurrencyDisplay === 'function') {
             updateCurrencyDisplay(element, value);
         }
     });
