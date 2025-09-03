@@ -159,7 +159,7 @@ export async function updateRecord(id, data) {
 
 export function buildTesoreriaRow(id, fecha, mov) {
   return [
-    id,
+    String(id),
     fecha || '',
     mov.tipo === 'entrada' ? 'Entrada' : 'Salida',
     mov.quien || '',
@@ -177,8 +177,12 @@ export async function deleteTesoreriaMovimientos(cierreId) {
   const rows = res.data.values || [];
   const rowsToDelete = [];
   rows.forEach((r, idx) => {
-    if ((r[0] || '').startsWith(`${cierreId}-`)) {
+    const cell = r[0] ? String(r[0]) : '';
+    if (cell.startsWith(`${cierreId}-`)) {
       rowsToDelete.push(idx + 1);
+    } else if (/^\d+$/.test(String(cierreId)) && /^\d+$/.test(cell)) {
+      const diff = Number(cierreId) - Number(cell);
+      if (diff >= 0 && diff < 100) rowsToDelete.push(idx + 1);
     }
   });
 
@@ -239,7 +243,7 @@ export async function appendTesoreriaMovimientos(
     await client.spreadsheets.values.update({
       spreadsheetId: SHEET_ID,
       range: `${TESORERIA_SHEET_NAME}!A2:E${1 + values.length}`,
-      valueInputOption: 'USER_ENTERED',
+      valueInputOption: 'RAW',
       requestBody: { values },
     });
   }
